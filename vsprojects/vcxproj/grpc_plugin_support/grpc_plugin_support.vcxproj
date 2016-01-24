@@ -159,7 +159,6 @@
     <ClInclude Include="$(SolutionDir)\..\src\compiler\ruby_generator_map-inl.h" />
     <ClInclude Include="$(SolutionDir)\..\src\compiler\ruby_generator_string-inl.h" />
     <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_cb_generator.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_cb_generator_helpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\compiler\cpp_generator.cc">

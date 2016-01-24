@@ -39,7 +39,7 @@
 #include "src/compiler/config.h"
 
 #include "src/compiler/cpp_cb_generator.h"
-#include "src/compiler/cpp_cb_generator_helpers.h"
+#include "src/compiler/cpp_generator_helpers.h"
 
 class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
  public:

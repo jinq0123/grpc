@@ -69,9 +69,6 @@
     <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_cb_generator.h">
       <Filter>src\compiler</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_cb_generator_helpers.h">
-      <Filter>src\compiler</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
