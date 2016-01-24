@@ -41,10 +41,10 @@
 #include "src/compiler/cpp_cb_generator.h"
 #include "src/compiler/cpp_generator_helpers.h"
 
-class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
+class CppcbGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
  public:
-  CppGrpcGenerator() {}
-  virtual ~CppGrpcGenerator() {}
+  CppcbGrpcGenerator() {}
+  virtual ~CppcbGrpcGenerator() {}
 
   virtual bool Generate(const grpc::protobuf::FileDescriptor *file,
                         const grpc::string &parameter,
@@ -85,7 +85,7 @@ class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
         grpc_cpp_cb_generator::GetHeaderServices(file, generator_parameters) +
         grpc_cpp_cb_generator::GetHeaderEpilogue(file, generator_parameters);
     std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> header_output(
-        context->Open(file_name + ".grpc.pb.h"));
+        context->Open(file_name + ".grpc_cb.pb.h"));
     grpc::protobuf::io::CodedOutputStream header_coded_out(
         header_output.get());
     header_coded_out.WriteRaw(header_code.data(), header_code.size());
@@ -96,7 +96,7 @@ class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
         grpc_cpp_cb_generator::GetSourceServices(file, generator_parameters) +
         grpc_cpp_cb_generator::GetSourceEpilogue(file, generator_parameters);
     std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> source_output(
-        context->Open(file_name + ".grpc.pb.cc"));
+        context->Open(file_name + ".grpc_cb.pb.cc"));
     grpc::protobuf::io::CodedOutputStream source_coded_out(
         source_output.get());
     source_coded_out.WriteRaw(source_code.data(), source_code.size());
@@ -117,6 +117,6 @@ class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
 };
 
 int main(int argc, char *argv[]) {
-  CppGrpcGenerator generator;
+  CppcbGrpcGenerator generator;
   return grpc::protobuf::compiler::PluginMain(argc, argv, &generator);
 }
