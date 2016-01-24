@@ -85,3 +85,4 @@ Pods/
 
 # Artifacts directory
 artifacts/
+/vsprojects/grpc.VC.opendb
