@@ -1,5 +1,4 @@
 Jinq0123: Fork to add cpp callback API. (Not ready)
-See [src/cpp_cb/README.md](src/cpp_cb/README.md).
 
 See [src/cpp_cb/README.md](src/cpp_cb/README.md).
 
