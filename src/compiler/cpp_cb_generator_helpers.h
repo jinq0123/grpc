@@ -38,7 +38,7 @@
 #include "src/compiler/config.h"
 #include "src/compiler/generator_helpers.h"
 
-namespace grpc_cpp_generator {
+namespace grpc_cpp_cb_generator {
 
 inline grpc::string DotsToColons(const grpc::string &name) {
   return grpc_generator::StringReplace(name, ".", "::");
@@ -65,6 +65,6 @@ inline grpc::string ClassName(const grpc::protobuf::Descriptor *descriptor,
   }
 }
 
-}  // namespace grpc_cpp_generator
+}  // namespace grpc_cpp_cb_generator
 
 #endif  // GRPC_INTERNAL_COMPILER_CPP_GENERATOR_HELPERS_H

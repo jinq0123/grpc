@@ -33,14 +33,14 @@
 
 #include <map>
 
-#include "src/compiler/cpp_generator.h"
-#include "src/compiler/cpp_generator_helpers.h"
+#include "src/compiler/cpp_cb_generator.h"
+#include "src/compiler/cpp_cb_generator_helpers.h"
 
 #include "src/compiler/config.h"
 
 #include <sstream>
 
-namespace grpc_cpp_generator {
+namespace grpc_cpp_cb_generator {
 namespace {
 
 template <class T>
@@ -150,9 +150,9 @@ void PrintHeaderClientMethodInterfaces(
     std::map<grpc::string, grpc::string> *vars, bool is_public) {
   (*vars)["Method"] = method->name();
   (*vars)["Request"] =
-      grpc_cpp_generator::ClassName(method->input_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->input_type(), true);
   (*vars)["Response"] =
-      grpc_cpp_generator::ClassName(method->output_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->output_type(), true);
 
   if (is_public) {
     if (NoStreaming(method)) {
@@ -303,9 +303,9 @@ void PrintHeaderClientMethod(grpc::protobuf::io::Printer *printer,
                              bool is_public) {
   (*vars)["Method"] = method->name();
   (*vars)["Request"] =
-      grpc_cpp_generator::ClassName(method->input_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->input_type(), true);
   (*vars)["Response"] =
-      grpc_cpp_generator::ClassName(method->output_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->output_type(), true);
   if (is_public) {
     if (NoStreaming(method)) {
       printer->Print(
@@ -453,9 +453,9 @@ void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
                                  std::map<grpc::string, grpc::string> *vars) {
   (*vars)["Method"] = method->name();
   (*vars)["Request"] =
-      grpc_cpp_generator::ClassName(method->input_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->input_type(), true);
   (*vars)["Response"] =
-      grpc_cpp_generator::ClassName(method->output_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(*vars,
                    "virtual ::grpc::Status $Method$("
@@ -488,9 +488,9 @@ void PrintHeaderServerMethodAsync(
     std::map<grpc::string, grpc::string> *vars) {
   (*vars)["Method"] = method->name();
   (*vars)["Request"] =
-      grpc_cpp_generator::ClassName(method->input_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->input_type(), true);
   (*vars)["Response"] =
-      grpc_cpp_generator::ClassName(method->output_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(
         *vars,
@@ -730,9 +730,9 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
                              std::map<grpc::string, grpc::string> *vars) {
   (*vars)["Method"] = method->name();
   (*vars)["Request"] =
-      grpc_cpp_generator::ClassName(method->input_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->input_type(), true);
   (*vars)["Response"] =
-      grpc_cpp_generator::ClassName(method->output_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(*vars,
                    "::grpc::Status $ns$$Service$::Stub::$Method$("
@@ -833,9 +833,9 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
                              std::map<grpc::string, grpc::string> *vars) {
   (*vars)["Method"] = method->name();
   (*vars)["Request"] =
-      grpc_cpp_generator::ClassName(method->input_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->input_type(), true);
   (*vars)["Response"] =
-      grpc_cpp_generator::ClassName(method->output_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(*vars,
                    "::grpc::Status $ns$$Service$::Service::$Method$("
@@ -895,9 +895,9 @@ void PrintSourceServerAsyncMethod(
     std::map<grpc::string, grpc::string> *vars) {
   (*vars)["Method"] = method->name();
   (*vars)["Request"] =
-      grpc_cpp_generator::ClassName(method->input_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->input_type(), true);
   (*vars)["Response"] =
-      grpc_cpp_generator::ClassName(method->output_type(), true);
+      grpc_cpp_cb_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(
         *vars,
@@ -1037,9 +1037,9 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
     (*vars)["Idx"] = as_string(i);
     (*vars)["Method"] = method->name();
     (*vars)["Request"] =
-        grpc_cpp_generator::ClassName(method->input_type(), true);
+        grpc_cpp_cb_generator::ClassName(method->input_type(), true);
     (*vars)["Response"] =
-        grpc_cpp_generator::ClassName(method->output_type(), true);
+        grpc_cpp_cb_generator::ClassName(method->output_type(), true);
     if (NoStreaming(method)) {
       printer->Print(
           *vars,
@@ -1133,4 +1133,4 @@ grpc::string GetSourceEpilogue(const grpc::protobuf::FileDescriptor *file,
   return temp;
 }
 
-}  // namespace grpc_cpp_generator
+}  // namespace grpc_cpp_cb_generator

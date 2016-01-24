@@ -31,15 +31,15 @@
  *
  */
 
-// Generates cpp gRPC service interface out of Protobuf IDL.
+// Generates cpp_cb gRPC service interface out of Protobuf IDL.
 //
 
 #include <memory>
 
 #include "src/compiler/config.h"
 
-#include "src/compiler/cpp_generator.h"
-#include "src/compiler/cpp_generator_helpers.h"
+#include "src/compiler/cpp_cb_generator.h"
+#include "src/compiler/cpp_cb_generator_helpers.h"
 
 class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
  public:
@@ -58,7 +58,7 @@ class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
       return false;
     }
 
-    grpc_cpp_generator::Parameters generator_parameters;
+    grpc_cpp_cb_generator::Parameters generator_parameters;
 
     if (!parameter.empty()) {
       std::vector<grpc::string> parameters_list =
@@ -80,10 +80,10 @@ class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
     grpc::string file_name = grpc_generator::StripProto(file->name());
 
     grpc::string header_code =
-        grpc_cpp_generator::GetHeaderPrologue(file, generator_parameters) +
-        grpc_cpp_generator::GetHeaderIncludes(file, generator_parameters) +
-        grpc_cpp_generator::GetHeaderServices(file, generator_parameters) +
-        grpc_cpp_generator::GetHeaderEpilogue(file, generator_parameters);
+        grpc_cpp_cb_generator::GetHeaderPrologue(file, generator_parameters) +
+        grpc_cpp_cb_generator::GetHeaderIncludes(file, generator_parameters) +
+        grpc_cpp_cb_generator::GetHeaderServices(file, generator_parameters) +
+        grpc_cpp_cb_generator::GetHeaderEpilogue(file, generator_parameters);
     std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> header_output(
         context->Open(file_name + ".grpc.pb.h"));
     grpc::protobuf::io::CodedOutputStream header_coded_out(
@@ -91,10 +91,10 @@ class CppGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
     header_coded_out.WriteRaw(header_code.data(), header_code.size());
 
     grpc::string source_code =
-        grpc_cpp_generator::GetSourcePrologue(file, generator_parameters) +
-        grpc_cpp_generator::GetSourceIncludes(file, generator_parameters) +
-        grpc_cpp_generator::GetSourceServices(file, generator_parameters) +
-        grpc_cpp_generator::GetSourceEpilogue(file, generator_parameters);
+        grpc_cpp_cb_generator::GetSourcePrologue(file, generator_parameters) +
+        grpc_cpp_cb_generator::GetSourceIncludes(file, generator_parameters) +
+        grpc_cpp_cb_generator::GetSourceServices(file, generator_parameters) +
+        grpc_cpp_cb_generator::GetSourceEpilogue(file, generator_parameters);
     std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> source_output(
         context->Open(file_name + ".grpc.pb.cc"));
     grpc::protobuf::io::CodedOutputStream source_coded_out(

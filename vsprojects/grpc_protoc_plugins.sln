@@ -16,6 +16,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_cpp_plugin", "vcxproj\
 		{B6E81D84-2ACB-41B8-8781-493A944C7817} = {B6E81D84-2ACB-41B8-8781-493A944C7817}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_cpp_cb_plugin", "vcxproj\.\grpc_cpp_cb_plugin\grpc_cpp_cb_plugin.vcxproj", "{7E51A25F-AC59-488F-906C-C60FAAE706AB}"
+	ProjectSection(myProperties) = preProject
+        	lib = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{B6E81D84-2ACB-41B8-8781-493A944C7818} = {B6E81D84-2ACB-41B8-8781-493A944C7818}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_csharp_plugin", "vcxproj\.\grpc_csharp_plugin\grpc_csharp_plugin.vcxproj", "{3C813052-A49A-4662-B90A-1ADBEC7EE453}"
 	ProjectSection(myProperties) = preProject
         	lib = "False"

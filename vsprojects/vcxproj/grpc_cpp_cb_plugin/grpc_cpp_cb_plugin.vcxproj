@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B6E81D84-2ACB-41B8-8781-493A944C7817}</ProjectGuid>
+    <ProjectGuid>{7E51A25F-AC59-488F-906C-C60FAAE706AB}</ProjectGuid>
     <IgnoreWarnIntDirInTempDetected>true</IgnoreWarnIntDirInTempDetected>
     <IntDir>$(SolutionDir)IntDir\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
@@ -37,12 +37,12 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -53,16 +53,17 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(SolutionDir)\..\vsprojects\global.props" />
-    <Import Project="$(SolutionDir)\..\vsprojects\winsock.props" />
+    <Import Project="$(SolutionDir)\..\vsprojects\protobuf.props" />
+    <Import Project="$(SolutionDir)\..\vsprojects\protoc.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <TargetName>grpc_plugin_support</TargetName>
+    <TargetName>grpc_cpp_cb_plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <TargetName>grpc_plugin_support</TargetName>
+    <TargetName>grpc_cpp_cb_plugin</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -75,12 +76,13 @@
       <MinimalRebuild Condition="$(Jenkins)">false</MinimalRebuild>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation Condition="!$(Jenkins)">true</GenerateDebugInformation>
       <GenerateDebugInformation Condition="$(Jenkins)">false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -93,12 +95,13 @@
       <MinimalRebuild Condition="$(Jenkins)">false</MinimalRebuild>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation Condition="!$(Jenkins)">true</GenerateDebugInformation>
       <GenerateDebugInformation Condition="$(Jenkins)">false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -113,14 +116,15 @@
       <MinimalRebuild Condition="$(Jenkins)">false</MinimalRebuild>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation Condition="!$(Jenkins)">true</GenerateDebugInformation>
       <GenerateDebugInformation Condition="$(Jenkins)">false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -135,44 +139,22 @@
       <MinimalRebuild Condition="$(Jenkins)">false</MinimalRebuild>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation Condition="!$(Jenkins)">true</GenerateDebugInformation>
       <GenerateDebugInformation Condition="$(Jenkins)">false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)\..\include\grpc++\support\config.h" />
-    <ClInclude Include="$(SolutionDir)\..\include\grpc++\support\config_protobuf.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\config.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_generator.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_generator_helpers.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\csharp_generator.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\csharp_generator_helpers.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\generator_helpers.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\objective_c_generator.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\objective_c_generator_helpers.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\python_generator.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\ruby_generator.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\ruby_generator_helpers-inl.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\ruby_generator_map-inl.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\ruby_generator_string-inl.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_cb_generator.h" />
-    <ClInclude Include="$(SolutionDir)\..\src\compiler\cpp_cb_generator_helpers.h" />
+    <ClCompile Include="$(SolutionDir)\..\src\compiler\cpp_cb_plugin.cc">
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\..\src\compiler\cpp_generator.cc">
-    </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\src\compiler\csharp_generator.cc">
-    </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\src\compiler\objective_c_generator.cc">
-    </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\src\compiler\python_generator.cc">
-    </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\src\compiler\ruby_generator.cc">
-    </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\src\compiler\cpp_cb_generator.cc" />
+    <ProjectReference Include="$(SolutionDir)\..\vsprojects\vcxproj\.\grpc_plugin_support\grpc_plugin_support.vcxproj">
+      <Project>{B6E81D84-2ACB-41B8-8781-493A944C7818}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -183,3 +165,4 @@
     </PropertyGroup>
   </Target>
 </Project>
+

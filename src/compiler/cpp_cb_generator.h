@@ -36,7 +36,7 @@
 
 #include "src/compiler/config.h"
 
-namespace grpc_cpp_generator {
+namespace grpc_cpp_cb_generator {
 
 // Contains all the parameters that are parsed from the command line.
 struct Parameters {
@@ -76,6 +76,6 @@ grpc::string GetSourceServices(const grpc::protobuf::FileDescriptor *file,
 grpc::string GetSourceEpilogue(const grpc::protobuf::FileDescriptor *file,
                                const Parameters &params);
 
-}  // namespace grpc_cpp_generator
+}  // namespace grpc_cpp_cb_generator
 
 #endif  // GRPC_INTERNAL_COMPILER_CPP_GENERATOR_H
