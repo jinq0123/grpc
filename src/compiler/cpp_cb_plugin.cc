@@ -103,17 +103,6 @@ class CppcbGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
 
     return true;
   }
-
- private:
-  // Insert the given code into the given file at the given insertion point.
-  void Insert(grpc::protobuf::compiler::GeneratorContext *context,
-              const grpc::string &filename, const grpc::string &insertion_point,
-              const grpc::string &code) const {
-    std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> output(
-        context->OpenForInsert(filename, insertion_point));
-    grpc::protobuf::io::CodedOutputStream coded_out(output.get());
-    coded_out.WriteRaw(code.data(), code.size());
-  }
 };
 
 int main(int argc, char *argv[]) {
