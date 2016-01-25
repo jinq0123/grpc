@@ -100,8 +100,8 @@ grpc::string GetHeaderPrologue(const grpc::protobuf::FileDescriptor *file,
     printer.Print(vars,
                   "// If you make any local change, they will be lost.\n");
     printer.Print(vars, "// source: $filename$\n");
-    printer.Print(vars, "#ifndef GRPC_$filename_identifier$__INCLUDED\n");
-    printer.Print(vars, "#define GRPC_$filename_identifier$__INCLUDED\n");
+    printer.Print(vars, "#ifndef GRPC_CB_$filename_identifier$__INCLUDED\n");
+    printer.Print(vars, "#define GRPC_CB_$filename_identifier$__INCLUDED\n");
     printer.Print(vars, "\n");
     printer.Print(vars, "#include \"$filename_base$.pb.h\"\n");
     printer.Print(vars, "\n");
@@ -112,22 +112,13 @@ grpc::string GetHeaderPrologue(const grpc::protobuf::FileDescriptor *file,
 grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
                                const Parameters &params) {
   grpc::string temp =
-      "#include <grpc++/support/async_stream.h>\n"
-      "#include <grpc++/impl/rpc_method.h>\n"
-      "#include <grpc++/impl/proto_utils.h>\n"
-      "#include <grpc++/impl/service_type.h>\n"
-      "#include <grpc++/support/async_unary_call.h>\n"
-      "#include <grpc++/support/status.h>\n"
-      "#include <grpc++/support/stub_options.h>\n"
-      "#include <grpc++/support/sync_stream.h>\n"
+      "// #include <grpc++/support/async_stream.h>\n"
+      "// #include <grpc++/impl/rpc_method.h>\n"
       "\n"
-      "namespace grpc {\n"
-      "class CompletionQueue;\n"
+      "namespace grpc_cb {\n"
       "class Channel;\n"
       "class RpcService;\n"
-      "class ServerCompletionQueue;\n"
-      "class ServerContext;\n"
-      "}  // namespace grpc\n\n";
+      "}  // namespace grpc_cb\n\n";
 
   if (!file->package().empty()) {
     std::vector<grpc::string> parts =
