@@ -655,8 +655,7 @@ grpc::string GetHeaderEpilogue(const grpc::protobuf::FileDescriptor *file,
       printer.Print(vars, "\n");
     }
 
-    printer.Print(vars, "\n");
-    printer.Print(vars, "#endif  // GRPC_$filename_identifier$__INCLUDED\n");
+    printer.Print(vars, "#endif  // GRPC_CB_$filename_identifier$__INCLUDED\n");
   }
   return output;
 }

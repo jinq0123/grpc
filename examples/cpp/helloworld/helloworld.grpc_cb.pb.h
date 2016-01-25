@@ -62,5 +62,4 @@ class Greeter GRPC_FINAL {
 
 }  // namespace helloworld
 
-
-#endif  // GRPC_helloworld_2eproto__INCLUDED
+#endif  // GRPC_CB_helloworld_2eproto__INCLUDED
