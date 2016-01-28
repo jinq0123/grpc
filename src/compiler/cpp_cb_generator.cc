@@ -523,9 +523,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   (*vars)["Service"] = service->name();
 
   printer->Print(*vars,
-                 "class $Service$ GRPC_FINAL {\n"
-                 " public:\n");
-  printer->Indent();
+      "namespace $Service$ {\n");
 
   // Client side
   printer->Print(
@@ -537,7 +535,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
     PrintHeaderClientMethodInterfaces(printer, service->method(i), vars, true);
   }
   printer->Outdent();
-  printer->Print("private:\n");
+  printer->Print(" private:\n");
   printer->Indent();
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderClientMethodInterfaces(printer, service->method(i), vars, false);
@@ -564,11 +562,12 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   }
   printer->Outdent();
   printer->Print("};\n");
+
+  printer->Print("\n");
   printer->Print(
-      "static std::unique_ptr<Stub> NewStub(const std::shared_ptr< "
+      "std::unique_ptr<Stub> NewStub(const std::shared_ptr< "
       "::grpc::Channel>& channel, "
       "const ::grpc::StubOptions& options = ::grpc::StubOptions());\n");
-
   printer->Print("\n");
 
   // Server side - Synchronous
@@ -601,9 +600,8 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   }
   printer->Outdent();
   printer->Print("};\n");
-
-  printer->Outdent();
-  printer->Print("};\n");
+  printer->Print(*vars,
+      "}  // namespace $Service$\n");
 }
 
 grpc::string GetHeaderServices(const grpc::protobuf::FileDescriptor *file,
