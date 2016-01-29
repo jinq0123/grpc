@@ -172,6 +172,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "route_guide_client", "vcxpr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "route_guide_server", "vcxproj\examples\route_guide_server.vcxproj", "{B5FB6EA3-2481-4AA5-9564-54CB7BE8FE57}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "grpc_cb", "vcxproj\grpc_cb\grpc_cb.vcxproj", "{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -568,6 +570,22 @@ Global
 		{B5FB6EA3-2481-4AA5-9564-54CB7BE8FE57}.Release-DLL|Win32.Build.0 = Release|Win32
 		{B5FB6EA3-2481-4AA5-9564-54CB7BE8FE57}.Release-DLL|x64.ActiveCfg = Release|x64
 		{B5FB6EA3-2481-4AA5-9564-54CB7BE8FE57}.Release-DLL|x64.Build.0 = Release|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug|Win32.Build.0 = Debug|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug|x64.ActiveCfg = Debug|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug|x64.Build.0 = Debug|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug-DLL|Win32.ActiveCfg = Debug-DLL|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug-DLL|Win32.Build.0 = Debug-DLL|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug-DLL|x64.ActiveCfg = Debug-DLL|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Debug-DLL|x64.Build.0 = Debug-DLL|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release|Win32.ActiveCfg = Release|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release|Win32.Build.0 = Release|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release|x64.ActiveCfg = Release|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release|x64.Build.0 = Release|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release-DLL|Win32.ActiveCfg = Release-DLL|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release-DLL|Win32.Build.0 = Release-DLL|Win32
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release-DLL|x64.ActiveCfg = Release-DLL|x64
+		{C187A093-A0FE-489D-A40A-6E33DE0F9FEC}.Release-DLL|x64.Build.0 = Release-DLL|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
