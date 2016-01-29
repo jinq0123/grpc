@@ -31,10 +31,10 @@
  *
  */
 
-#ifndef GRPCXX_SUPPORT_STATUS_CODE_ENUM_H
-#define GRPCXX_SUPPORT_STATUS_CODE_ENUM_H
+#ifndef GRPC_CB_SUPPORT_STATUS_CODE_ENUM_H
+#define GRPC_CB_SUPPORT_STATUS_CODE_ENUM_H
 
-namespace grpc {
+namespace grpc_cb {
 
 enum StatusCode {
   /// Not an error; returned on success.
@@ -147,6 +147,6 @@ enum StatusCode {
   DO_NOT_USE = -1
 };
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_SUPPORT_STATUS_CODE_ENUM_H
+#endif  // GRPC_CB_SUPPORT_STATUS_CODE_ENUM_H

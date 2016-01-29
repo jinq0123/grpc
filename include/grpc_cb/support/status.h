@@ -31,13 +31,13 @@
  *
  */
 
-#ifndef GRPCXX_SUPPORT_STATUS_H
-#define GRPCXX_SUPPORT_STATUS_H
+#ifndef GRPC_CB_SUPPORT_STATUS_H
+#define GRPC_CB_SUPPORT_STATUS_H
 
-#include <grpc++/support/config.h>
-#include <grpc++/support/status_code_enum.h>
+#include <grpc_cb/support/config.h>
+#include <grpc_cb/support/status_code_enum.h>
 
-namespace grpc {
+namespace grpc_cb {
 
 /// Did it work? If it didn't, why?
 ///
@@ -49,7 +49,7 @@ class Status {
 
   /// Construct an instance with associated \a code and \a details (also
   // referred to as "error_message").
-  Status(StatusCode code, const grpc::string& details)
+  Status(StatusCode code, const grpc_cb::string& details)
       : code_(code), details_(details) {}
 
   // Pre-defined special status objects.
@@ -61,16 +61,16 @@ class Status {
   /// Return the instance's error code.
   StatusCode error_code() const { return code_; }
   /// Return the instance's error message.
-  grpc::string error_message() const { return details_; }
+  grpc_cb::string error_message() const { return details_; }
 
   /// Is the status OK?
   bool ok() const { return code_ == StatusCode::OK; }
 
  private:
   StatusCode code_;
-  grpc::string details_;
+  grpc_cb::string details_;
 };
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_SUPPORT_STATUS_H
+#endif  // GRPC_CB_SUPPORT_STATUS_H

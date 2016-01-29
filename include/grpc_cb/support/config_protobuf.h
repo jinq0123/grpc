@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef GRPCXX_SUPPORT_CONFIG_PROTOBUF_H
-#define GRPCXX_SUPPORT_CONFIG_PROTOBUF_H
+#ifndef GRPC_CB_SUPPORT_CONFIG_PROTOBUF_H
+#define GRPC_CB_SUPPORT_CONFIG_PROTOBUF_H
 
 #ifndef GRPC_CUSTOM_PROTOBUF_INT64
 #include <google/protobuf/stubs/common.h>
@@ -54,7 +54,7 @@
 #define GRPC_CUSTOM_CODEDINPUTSTREAM ::google::protobuf::io::CodedInputStream
 #endif
 
-namespace grpc {
+namespace grpc_cb {
 namespace protobuf {
 
 typedef GRPC_CUSTOM_MESSAGE Message;
@@ -67,6 +67,6 @@ typedef GRPC_CUSTOM_CODEDINPUTSTREAM CodedInputStream;
 }  // namespace io
 
 }  // namespace protobuf
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_SUPPORT_CONFIG_PROTOBUF_H
+#endif  // GRPC_CB_SUPPORT_CONFIG_PROTOBUF_H

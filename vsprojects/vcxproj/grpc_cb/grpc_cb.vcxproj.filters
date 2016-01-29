@@ -21,6 +21,18 @@
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\service_stub.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\config.h">
+      <Filter>include\grp_cb\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h">
+      <Filter>include\grp_cb\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\status.h">
+      <Filter>include\grp_cb\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\status_code_enum.h">
+      <Filter>include\grp_cb\support</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -40,6 +52,9 @@
     </Filter>
     <Filter Include="include\grp_cb\impl">
       <UniqueIdentifier>{0da8cd95-314f-da1b-5ce7-7791a5be1f1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\grp_cb\support">
+      <UniqueIdentifier>{a8a760c0-baae-4f34-b283-72468be46b91}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

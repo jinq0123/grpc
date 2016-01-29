@@ -34,8 +34,7 @@
 #ifndef GRPC_CB_CHANNEL_H
 #define GRPC_CB_CHANNEL_H
 
-#include <memory>
-
+#include <grpc_cb/channel_ptr.h>
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>
 
@@ -50,10 +49,10 @@ class Channel GRPC_FINAL : public GrpcLibrary,
   ~Channel();
 
  private:
-  Channel(const grpc::string& host, grpc_channel* c_channel);
+  Channel(const grpc_cb::string& host, grpc_channel* c_channel);
 
  private: 
-  const grpc::string host_;
+  const grpc_cb::string host_;
   grpc_channel* const c_channel_;  // owned
 };
 

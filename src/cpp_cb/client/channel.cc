@@ -37,7 +37,7 @@
 
 namespace grpc_cb {
 
-Channel::Channel(const grpc::string& host, grpc_channel* channel)
+Channel::Channel(const grpc_cb::string& host, grpc_channel* channel)
     : host_(host), c_channel_(channel) {}
 
 Channel::~Channel() { grpc_channel_destroy(c_channel_); }

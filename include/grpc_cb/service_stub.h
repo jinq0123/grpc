@@ -8,7 +8,7 @@
 
 #include <cassert>
 
-#include <channel_ptr.h>
+#include <grpc_cb/channel_ptr.h>
 
 namespace grpc_cb {
 

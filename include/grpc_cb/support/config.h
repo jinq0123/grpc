@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef GRPCXX_SUPPORT_CONFIG_H
-#define GRPCXX_SUPPORT_CONFIG_H
+#ifndef GRPC_CB_SUPPORT_CONFIG_H
+#define GRPC_CB_SUPPORT_CONFIG_H
 
 #if !defined(GRPC_NO_AUTODETECT_PLATFORM)
 
@@ -79,7 +79,7 @@
 
 #ifdef GRPC_CXX0X_NO_NULLPTR
 #include <memory>
-namespace grpc {
+namespace grpc_cb {
 const class {
  public:
   template <class T>
@@ -107,10 +107,10 @@ const class {
 #define GRPC_CUSTOM_STRING std::string
 #endif
 
-namespace grpc {
+namespace grpc_cb {
 
 typedef GRPC_CUSTOM_STRING string;
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_SUPPORT_CONFIG_H
+#endif  // GRPC_CB_SUPPORT_CONFIG_H
