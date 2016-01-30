@@ -8,6 +8,7 @@
 
 #include <grpc_cb/channel_ptr.h>
 #include <grpc_cb/service_stub.h>
+#include <grpc_cb/support/status.h>
 
 namespace grpc_cb {
 class RpcService;

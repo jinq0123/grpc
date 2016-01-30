@@ -114,6 +114,7 @@ grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
   grpc::string temp =
       "#include <grpc_cb/channel_ptr.h>\n"
       "#include <grpc_cb/service_stub.h>\n"
+      "#include <grpc_cb/support/status.h>\n"
       "\n"
       "namespace grpc_cb {\n"
       "class RpcService;\n"
