@@ -6,6 +6,8 @@
 
 #include "helloworld.pb.h"
 
+#include <functional>  // for std::function()
+
 #include <grpc_cb/channel_ptr.h>
 #include <grpc_cb/service_stub.h>
 #include <grpc_cb/support/status.h>
@@ -20,10 +22,14 @@ namespace Greeter {
 class Stub : public ::grpc_cb::ServiceStub {
  public:
   Stub(const ::grpc_cb::ChannelPtr& channel);
-  ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) GRPC_OVERRIDE;
-  std::unique_ptr< ::grpc_cb::ClientAsyncResponseReader< ::helloworld::HelloReply>> AsyncSayHello(::grpc_cb::ClientContext* context, const ::helloworld::HelloRequest& request, ::grpc_cb::CompletionQueue* cq) {
-    return std::unique_ptr< ::grpc_cb::ClientAsyncResponseReader< ::helloworld::HelloReply>>(AsyncSayHelloRaw(context, request, cq));
-  }
+
+  ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request);  // Ignore response.
+  ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
+  typedef std::function<void (const ::helloworld::HelloReply& response)> SayHelloCallback;
+  typedef std::function<void (const ::grpc_cb::Status& error_status)> SayHelloErrorCallback;
+  void AsyncSayHello(const ::helloworld::HelloRequest& request);  // Ignore response and use default error callback.
+  void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb);  // Use default error callback.
+  void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb, const SayHelloErrorCallback& err_cb);
 
  private:
   ::grpc_cb::ClientAsyncResponseReader< ::helloworld::HelloReply>* AsyncSayHelloRaw(::grpc_cb::ClientContext* context, const ::helloworld::HelloRequest& request, ::grpc_cb::CompletionQueue* cq) GRPC_OVERRIDE;
