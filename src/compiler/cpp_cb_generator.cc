@@ -249,11 +249,6 @@ void PrintHeaderClientMethodPrivate(
       grpc_cpp_generator::ClassName(method->output_type(), true);
 
   if (NoStreaming(method)) {
-      printer->Print(*vars,
-                     "::grpc_cb::ClientAsyncResponseReader< $Response$>* "
-                     "Async$Method$Raw(::grpc_cb::ClientContext* context, "
-                     "const $Request$& request, "
-                     "::grpc_cb::CompletionQueue* cq) GRPC_OVERRIDE;\n");
   } else if (ClientOnlyStreaming(method)) {
       printer->Print(*vars,
                      "::grpc_cb::ClientWriter< $Request$>* $Method$Raw("
@@ -291,7 +286,7 @@ void PrintHeaderClientMethodData(grpc::protobuf::io::Printer *printer,
                                  const grpc::protobuf::MethodDescriptor *method,
                                  std::map<grpc::string, grpc::string> *vars) {
   (*vars)["Method"] = method->name();
-  printer->Print(*vars, "const ::grpc_cb::RpcMethod rpcmethod_$Method$_;\n");
+  printer->Print(*vars, "// const ::grpc_cb::RpcMethod rpcmethod_$Method$_;\n");
 }
 
 void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
@@ -378,7 +373,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   (*vars)["Service"] = service->name();
 
   printer->Print(*vars,
-      "namespace $Service$ {\n");
+      "namespace $Service$ {\n\n");
 
   // Client side
   printer->Print(
@@ -409,7 +404,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
 
   // Server side - Synchronous
   printer->Print(
-      "class Service : public ::grpc_cb::SynchronousService {\n"
+      "class Service {\n"
       " public:\n");
   printer->Indent();
   printer->Print("Service();\n");
@@ -417,28 +412,14 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderServerMethodSync(printer, service->method(i), vars);
   }
-  printer->Print("::grpc_cb::RpcService* service() GRPC_OVERRIDE GRPC_FINAL;\n");
+  printer->Print("// ::grpc_cb::RpcService* service() GRPC_OVERRIDE GRPC_FINAL;\n");
   printer->Outdent();
   printer->Print(
       " private:\n"
-      "  std::unique_ptr< ::grpc_cb::RpcService> service_;\n");
-  printer->Print("};\n");
-
-  // Server side - Asynchronous
-  printer->Print(
-      "class AsyncService GRPC_FINAL : public ::grpc_cb::AsynchronousService {\n"
-      " public:\n");
-  printer->Indent();
-  (*vars)["MethodCount"] = as_string(service->method_count());
-  printer->Print("explicit AsyncService();\n");
-  printer->Print("~AsyncService() {};\n");
-  for (int i = 0; i < service->method_count(); ++i) {
-    PrintHeaderServerMethodAsync(printer, service->method(i), vars);
-  }
-  printer->Outdent();
+      "  // std::unique_ptr< ::grpc_cb::RpcService> service_;\n");
   printer->Print("};\n");
   printer->Print(*vars,
-      "}  // namespace $Service$\n");
+      "\n}  // namespace $Service$\n");
 }
 
 grpc::string GetHeaderServices(const grpc::protobuf::FileDescriptor *file,
