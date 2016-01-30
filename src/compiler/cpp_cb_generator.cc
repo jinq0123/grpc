@@ -148,7 +148,7 @@ void PrintHeaderClientMethod(grpc::protobuf::io::Printer *printer,
     if (NoStreaming(method)) {
       printer->Print(
           *vars,
-          "::grpc_cb::Status $Method$(::grpc_cb::ClientContext* context, "
+          "::grpc_cb::Status $Method$("
           "const $Request$& request, $Response$* response) GRPC_OVERRIDE;\n");
       printer->Print(
           *vars,
@@ -297,7 +297,7 @@ void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
   if (NoStreaming(method)) {
     printer->Print(*vars,
                    "virtual ::grpc_cb::Status $Method$("
-                   "::grpc_cb::ServerContext* context, const $Request$* request, "
+                   "const $Request$& request, "
                    "$Response$* response);\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
@@ -650,9 +650,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
   if (NoStreaming(method)) {
     printer->Print(*vars,
                    "::grpc_cb::Status $ns$$Service$::Service::$Method$("
-                   "::grpc_cb::ServerContext* context, "
-                   "const $Request$* request, $Response$* response) {\n");
-    printer->Print("  (void) context;\n");
+                   "const $Request$& request, $Response$* response) {\n");
     printer->Print("  (void) request;\n");
     printer->Print("  (void) response;\n");
     printer->Print(

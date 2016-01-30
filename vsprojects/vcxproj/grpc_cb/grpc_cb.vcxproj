@@ -255,6 +255,7 @@
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\grpc_cb.h" />
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h" />
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\service_stub.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\client_context.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />

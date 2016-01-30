@@ -20,7 +20,7 @@ namespace Greeter {
 class Stub : public ::grpc_cb::ServiceStub {
  public:
   Stub(const ::grpc_cb::ChannelPtr& channel);
-  ::grpc_cb::Status SayHello(::grpc_cb::ClientContext* context, const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) GRPC_OVERRIDE;
+  ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) GRPC_OVERRIDE;
   std::unique_ptr< ::grpc_cb::ClientAsyncResponseReader< ::helloworld::HelloReply>> AsyncSayHello(::grpc_cb::ClientContext* context, const ::helloworld::HelloRequest& request, ::grpc_cb::CompletionQueue* cq) {
     return std::unique_ptr< ::grpc_cb::ClientAsyncResponseReader< ::helloworld::HelloReply>>(AsyncSayHelloRaw(context, request, cq));
   }
@@ -36,7 +36,7 @@ class Service : public ::grpc_cb::SynchronousService {
  public:
   Service();
   virtual ~Service();
-  virtual ::grpc_cb::Status SayHello(::grpc_cb::ServerContext* context, const ::helloworld::HelloRequest* request, ::helloworld::HelloReply* response);
+  virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
   ::grpc_cb::RpcService* service() GRPC_OVERRIDE GRPC_FINAL;
  private:
   std::unique_ptr< ::grpc_cb::RpcService> service_;

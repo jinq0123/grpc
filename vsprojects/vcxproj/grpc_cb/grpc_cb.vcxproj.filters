@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\status_code_enum.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\client_context.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
