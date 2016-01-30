@@ -394,8 +394,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
 
   printer->Print("\n");
   printer->Print(
-      "std::unique_ptr<Stub> NewStub(const std::shared_ptr< "
-      "::grpc_cb::Channel>& channel, "
+      "std::unique_ptr<Stub> NewStub(const ::grpc::ChannelPtr& channel, "
       "const ::grpc_cb::StubOptions& options = ::grpc_cb::StubOptions());\n");
   printer->Print("\n");
 
@@ -519,13 +518,8 @@ grpc::string GetSourceIncludes(const grpc::protobuf::FileDescriptor *file,
     grpc::protobuf::io::Printer printer(&output_stream, '$');
     std::map<grpc::string, grpc::string> vars;
 
-    printer.Print(vars, "#include <grpc++/channel.h>\n");
-    printer.Print(vars, "#include <grpc++/impl/client_unary_call.h>\n");
-    printer.Print(vars, "#include <grpc++/impl/rpc_service_method.h>\n");
-    printer.Print(vars, "#include <grpc++/impl/service_type.h>\n");
-    printer.Print(vars, "#include <grpc++/support/async_unary_call.h>\n");
-    printer.Print(vars, "#include <grpc++/support/async_stream.h>\n");
-    printer.Print(vars, "#include <grpc++/support/sync_stream.h>\n");
+    printer.Print(vars, "#include <grpc_cb/channel.h>\n");
+    printer.Print("\n");
 
     if (!file->package().empty()) {
       std::vector<grpc::string> parts =
@@ -784,15 +778,14 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
 
   printer->Print(*vars,
                  "std::unique_ptr< $ns$$Service$::Stub> $ns$$Service$::NewStub("
-                 "const std::shared_ptr< ::grpc_cb::Channel>& channel, "
+                 "const ::grpc_cb::ChannelPtr& channel, "
                  "const ::grpc_cb::StubOptions& options) {\n"
                  "  std::unique_ptr< $ns$$Service$::Stub> stub(new "
                  "$ns$$Service$::Stub(channel));\n"
                  "  return stub;\n"
                  "}\n\n");
   printer->Print(*vars,
-                 "$ns$$Service$::Stub::Stub(const std::shared_ptr< "
-                 "::grpc_cb::Channel>& channel)\n");
+                 "$ns$$Service$::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)\n");
   printer->Indent();
   printer->Print(": channel_(channel)");
   for (int i = 0; i < service->method_count(); ++i) {
