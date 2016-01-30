@@ -394,8 +394,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
 
   printer->Print("\n");
   printer->Print(
-      "std::unique_ptr<Stub> NewStub(const ::grpc::ChannelPtr& channel, "
-      "const ::grpc_cb::StubOptions& options = ::grpc_cb::StubOptions());\n");
+      "std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelPtr& channel);\n");
   printer->Print("\n");
 
   // Server side - Synchronous
@@ -503,7 +502,7 @@ grpc::string GetSourcePrologue(const grpc::protobuf::FileDescriptor *file,
                   "// If you make any local change, they will be lost.\n");
     printer.Print(vars, "// source: $filename$\n\n");
     printer.Print(vars, "#include \"$filename_base$.pb.h\"\n");
-    printer.Print(vars, "#include \"$filename_base$.grpc.pb.h\"\n");
+    printer.Print(vars, "#include \"$filename_base$.grpc_cb.pb.h\"\n");
     printer.Print(vars, "\n");
   }
   return output;
@@ -778,8 +777,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
 
   printer->Print(*vars,
                  "std::unique_ptr< $ns$$Service$::Stub> $ns$$Service$::NewStub("
-                 "const ::grpc_cb::ChannelPtr& channel, "
-                 "const ::grpc_cb::StubOptions& options) {\n"
+                 "const ::grpc_cb::ChannelPtr& channel) {\n"
                  "  std::unique_ptr< $ns$$Service$::Stub> stub(new "
                  "$ns$$Service$::Stub(channel));\n"
                  "  return stub;\n"

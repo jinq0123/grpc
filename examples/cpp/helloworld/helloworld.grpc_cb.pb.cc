@@ -3,7 +3,7 @@
 // source: helloworld.proto
 
 #include "helloworld.pb.h"
-#include "helloworld.grpc.pb.h"
+#include "helloworld.grpc_cb.pb.h"
 
 #include <grpc_cb/channel.h>
 
@@ -13,7 +13,7 @@ static const char* Greeter_method_names[] = {
   "/helloworld.Greeter/SayHello",
 };
 
-std::unique_ptr< Greeter::Stub> Greeter::NewStub(const ::grpc_cb::ChannelPtr& channel, const ::grpc_cb::StubOptions& options) {
+std::unique_ptr< Greeter::Stub> Greeter::NewStub(const ::grpc_cb::ChannelPtr& channel) {
   std::unique_ptr< Greeter::Stub> stub(new Greeter::Stub(channel));
   return stub;
 }

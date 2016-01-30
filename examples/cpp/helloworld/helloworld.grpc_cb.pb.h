@@ -29,7 +29,7 @@ class Stub : public ::grpc_cb::ServiceStub {
   const ::grpc_cb::RpcMethod rpcmethod_SayHello_;
 };
 
-std::unique_ptr<Stub> NewStub(const ::grpc::ChannelPtr& channel, const ::grpc_cb::StubOptions& options = ::grpc_cb::StubOptions());
+std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelPtr& channel);
 
 class Service : public ::grpc_cb::SynchronousService {
  public:
