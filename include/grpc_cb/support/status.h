@@ -34,6 +34,8 @@
 #ifndef GRPC_CB_SUPPORT_STATUS_H
 #define GRPC_CB_SUPPORT_STATUS_H
 
+#include <string>
+
 #include <grpc_cb/support/config.h>
 #include <grpc_cb/support/status_code_enum.h>
 
@@ -49,7 +51,7 @@ class Status {
 
   /// Construct an instance with associated \a code and \a details (also
   // referred to as "error_message").
-  Status(StatusCode code, const grpc_cb::string& details)
+  Status(StatusCode code, const std::string& details)
       : code_(code), details_(details) {}
 
   // Pre-defined special status objects.
@@ -61,14 +63,14 @@ class Status {
   /// Return the instance's error code.
   StatusCode error_code() const { return code_; }
   /// Return the instance's error message.
-  grpc_cb::string error_message() const { return details_; }
+  std::string error_message() const { return details_; }
 
   /// Is the status OK?
   bool ok() const { return code_ == StatusCode::OK; }
 
  private:
   StatusCode code_;
-  grpc_cb::string details_;
+  std::string details_;
 };
 
 }  // namespace grpc_cb

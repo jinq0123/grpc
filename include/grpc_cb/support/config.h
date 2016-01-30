@@ -102,15 +102,4 @@ const class {
 }
 #endif
 
-#ifndef GRPC_CUSTOM_STRING
-#include <string>
-#define GRPC_CUSTOM_STRING std::string
-#endif
-
-namespace grpc_cb {
-
-typedef GRPC_CUSTOM_STRING string;
-
-}  // namespace grpc_cb
-
 #endif  // GRPC_CB_SUPPORT_CONFIG_H
