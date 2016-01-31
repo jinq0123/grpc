@@ -757,12 +757,12 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   (*vars)["Service"] = service->name();
 
   printer->Print(*vars,
-                 "static const char* $prefix$$Service$_method_names[] = {\n");
+                 "// static const char* $prefix$$Service$_method_names[] = {\n");
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Method"] = service->method(i)->name();
-    printer->Print(*vars, "  \"/$Package$$Service$/$Method$\",\n");
+    printer->Print(*vars, "//  \"/$Package$$Service$/$Method$\",\n");
   }
-  printer->Print(*vars, "};\n\n");
+  printer->Print(*vars, "//};\n\n");
 
   printer->Print(*vars,
                  "std::unique_ptr< $ns$$Service$::Stub> $ns$$Service$::NewStub("
@@ -774,7 +774,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   printer->Print(*vars,
                  "$ns$$Service$::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)\n");
   printer->Indent();
-  printer->Print(": channel_(channel)");
+  printer->Print(": ::grpc_cb::ServiceStub(channel)");
   for (int i = 0; i < service->method_count(); ++i) {
     const grpc::protobuf::MethodDescriptor *method = service->method(i);
     (*vars)["Method"] = method->name();
@@ -789,7 +789,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
       (*vars)["StreamingType"] = "BIDI_STREAMING";
     }
     printer->Print(*vars,
-                   ", rpcmethod_$Method$_("
+                   "\n  // , rpcmethod_$Method$_("
                    "$prefix$$Service$_method_names[$Idx$], "
                    "::grpc_cb::RpcMethod::$StreamingType$, "
                    "channel"
@@ -800,12 +800,12 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
 
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Idx"] = as_string(i);
-    PrintSourceClientMethod(printer, service->method(i), vars);
+    // PrintSourceClientMethod(printer, service->method(i), vars);
   }
 
   (*vars)["MethodCount"] = as_string(service->method_count());
   printer->Print(*vars,
-                 "$ns$$Service$::AsyncService::AsyncService() : "
+                 "// $ns$$Service$::AsyncService::AsyncService() : "
                  "::grpc_cb::AsynchronousService("
                  "$prefix$$Service$_method_names, $MethodCount$) "
                  "{}\n\n");
@@ -819,66 +819,8 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Idx"] = as_string(i);
     PrintSourceServerMethod(printer, service->method(i), vars);
-    PrintSourceServerAsyncMethod(printer, service->method(i), vars);
+    // PrintSourceServerAsyncMethod(printer, service->method(i), vars);
   }
-  printer->Print(*vars,
-                 "::grpc_cb::RpcService* $ns$$Service$::Service::service() {\n");
-  printer->Indent();
-  printer->Print(
-      "if (service_) {\n"
-      "  return service_.get();\n"
-      "}\n");
-  printer->Print("service_ = std::unique_ptr< ::grpc_cb::RpcService>(new ::grpc_cb::RpcService());\n");
-  for (int i = 0; i < service->method_count(); ++i) {
-    const grpc::protobuf::MethodDescriptor *method = service->method(i);
-    (*vars)["Idx"] = as_string(i);
-    (*vars)["Method"] = method->name();
-    (*vars)["Request"] =
-        grpc_cpp_generator::ClassName(method->input_type(), true);
-    (*vars)["Response"] =
-        grpc_cpp_generator::ClassName(method->output_type(), true);
-    if (NoStreaming(method)) {
-      printer->Print(
-          *vars,
-          "service_->AddMethod(new ::grpc_cb::RpcServiceMethod(\n"
-          "    $prefix$$Service$_method_names[$Idx$],\n"
-          "    ::grpc_cb::RpcMethod::NORMAL_RPC,\n"
-          "    new ::grpc_cb::RpcMethodHandler< $ns$$Service$::Service, "
-          "$Request$, "
-          "$Response$>(\n"
-          "        std::mem_fn(&$ns$$Service$::Service::$Method$), this)));\n");
-    } else if (ClientOnlyStreaming(method)) {
-      printer->Print(
-          *vars,
-          "service_->AddMethod(new ::grpc_cb::RpcServiceMethod(\n"
-          "    $prefix$$Service$_method_names[$Idx$],\n"
-          "    ::grpc_cb::RpcMethod::CLIENT_STREAMING,\n"
-          "    new ::grpc_cb::ClientStreamingHandler< "
-          "$ns$$Service$::Service, $Request$, $Response$>(\n"
-          "        std::mem_fn(&$ns$$Service$::Service::$Method$), this)));\n");
-    } else if (ServerOnlyStreaming(method)) {
-      printer->Print(
-          *vars,
-          "service_->AddMethod(new ::grpc_cb::RpcServiceMethod(\n"
-          "    $prefix$$Service$_method_names[$Idx$],\n"
-          "    ::grpc_cb::RpcMethod::SERVER_STREAMING,\n"
-          "    new ::grpc_cb::ServerStreamingHandler< "
-          "$ns$$Service$::Service, $Request$, $Response$>(\n"
-          "        std::mem_fn(&$ns$$Service$::Service::$Method$), this)));\n");
-    } else if (BidiStreaming(method)) {
-      printer->Print(
-          *vars,
-          "service_->AddMethod(new ::grpc_cb::RpcServiceMethod(\n"
-          "    $prefix$$Service$_method_names[$Idx$],\n"
-          "    ::grpc_cb::RpcMethod::BIDI_STREAMING,\n"
-          "    new ::grpc_cb::BidiStreamingHandler< "
-          "$ns$$Service$::Service, $Request$, $Response$>(\n"
-          "        std::mem_fn(&$ns$$Service$::Service::$Method$), this)));\n");
-    }
-  }
-  printer->Print("return service_.get();\n");
-  printer->Outdent();
-  printer->Print("}\n\n");
 }
 
 grpc::string GetSourceServices(const grpc::protobuf::FileDescriptor *file,

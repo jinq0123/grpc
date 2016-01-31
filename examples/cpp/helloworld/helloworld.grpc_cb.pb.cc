@@ -9,9 +9,9 @@
 
 namespace helloworld {
 
-static const char* Greeter_method_names[] = {
-  "/helloworld.Greeter/SayHello",
-};
+// static const char* Greeter_method_names[] = {
+//  "/helloworld.Greeter/SayHello",
+//};
 
 std::unique_ptr< Greeter::Stub> Greeter::NewStub(const ::grpc_cb::ChannelPtr& channel) {
   std::unique_ptr< Greeter::Stub> stub(new Greeter::Stub(channel));
@@ -19,18 +19,11 @@ std::unique_ptr< Greeter::Stub> Greeter::NewStub(const ::grpc_cb::ChannelPtr& ch
 }
 
 Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
-  : channel_(channel), rpcmethod_SayHello_(Greeter_method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
+  : ::grpc_cb::ServiceStub(channel)
+    // , rpcmethod_SayHello_(Greeter_method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc_cb::Status Greeter::Stub::SayHello(::grpc_cb::ClientContext* context, const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
-  return ::grpc_cb::BlockingUnaryCall(channel_.get(), rpcmethod_SayHello_, context, request, response);
-}
-
-::grpc_cb::ClientAsyncResponseReader< ::helloworld::HelloReply>* Greeter::Stub::AsyncSayHelloRaw(::grpc_cb::ClientContext* context, const ::helloworld::HelloRequest& request, ::grpc_cb::CompletionQueue* cq) {
-  return new ::grpc_cb::ClientAsyncResponseReader< ::helloworld::HelloReply>(channel_.get(), cq, rpcmethod_SayHello_, context, request);
-}
-
-Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}
+// Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}
 
 Greeter::Service::Service() {
 }
@@ -42,23 +35,6 @@ Greeter::Service::~Service() {
   (void) request;
   (void) response;
   return ::grpc_cb::Status(::grpc_cb::StatusCode::UNIMPLEMENTED, "");
-}
-
-void Greeter::AsyncService::RequestSayHello(::grpc_cb::ServerContext* context, ::helloworld::HelloRequest* request, ::grpc_cb::ServerAsyncResponseWriter< ::helloworld::HelloReply>* response, ::grpc_cb::CompletionQueue* new_call_cq, ::grpc_cb::ServerCompletionQueue* notification_cq, void *tag) {
-  AsynchronousService::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-}
-
-::grpc_cb::RpcService* Greeter::Service::service() {
-  if (service_) {
-    return service_.get();
-  }
-  service_ = std::unique_ptr< ::grpc_cb::RpcService>(new ::grpc_cb::RpcService());
-  service_->AddMethod(new ::grpc_cb::RpcServiceMethod(
-      Greeter_method_names[0],
-      ::grpc_cb::RpcMethod::NORMAL_RPC,
-      new ::grpc_cb::RpcMethodHandler< Greeter::Service, ::helloworld::HelloRequest, ::helloworld::HelloReply>(
-          std::mem_fn(&Greeter::Service::SayHello), this)));
-  return service_.get();
 }
 
 

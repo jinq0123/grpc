@@ -49,6 +49,7 @@ class Channel GRPC_FINAL : public GrpcLibrary,
                            public std::enable_shared_from_this<Channel> {
  public:
   ~Channel();
+  explicit Channel(const std::string&) : c_channel_(nullptr) {};  // TODO: Create channel.
 
  private:
   Channel(const std::string& host, grpc_channel* c_channel);
