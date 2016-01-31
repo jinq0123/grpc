@@ -31,50 +31,16 @@
  *
  */
 
-/// A completion queue implements a concurrent producer-consumer queue, with two
-/// main methods, \a Next and \a AsyncNext.
-#ifndef GRPCXX_COMPLETION_QUEUE_H
-#define GRPCXX_COMPLETION_QUEUE_H
+/// A completion queue implements a concurrent producer-consumer queue.
 
-#include <grpc/support/time.h>
-#include <grpc++/impl/grpc_library.h>
-#include <grpc++/support/status.h>
-#include <grpc++/support/time.h>
+#ifndef GRPC_CB_COMPLETION_QUEUE_H
+#define GRPC_CB_COMPLETION_QUEUE_H
+
+#include <grpc_cb/impl/grpc_library.h>
 
 struct grpc_completion_queue;
 
-namespace grpc {
-
-template <class R>
-class ClientReader;
-template <class W>
-class ClientWriter;
-template <class W, class R>
-class ClientReaderWriter;
-template <class R>
-class ServerReader;
-template <class W>
-class ServerWriter;
-template <class W, class R>
-class ServerReaderWriter;
-template <class ServiceType, class RequestType, class ResponseType>
-class RpcMethodHandler;
-template <class ServiceType, class RequestType, class ResponseType>
-class ClientStreamingHandler;
-template <class ServiceType, class RequestType, class ResponseType>
-class ServerStreamingHandler;
-template <class ServiceType, class RequestType, class ResponseType>
-class BidiStreamingHandler;
-class UnknownMethodHandler;
-
-class Channel;
-class ClientContext;
-class CompletionQueueTag;
-class CompletionQueue;
-class RpcMethod;
-class Server;
-class ServerBuilder;
-class ServerContext;
+namespace grpc_cb {
 
 /// A thin wrapper around \a grpc_completion_queue (see / \a
 /// src/core/surface/completion_queue.h).
@@ -90,8 +56,9 @@ class CompletionQueue : public GrpcLibrary {
   explicit CompletionQueue(grpc_completion_queue* take);
 
   /// Destructor. Destroys the owned wrapped completion queue / instance.
-  ~CompletionQueue() GRPC_OVERRIDE;
+  virtual ~CompletionQueue();
 
+ public:
   /// Tri-state return for AsyncNext: SHUTDOWN, GOT_EVENT, TIMEOUT.
   enum NextStatus {
     SHUTDOWN,   ///< The completion queue has been shutdown.
@@ -100,6 +67,10 @@ class CompletionQueue : public GrpcLibrary {
     TIMEOUT     ///< deadline was reached.
   };
 
+ public:
+  typedef uintptr_t Tag;
+
+ public:
   /// Read from the queue, blocking up to \a deadline (or the queue's shutdown).
   /// Both \a tag and \a ok are updated upon success (if an event is available
   /// within the \a deadline).  A \a tag points to an arbitrary location usually
@@ -111,9 +82,9 @@ class CompletionQueue : public GrpcLibrary {
   ///
   /// \return The type of event read.
   template <typename T>
-  NextStatus AsyncNext(void** tag, bool* ok, const T& deadline) {
+  NextStatus AsyncNext(bool* ok, const T& deadline) {
     TimePoint<T> deadline_tp(deadline);
-    return AsyncNextInternal(tag, ok, deadline_tp.raw_time());
+    return AsyncNextInternal(ok, deadline_tp.raw_time());
   }
 
   /// Read from the queue, blocking until an event is available or the queue is
@@ -123,8 +94,8 @@ class CompletionQueue : public GrpcLibrary {
   /// \param ok[out] true if read a regular event, false otherwise.
   ///
   /// \return true if read a regular event, false if the queue is shutting down.
-  bool Next(void** tag, bool* ok) {
-    return (AsyncNextInternal(tag, ok, gpr_inf_future(GPR_CLOCK_REALTIME)) !=
+  bool Next(bool* ok) {
+    return (AsyncNextInternal(ok, gpr_inf_future(GPR_CLOCK_REALTIME)) !=
             SHUTDOWN);
   }
 
@@ -145,68 +116,19 @@ class CompletionQueue : public GrpcLibrary {
   grpc_completion_queue* cq() { return cq_; }
 
  private:
-  // Friend synchronous wrappers so that they can access Pluck(), which is
-  // a semi-private API geared towards the synchronous implementation.
-  template <class R>
-  friend class ::grpc::ClientReader;
-  template <class W>
-  friend class ::grpc::ClientWriter;
-  template <class W, class R>
-  friend class ::grpc::ClientReaderWriter;
-  template <class R>
-  friend class ::grpc::ServerReader;
-  template <class W>
-  friend class ::grpc::ServerWriter;
-  template <class W, class R>
-  friend class ::grpc::ServerReaderWriter;
-  template <class ServiceType, class RequestType, class ResponseType>
-  friend class RpcMethodHandler;
-  template <class ServiceType, class RequestType, class ResponseType>
-  friend class ClientStreamingHandler;
-  template <class ServiceType, class RequestType, class ResponseType>
-  friend class ServerStreamingHandler;
-  template <class ServiceType, class RequestType, class ResponseType>
-  friend class BidiStreamingHandler;
-  friend class UnknownMethodHandler;
-  friend class ::grpc::Server;
-  friend class ::grpc::ServerContext;
-  template <class InputMessage, class OutputMessage>
-  friend Status BlockingUnaryCall(Channel* channel, const RpcMethod& method,
-                                  ClientContext* context,
-                                  const InputMessage& request,
-                                  OutputMessage* result);
-
-  NextStatus AsyncNextInternal(void** tag, bool* ok, gpr_timespec deadline);
+  NextStatus AsyncNextInternal(bool* ok, gpr_timespec deadline);
 
   /// Wraps \a grpc_completion_queue_pluck.
   /// \warning Must not be mixed with calls to \a Next.
-  bool Pluck(CompletionQueueTag* tag);
+  bool Pluck(Tag tag);
 
   /// Performs a single polling pluck on \a tag.
-  void TryPluck(CompletionQueueTag* tag);
+  void TryPluck(Tag tag);
 
-  grpc_completion_queue* cq_;  // owned
-};
-
-/// An interface allowing implementors to process and filter event tags.
-class CompletionQueueTag {
- public:
-  virtual ~CompletionQueueTag() {}
-  // Called prior to returning from Next(), return value is the status of the
-  // operation (return status is the default thing to do). If this function
-  // returns false, the tag is dropped and not returned from the completion
-  // queue
-  virtual bool FinalizeResult(void** tag, bool* status) = 0;
-};
-
-/// A specific type of completion queue used by the processing of notifications
-/// by servers. Instantiated by \a ServerBuilder.
-class ServerCompletionQueue : public CompletionQueue {
  private:
-  friend class ServerBuilder;
-  ServerCompletionQueue() {}
+  grpc_completion_queue* const cq_;  // owned
 };
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_COMPLETION_QUEUE_H
+#endif  // GRPC_CB_COMPLETION_QUEUE_H

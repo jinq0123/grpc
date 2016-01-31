@@ -256,6 +256,7 @@
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h" />
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\service_stub.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client_context.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />
@@ -263,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc" />
   </ItemGroup>
   <ItemGroup>

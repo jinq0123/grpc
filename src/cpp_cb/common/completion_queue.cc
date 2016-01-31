@@ -30,28 +30,34 @@
  *
  */
 
-#include <grpc++/completion_queue.h>
+#include <grpc_cb/completion_queue.h>
 
+#include <cassert>
 #include <memory>
 
 #include <grpc/grpc.h>
 #include <grpc/support/log.h>
 #include <grpc++/support/time.h>
 
-namespace grpc {
+namespace grpc_cb {
 
-CompletionQueue::CompletionQueue() {
-  cq_ = grpc_completion_queue_create(nullptr);
+CompletionQueue::CompletionQueue()
+    : cq_(grpc_completion_queue_create(nullptr)) {
 }
 
-CompletionQueue::CompletionQueue(grpc_completion_queue* take) : cq_(take) {}
+CompletionQueue::CompletionQueue(grpc_completion_queue* take) : cq_(take) {
+  assert(take);
+}
 
-CompletionQueue::~CompletionQueue() { grpc_completion_queue_destroy(cq_); }
+CompletionQueue::~CompletionQueue() {
+    assert(sizeof(Tag) == sizeof(void*));
+    grpc_completion_queue_destroy(cq_);
+}
 
 void CompletionQueue::Shutdown() { grpc_completion_queue_shutdown(cq_); }
 
 CompletionQueue::NextStatus CompletionQueue::AsyncNextInternal(
-    void** tag, bool* ok, gpr_timespec deadline) {
+    bool* ok, gpr_timespec deadline) {
   for (;;) {
     auto ev = grpc_completion_queue_next(cq_, deadline, nullptr);
     switch (ev.type) {
@@ -60,36 +66,38 @@ CompletionQueue::NextStatus CompletionQueue::AsyncNextInternal(
       case GRPC_QUEUE_SHUTDOWN:
         return SHUTDOWN;
       case GRPC_OP_COMPLETE:
-        auto cq_tag = static_cast<CompletionQueueTag*>(ev.tag);
+        Tag cq_tag = reinterpret_cast<Tag>(ev.tag);
         *ok = ev.success != 0;
-        *tag = cq_tag;
-        if (cq_tag->FinalizeResult(tag, ok)) {
-          return GOT_EVENT;
-        }
+        // *tag = cq_tag;
+        // if (cq_tag->FinalizeResult(tag, ok)) {
+        //   return GOT_EVENT;
+        //}
         break;
     }
   }
 }
 
-bool CompletionQueue::Pluck(CompletionQueueTag* tag) {
+bool CompletionQueue::Pluck(Tag tag) {
   auto deadline = gpr_inf_future(GPR_CLOCK_REALTIME);
-  auto ev = grpc_completion_queue_pluck(cq_, tag, deadline, nullptr);
-  bool ok = ev.success != 0;
-  void* ignored = tag;
-  GPR_ASSERT(tag->FinalizeResult(&ignored, &ok));
-  GPR_ASSERT(ignored == tag);
+  void* c_tag = reinterpret_cast<void*>(tag);
+  auto ev = grpc_completion_queue_pluck(cq_, c_tag, deadline, nullptr);
+  // bool ok = ev.success != 0;
+  // void* ignored = c_tag;
+  // GPR_ASSERT(tag->FinalizeResult(&ignored, &ok));
+  // GPR_ASSERT(ignored == c_tag);
   // Ignore mutations by FinalizeResult: Pluck returns the C API status
   return ev.success != 0;
 }
 
-void CompletionQueue::TryPluck(CompletionQueueTag* tag) {
+void CompletionQueue::TryPluck(Tag tag) {
   auto deadline = gpr_time_0(GPR_CLOCK_REALTIME);
-  auto ev = grpc_completion_queue_pluck(cq_, tag, deadline, nullptr);
-  if (ev.type == GRPC_QUEUE_TIMEOUT) return;
-  bool ok = ev.success != 0;
-  void* ignored = tag;
+  void* c_tag = reinterpret_cast<void*>(tag);
+  auto ev = grpc_completion_queue_pluck(cq_, c_tag, deadline, nullptr);
+  // if (ev.type == GRPC_QUEUE_TIMEOUT) return;
+  // bool ok = ev.success != 0;
+  // void* ignored = tag;
   // the tag must be swallowed if using TryPluck
-  GPR_ASSERT(!tag->FinalizeResult(&ignored, &ok));
+  // GPR_ASSERT(!tag->FinalizeResult(&ignored, &ok));
 }
 
-}  // namespace grpc
+}  // namespace grpc_cb

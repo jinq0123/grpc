@@ -7,6 +7,9 @@
     <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc">
       <Filter>src\cpp_cb\util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc">
+      <Filter>src\cpp_cb\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -39,6 +42,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\client_context.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -64,6 +70,9 @@
     </Filter>
     <Filter Include="src\cpp_cb\util">
       <UniqueIdentifier>{f00d139c-307a-41b1-aa4f-682dae2698a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\cpp_cb\common">
+      <UniqueIdentifier>{4e297266-df23-469b-b955-5dd2be3e9cce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
