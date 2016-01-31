@@ -263,6 +263,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\..\vsprojects\vcxproj\.\gpr\gpr.vcxproj">

@@ -4,6 +4,9 @@
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc">
       <Filter>src\cpp_cb\client</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc">
+      <Filter>src\cpp_cb\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -58,6 +61,9 @@
     </Filter>
     <Filter Include="include\grp_cb\support">
       <UniqueIdentifier>{a8a760c0-baae-4f34-b283-72468be46b91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\cpp_cb\util">
+      <UniqueIdentifier>{f00d139c-307a-41b1-aa4f-682dae2698a5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
