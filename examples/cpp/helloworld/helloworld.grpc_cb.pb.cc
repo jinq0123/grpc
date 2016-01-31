@@ -23,6 +23,12 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
     // , rpcmethod_SayHello_(Greeter_method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
   {}
 
+::grpc_cb::Status Greeter::Stub::SayHello(
+    const ::helloworld::HelloRequest& request,
+    ::helloworld::HelloReply* response) {
+  return ::grpc_cb::Status::OK;
+}
+
 // Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}
 
 Greeter::Service::Service() {
