@@ -37,6 +37,10 @@
 
 namespace grpc_cb {
 
+Channel::Channel(const std::string& target)
+    : c_channel_(grpc_insecure_channel_create(
+        target.c_str(), nullptr, nullptr)) {}
+
 Channel::Channel(const std::string& host, grpc_channel* channel)
     : host_(host), c_channel_(channel) {}
 

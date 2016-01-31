@@ -38,18 +38,17 @@
 
 #include <grpc_cb/channel_ptr.h>
 #include <grpc_cb/impl/grpc_library.h>
-#include <grpc_cb/support/config.h>
 
 struct grpc_channel;
 
 namespace grpc_cb {
 
-/// Channels represent a connection to an endpoint. Created by \a CreateChannel.
-class Channel GRPC_FINAL : public GrpcLibrary,
-                           public std::enable_shared_from_this<Channel> {
+/// Channel represents a connection to an endpoint.
+class Channel : public GrpcLibrary,
+                public std::enable_shared_from_this<Channel> {
  public:
-  ~Channel();
-  explicit Channel(const std::string&) : c_channel_(nullptr) {};  // TODO: Create channel.
+  explicit Channel(const std::string& target);
+  virtual ~Channel();
 
  private:
   Channel(const std::string& host, grpc_channel* c_channel);
