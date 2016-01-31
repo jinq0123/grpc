@@ -69,6 +69,7 @@ class CompletionQueue : public GrpcLibrary {
 
  public:
   typedef uintptr_t Tag;
+  static_assert(sizeof(Tag) == sizeof(void*), "Tag size is wrong.");
 
  public:
   /// Read from the queue, blocking up to \a deadline (or the queue's shutdown).
@@ -120,10 +121,10 @@ class CompletionQueue : public GrpcLibrary {
 
   /// Wraps \a grpc_completion_queue_pluck.
   /// \warning Must not be mixed with calls to \a Next.
-  bool Pluck(Tag tag);
+  bool Pluck(const Tag& tag);
 
   /// Performs a single polling pluck on \a tag.
-  void TryPluck(Tag tag);
+  void TryPluck(const Tag& tag);
 
  private:
   grpc_completion_queue* const cq_;  // owned

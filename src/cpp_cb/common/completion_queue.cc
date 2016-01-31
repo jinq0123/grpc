@@ -77,7 +77,7 @@ CompletionQueue::NextStatus CompletionQueue::AsyncNextInternal(
   }
 }
 
-bool CompletionQueue::Pluck(Tag tag) {
+bool CompletionQueue::Pluck(const Tag& tag) {
   auto deadline = gpr_inf_future(GPR_CLOCK_REALTIME);
   void* c_tag = reinterpret_cast<void*>(tag);
   auto ev = grpc_completion_queue_pluck(cq_, c_tag, deadline, nullptr);
@@ -89,7 +89,7 @@ bool CompletionQueue::Pluck(Tag tag) {
   return ev.success != 0;
 }
 
-void CompletionQueue::TryPluck(Tag tag) {
+void CompletionQueue::TryPluck(const Tag& tag) {
   auto deadline = gpr_time_0(GPR_CLOCK_REALTIME);
   void* c_tag = reinterpret_cast<void*>(tag);
   auto ev = grpc_completion_queue_pluck(cq_, c_tag, deadline, nullptr);
