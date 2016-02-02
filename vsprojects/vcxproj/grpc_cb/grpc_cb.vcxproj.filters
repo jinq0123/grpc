@@ -10,6 +10,9 @@
     <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc">
       <Filter>src\cpp_cb\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\common\call.cc">
+      <Filter>src\cpp_cb\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h">
       <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h">
+      <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
