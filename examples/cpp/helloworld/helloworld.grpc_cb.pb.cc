@@ -6,6 +6,8 @@
 #include "helloworld.grpc_cb.pb.h"
 
 #include <grpc_cb/channel.h>
+#include <grpc_cb/completion_queue.h>
+#include <grpc_cb/impl/call.h>
 
 namespace helloworld {
 
@@ -26,7 +28,12 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
 ::grpc_cb::Status Greeter::Stub::SayHello(
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
-  return ::grpc_cb::Status::OK;
+  grpc_cb::CompletionQueue cq;
+  grpc_cb::Call call(channel_->CreateCall("SayHello"));
+  grpc_cb::Status status = call.StartBatch();
+  if (!status.ok()) return status;
+  cq.Pluck(1234);
+  return status;
 }
 
 // Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}

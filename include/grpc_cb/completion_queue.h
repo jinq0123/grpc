@@ -116,7 +116,7 @@ class CompletionQueue : public GrpcLibrary {
   /// owership is performed.
   grpc_completion_queue* cq() { return cq_; }
 
- private:
+ public:
   NextStatus AsyncNextInternal(bool* ok, gpr_timespec deadline);
 
   /// Wraps \a grpc_completion_queue_pluck.

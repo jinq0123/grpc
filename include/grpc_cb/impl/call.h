@@ -8,6 +8,8 @@ struct grpc_call;
 
 namespace grpc_cb {
 
+class Status;
+
 // Straightforward wrapping of the C call object.
 // Differ from grpc++:
 //  grpc_call is owned by Call instead of ClientContext/ServerContext.
@@ -16,6 +18,9 @@ class Call {
   // Created by Channel::CreateCall().
   explicit Call(grpc_call* c_call);
   virtual ~Call();
+
+ public:
+  Status StartBatch();
 
  public: 
   inline grpc_call* call() const { return call_; }
