@@ -36,6 +36,10 @@
 namespace grpc_cb {
 
 const Status& Status::OK = Status();
-const Status& Status::CANCELLED = Status(StatusCode::CANCELLED, "");
+const Status& Status::CANCELLED = Status(GRPC_STATUS_CANCELLED, "");
+
+Status Status::InternalError(const std::string& details) {
+  Status(GRPC_STATUS_INTERNAL, details);
+}
 
 }  // namespace grpc_cb

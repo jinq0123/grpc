@@ -36,7 +36,7 @@
 
 #include <string>
 
-#include <grpc_cb/support/status_code_enum.h>
+#include <grpc/status.h>
 
 namespace grpc_cb {
 
@@ -46,11 +46,11 @@ namespace grpc_cb {
 class Status {
  public:
   /// Construct an OK instance.
-  Status() : code_(StatusCode::OK) {}
+  Status() : code_(GRPC_STATUS_OK) {}
 
   /// Construct an instance with associated \a code and \a details (also
   // referred to as "error_message").
-  Status(StatusCode code, const std::string& details)
+  Status(grpc_status_code code, const std::string& details)
       : code_(code), details_(details) {}
 
   // Pre-defined special status objects.
@@ -59,16 +59,20 @@ class Status {
   /// A CANCELLED pre-defined instance.
   static const Status& CANCELLED;
 
+ public:
+  static Status InternalError(const std::string& details);
+
+ public:
   /// Return the instance's error code.
-  StatusCode error_code() const { return code_; }
+  grpc_status_code error_code() const { return code_; }
   /// Return the instance's error message.
   std::string error_message() const { return details_; }
 
   /// Is the status OK?
-  bool ok() const { return code_ == StatusCode::OK; }
+  bool ok() const { return code_ == GRPC_STATUS_OK; }
 
  private:
-  StatusCode code_;
+  grpc_status_code code_;
   std::string details_;
 };
 

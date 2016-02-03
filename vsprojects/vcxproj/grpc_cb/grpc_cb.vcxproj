@@ -261,7 +261,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\support\status_code_enum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
