@@ -47,7 +47,7 @@ Greeter::Service::~Service() {
 ::grpc_cb::Status Greeter::Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
   (void) request;
   (void) response;
-  return ::grpc_cb::Status(::grpc_cb::StatusCode::UNIMPLEMENTED, "");
+  return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 
 

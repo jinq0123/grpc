@@ -58,6 +58,8 @@ class Status {
   static const Status& OK;
   /// A CANCELLED pre-defined instance.
   static const Status& CANCELLED;
+  /// An UNIMPLEMENTED pre-defined instance.
+  static const Status& UNIMPLEMENTED;
 
  public:
   static Status InternalError(const std::string& details);

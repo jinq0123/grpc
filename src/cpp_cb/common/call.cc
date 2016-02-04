@@ -30,7 +30,7 @@ Status Call::StartBatch() {
   if (GRPC_CALL_OK == result) {
     return Status::OK;
   }
-  return Status(StatusCode::UNKNOWN, "grpc_call_start_batch() failed");
+  return Status::InternalError("grpc_call_start_batch() failed");
 }
 
 }  // namespace grpc_cb
