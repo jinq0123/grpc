@@ -261,10 +261,12 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\common\call_operations.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc" />
   </ItemGroup>

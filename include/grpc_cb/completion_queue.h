@@ -37,6 +37,7 @@
 #define GRPC_CB_COMPLETION_QUEUE_H
 
 #include <grpc_cb/impl/grpc_library.h>
+#include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
 struct grpc_completion_queue;
 
@@ -56,7 +57,7 @@ class CompletionQueue : public GrpcLibrary {
   explicit CompletionQueue(grpc_completion_queue* take);
 
   /// Destructor. Destroys the owned wrapped completion queue / instance.
-  virtual ~CompletionQueue();
+  virtual ~CompletionQueue() GRPC_OVERRIDE;
 
  public:
   /// Tri-state return for AsyncNext: SHUTDOWN, GOT_EVENT, TIMEOUT.

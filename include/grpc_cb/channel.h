@@ -8,6 +8,7 @@
 
 #include <grpc_cb/channel_ptr.h>
 #include <grpc_cb/impl/grpc_library.h>
+#include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
 struct grpc_channel;
 
@@ -20,7 +21,7 @@ class Channel : public GrpcLibrary,
                 public std::enable_shared_from_this<Channel> {
  public:
   explicit Channel(const std::string& target);
-  virtual ~Channel();
+  virtual ~Channel() GRPC_OVERRIDE;
 
  public:
   Call CreateCall(const std::string& method);

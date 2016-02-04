@@ -8,6 +8,8 @@
 #include <grpc/grpc.h>
 #include <grpc_cb/support/status.h>
 
+#include "src/cpp_cb/common/call_operations.h"  // for CallOperations
+
 namespace grpc_cb {
 
 Call::Call(grpc_call* call)
@@ -21,9 +23,18 @@ Call::~Call() {
 }
 
 Status Call::StartBatch() {
-  static const size_t MAX_OPS = 8;
-  size_t nops = 0;
-  grpc_op cops[MAX_OPS];
+  CallOperations ops;
+
+  Status status = ops.SendMessage(request);
+  if (!status.ok()) {
+    return status;
+  }
+  ops.SendInitialMetadata(context->send_initial_metadata_);
+  ops.RecvInitialMetadata(context);
+  ops.RecvMessage(result);
+  ops.ClientSendClose();
+  ops.ClientRecvStatus(context, &status);
+
   // ops->FillOps(cops, &nops);
   grpc_call_error result = grpc_call_start_batch(
     call_, cops, nops, (void*)1234, nullptr);

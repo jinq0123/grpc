@@ -4,6 +4,8 @@
 #ifndef GRPC_CB_IMPL_CALL_H
 #define GRPC_CB_IMPL_CALL_H
 
+#include <grpc_cb/support/config.h>  // for GRPC_FINAL
+
 struct grpc_call;
 
 namespace grpc_cb {
@@ -13,11 +15,11 @@ class Status;
 // Straightforward wrapping of the C call object.
 // Differ from grpc++:
 //  grpc_call is owned by Call instead of ClientContext/ServerContext.
-class Call {
+class Call GRPC_FINAL {
  public:
   // Created by Channel::CreateCall().
   explicit Call(grpc_call* c_call);
-  virtual ~Call();
+  ~Call();
 
  public:
   Status StartBatch();

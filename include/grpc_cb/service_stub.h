@@ -9,6 +9,7 @@
 #include <cassert>
 
 #include <grpc_cb/channel_ptr.h>
+#include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
 namespace grpc_cb {
 
@@ -16,10 +17,10 @@ namespace grpc_cb {
 class ServiceStub {
  public:
   inline explicit ServiceStub(const ChannelPtr& channel)
-    : channel_(channel) { // copy
+    : channel_(channel) {  // copy
     assert(channel);
   }
-  inline virtual ~ServiceStub() {}
+  inline virtual ~ServiceStub() GRPC_OVERRIDE {}
 
  public:
   inline ChannelPtr GetChannelPtr() const { return channel_; }
