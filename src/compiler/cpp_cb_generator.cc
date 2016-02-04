@@ -644,8 +644,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
     printer->Print("  (void) request;\n");
     printer->Print("  (void) response;\n");
     printer->Print(
-        "  return ::grpc_cb::Status("
-        "::grpc_cb::StatusCode::UNIMPLEMENTED, \"\");\n");
+        "  return ::grpc_cb::Status::UNIMPLEMENTED;\n");
     printer->Print("}\n\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
@@ -657,8 +656,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
     printer->Print("  (void) reader;\n");
     printer->Print("  (void) response;\n");
     printer->Print(
-        "  return ::grpc_cb::Status("
-        "::grpc_cb::StatusCode::UNIMPLEMENTED, \"\");\n");
+        "  return ::grpc_cb::Status::UNIMPLEMENTED;\n");
     printer->Print("}\n\n");
   } else if (ServerOnlyStreaming(method)) {
     printer->Print(*vars,
@@ -670,8 +668,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
     printer->Print("  (void) request;\n");
     printer->Print("  (void) writer;\n");
     printer->Print(
-        "  return ::grpc_cb::Status("
-        "::grpc_cb::StatusCode::UNIMPLEMENTED, \"\");\n");
+        "  return ::grpc_cb::Status::UNIMPLEMENTED;\n");
     printer->Print("}\n\n");
   } else if (BidiStreaming(method)) {
     printer->Print(*vars,
@@ -682,8 +679,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
     printer->Print("  (void) context;\n");
     printer->Print("  (void) stream;\n");
     printer->Print(
-        "  return ::grpc_cb::Status("
-        "::grpc_cb::StatusCode::UNIMPLEMENTED, \"\");\n");
+        "  return ::grpc_cb::Status::UNIMPLEMENTED;\n");
     printer->Print("}\n\n");
   }
 }
