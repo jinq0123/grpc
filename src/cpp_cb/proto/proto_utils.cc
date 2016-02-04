@@ -31,7 +31,7 @@
  *
  */
 
-#include <grpc++/impl/proto_utils.h>
+#include <src/cpp_cb/proto/proto_utils.h>
 
 #include <climits>
 
@@ -42,14 +42,14 @@
 #include <grpc/support/slice.h>
 #include <grpc/support/slice_buffer.h>
 #include <grpc/support/port_platform.h>
-#include <grpc++/support/config.h>
+#include <grpc_cb/support/config.h>
 
 #include "src/core/profiling/timers.h"
 
 const int kMaxBufferLength = 8192;
 
 class GrpcBufferWriter GRPC_FINAL
-    : public ::grpc::protobuf::io::ZeroCopyOutputStream {
+    : public ::grpc_cb::protobuf::io::ZeroCopyOutputStream {
  public:
   explicit GrpcBufferWriter(grpc_byte_buffer** bp,
                             int block_size = kMaxBufferLength)
@@ -92,7 +92,7 @@ class GrpcBufferWriter GRPC_FINAL
     byte_count_ -= count;
   }
 
-  grpc::protobuf::int64 ByteCount() const GRPC_OVERRIDE { return byte_count_; }
+  grpc_cb::protobuf::int64 ByteCount() const GRPC_OVERRIDE { return byte_count_; }
 
  private:
   const int block_size_;
@@ -104,7 +104,7 @@ class GrpcBufferWriter GRPC_FINAL
 };
 
 class GrpcBufferReader GRPC_FINAL
-    : public ::grpc::protobuf::io::ZeroCopyInputStream {
+    : public ::grpc_cb::protobuf::io::ZeroCopyInputStream {
  public:
   explicit GrpcBufferReader(grpc_byte_buffer* buffer)
       : byte_count_(0), backup_count_(0) {
@@ -151,7 +151,7 @@ class GrpcBufferReader GRPC_FINAL
     return false;
   }
 
-  grpc::protobuf::int64 ByteCount() const GRPC_OVERRIDE {
+  grpc_cb::protobuf::int64 ByteCount() const GRPC_OVERRIDE {
     return byte_count_ - backup_count_;
   }
 
@@ -162,9 +162,9 @@ class GrpcBufferReader GRPC_FINAL
   gpr_slice slice_;
 };
 
-namespace grpc {
+namespace grpc_cb {
 
-Status SerializeProto(const grpc::protobuf::Message& msg,
+Status SerializeProto(const grpc_cb::protobuf::Message& msg,
                       grpc_byte_buffer** bp) {
   GPR_TIMER_SCOPE("SerializeProto", 0);
   int byte_size = msg.ByteSize();
@@ -179,28 +179,29 @@ Status SerializeProto(const grpc::protobuf::Message& msg,
     GrpcBufferWriter writer(bp);
     return msg.SerializeToZeroCopyStream(&writer)
                ? Status::OK
-               : Status(StatusCode::INTERNAL, "Failed to serialize message");
+               : Status::InternalError("Failed to serialize message");
   }
 }
 
-Status DeserializeProto(grpc_byte_buffer* buffer, grpc::protobuf::Message* msg,
+Status DeserializeProto(grpc_byte_buffer* buffer,
+                        grpc_cb::protobuf::Message* msg,
                         int max_message_size) {
   GPR_TIMER_SCOPE("DeserializeProto", 0);
   if (!buffer) {
-    return Status(StatusCode::INTERNAL, "No payload");
+    return Status::InternalError("No payload");
   }
   GrpcBufferReader reader(buffer);
-  ::grpc::protobuf::io::CodedInputStream decoder(&reader);
+  ::grpc_cb::protobuf::io::CodedInputStream decoder(&reader);
   if (max_message_size > 0) {
     decoder.SetTotalBytesLimit(max_message_size, max_message_size);
   }
   if (!msg->ParseFromCodedStream(&decoder)) {
-    return Status(StatusCode::INTERNAL, msg->InitializationErrorString());
+    return Status::InternalError(msg->InitializationErrorString());
   }
   if (!decoder.ConsumedEntireMessage()) {
-    return Status(StatusCode::INTERNAL, "Did not read entire message");
+    return Status::InternalError("Did not read entire message");
   }
   return Status::OK;
 }
 
-}  // namespace grpc
+}  // namespace grpc_cb

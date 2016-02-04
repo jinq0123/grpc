@@ -3,6 +3,10 @@
 
 #include "src/cpp_cb/common/call_operations.h"
 
+#include <grpc_cb/support/status.h>
+
+#include "src/cpp_cb/proto/proto_utils.h"
+
 namespace grpc_cb {
 
 CallOperations::CallOperations()
@@ -11,6 +15,11 @@ CallOperations::CallOperations()
 
 CallOperations::~CallOperations() {
   grpc_byte_buffer_destroy(send_buf_);
+}
+
+Status CallOperations::SendMessage(
+    const protobuf::Message& message) {
+  return SerializeProto(message, &send_buf_);
 }
 
 }  // namespace grpc_cb

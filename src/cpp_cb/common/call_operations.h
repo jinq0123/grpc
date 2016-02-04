@@ -7,7 +7,9 @@
 #include <vector>
 
 #include <grpc/grpc.h>  // for grpc_op
+#include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
+#include <grpc_cb/support/config_protobuf.h>  // for Message
 
 namespace grpc_cb {
 
@@ -26,10 +28,7 @@ class CallOperations GRPC_FINAL {
   }
 
  public:
-  template <class M>
-  Status SendMessage(const M& message) {
-    return SerializationTraits<M>::Serialize(message, &send_buf_, &own_buf_);
-  }
+  Status SendMessage(const protobuf::Message& message) GRPC_MUST_USE_RESULT;
 
  private:
   std::vector<grpc_op> cops_;

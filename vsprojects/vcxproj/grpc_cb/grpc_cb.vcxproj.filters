@@ -16,6 +16,9 @@
     <ClCompile Include="..\..\..\src\cpp_cb\common\call_operations.cc">
       <Filter>src\cpp_cb\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc">
+      <Filter>src\proto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -54,6 +57,9 @@
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h">
       <Filter>src\cpp_cb\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h">
+      <Filter>src\proto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -82,6 +88,9 @@
     </Filter>
     <Filter Include="src\cpp_cb\common">
       <UniqueIdentifier>{4e297266-df23-469b-b955-5dd2be3e9cce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\proto">
+      <UniqueIdentifier>{113b0579-7074-4a6b-b98e-656b0913c067}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
