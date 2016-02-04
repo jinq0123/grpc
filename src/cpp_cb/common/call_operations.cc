@@ -19,7 +19,38 @@ CallOperations::~CallOperations() {
 
 Status CallOperations::SendMessage(
     const protobuf::Message& message) {
-  return SerializeProto(message, &send_buf_);
+  Status status = SerializeProto(message, &send_buf_);
+  if (!status.ok()) return status;
+  if (send_buf_ == nullptr) return status;
+  grpc_op op = {GRPC_OP_SEND_MESSAGE, 0, 0, 0};
+  op.data.send_message = send_buf_;
+  cops_.push_back(op);
+  return status;
+}
+
+void CallOperations::SendInitialMetadata() {
+}
+
+void CallOperations::RecvInitialMetadata() {
+}
+
+void CallOperations::RecvMessage(grpc_byte_buffer** recv_buf) {
+  grpc_op op = {GRPC_OP_RECV_MESSAGE, 0, 0};
+  op.data.recv_message = recv_buf;
+  cops_.push_back(op);
+}
+
+void CallOperations::ClientSendClose() {
+}
+
+void CallOperations::ClientRecvStatus(Status* status) {
+
+  grpc_op op = {GRPC_OP_RECV_STATUS_ON_CLIENT, 0, 0};
+  op.data.recv_status_on_client.trailing_metadata = nullptr;
+  op.data.recv_status_on_client.status = nullptr;
+  op.data.recv_status_on_client.status_details = nullptr;
+  op.data.recv_status_on_client.status_details_capacity = nullptr;
+  cops_.push_back(op);
 }
 
 }  // namespace grpc_cb

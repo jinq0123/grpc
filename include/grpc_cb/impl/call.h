@@ -5,6 +5,7 @@
 #define GRPC_CB_IMPL_CALL_H
 
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
+#include <grpc_cb/support/config_protobuf.h>  // for Message
 
 struct grpc_call;
 
@@ -22,8 +23,7 @@ class Call GRPC_FINAL {
   ~Call();
 
  public:
-  template <class InputMessage>
-  Status StartBatch(const InputMessage& request);
+  Status StartBatch(const protobuf::Message& request);
 
  public: 
   inline grpc_call* call() const { return call_; }

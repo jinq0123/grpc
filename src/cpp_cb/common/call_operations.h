@@ -29,6 +29,11 @@ class CallOperations GRPC_FINAL {
 
  public:
   Status SendMessage(const protobuf::Message& message) GRPC_MUST_USE_RESULT;
+  void SendInitialMetadata();
+  void RecvInitialMetadata();
+  void RecvMessage(grpc_byte_buffer** recv_buf);
+  void ClientSendClose();
+  void ClientRecvStatus(Status* status);
 
  private:
   std::vector<grpc_op> cops_;

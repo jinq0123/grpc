@@ -30,8 +30,7 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
     ::helloworld::HelloReply* response) {
   grpc_cb::CompletionQueue cq;
   grpc_cb::Call call(channel_->CreateCall("SayHello"));
-  std::string req_str(request.SerializeAsString());
-  grpc_cb::Status status = call.StartBatch(req_str);
+  grpc_cb::Status status = call.StartBatch(request);
   if (!status.ok()) return status;
   cq.Pluck(1234);
   return status;
