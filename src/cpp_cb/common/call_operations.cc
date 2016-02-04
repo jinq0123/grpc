@@ -6,11 +6,11 @@
 namespace grpc_cb {
 
 CallOperations::CallOperations()
-{
+    : send_buf_(nullptr) {
 }
 
-CallOperations::~CallOperations()
-{
+CallOperations::~CallOperations() {
+  grpc_byte_buffer_destroy(send_buf_);
 }
 
 }  // namespace grpc_cb
