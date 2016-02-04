@@ -22,7 +22,8 @@ class Call GRPC_FINAL {
   ~Call();
 
  public:
-  Status StartBatch();
+  template <class InputMessage>
+  Status StartBatch(const InputMessage& request);
 
  public: 
   inline grpc_call* call() const { return call_; }

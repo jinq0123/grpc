@@ -22,7 +22,8 @@ Call::~Call() {
   grpc_call_destroy(call_);
 }
 
-Status Call::StartBatch() {
+template <class InputMessage>
+Status Call::StartBatch(const InputMessage& request) {
   CallOperations ops;
 
   Status status = ops.SendMessage(request);
