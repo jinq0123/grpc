@@ -36,6 +36,8 @@
 #ifndef GRPC_CB_COMPLETION_QUEUE_H
 #define GRPC_CB_COMPLETION_QUEUE_H
 
+#include <cassert>
+
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
@@ -110,12 +112,12 @@ class CompletionQueue : public GrpcLibrary {
   /// class be destroyed.
   void Shutdown();
 
-  /// Returns a \em raw pointer to the underlying \a grpc_completion_queue
+  /// Returns the underlying \a grpc_completion_queue
   /// instance.
-  ///
-  /// \warning Remember that the returned instance is owned. No transfer of
-  /// owership is performed.
-  grpc_completion_queue* cq() { return cq_; }
+  grpc_completion_queue& cq() const {
+    assert(cq_);
+    return *cq_;
+  }
 
  public:
   NextStatus AsyncNextInternal(bool* ok, gpr_timespec deadline);

@@ -11,6 +11,7 @@
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
 struct grpc_channel;
+struct grpc_completion_queue;
 
 namespace grpc_cb {
 
@@ -24,7 +25,8 @@ class Channel : public GrpcLibrary,
   virtual ~Channel() GRPC_OVERRIDE;
 
  public:
-  Call CreateCall(const std::string& method);
+  Call CreateCall(const std::string& method,
+    grpc_completion_queue& cp);
 
  private:
   Channel(const std::string& host, grpc_channel* c_channel);

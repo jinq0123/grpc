@@ -43,15 +43,17 @@ namespace grpc_cb {
 
 CompletionQueue::CompletionQueue()
     : cq_(grpc_completion_queue_create(nullptr)) {
+  assert(cq_);
 }
 
 CompletionQueue::CompletionQueue(grpc_completion_queue* take) : cq_(take) {
-  assert(take);
+  assert(cq_);
 }
 
 CompletionQueue::~CompletionQueue() {
-    assert(sizeof(Tag) == sizeof(void*));
-    grpc_completion_queue_destroy(cq_);
+  assert(sizeof(Tag) == sizeof(void*));
+  assert(cq_);
+  grpc_completion_queue_destroy(cq_);
 }
 
 void CompletionQueue::Shutdown() { grpc_completion_queue_shutdown(cq_); }

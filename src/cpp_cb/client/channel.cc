@@ -28,9 +28,11 @@ Channel::~Channel() {
   grpc_channel_destroy(c_channel_);
 }
 
-Call Channel::CreateCall(const std::string& method) {
+Call Channel::CreateCall(
+    const std::string& method,
+    grpc_completion_queue& cp) {
   grpc_call* c_call = grpc_channel_create_call(
-    c_channel_, nullptr, 0, nullptr, method.c_str(), nullptr,
+    c_channel_, nullptr, 0, &cp, method.c_str(), nullptr,
     gpr_inf_future(GPR_CLOCK_REALTIME), nullptr);
   return Call(c_call);
 }
