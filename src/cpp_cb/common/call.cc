@@ -23,7 +23,8 @@ Call::~Call() {
 }
 
 Status Call::StartBatch(const protobuf::Message& request) {
-  static CallOperations ops;
+  ops_.reset(new CallOperations);
+  CallOperations& ops = *ops_;
 
   ops.SendInitialMetadata();
   Status status = ops.SendMessage(request);

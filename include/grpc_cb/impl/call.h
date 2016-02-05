@@ -12,6 +12,7 @@ struct grpc_call;
 namespace grpc_cb {
 
 class Status;
+class CallOperations;
 
 // Straightforward wrapping of the C call object.
 // Differ from grpc++:
@@ -30,6 +31,9 @@ class Call GRPC_FINAL {
 
  private:
   grpc_call* const call_;  // owned
+
+ private:
+  std::shared_ptr<CallOperations> ops_;
 };
 
 }  // namespace grpc_cb

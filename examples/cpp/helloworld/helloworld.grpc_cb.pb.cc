@@ -29,7 +29,7 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
   grpc_cb::CompletionQueue cq;
-  grpc_cb::Call call(channel_->CreateCall("SayHello", cq.cq()));
+  grpc_cb::Call call(channel_->CreateCall("/helloworld.Greeter/SayHello", cq.cq()));
   grpc_cb::Status status = call.StartBatch(request);
   if (!status.ok()) return status;
   cq.Pluck(1234);
