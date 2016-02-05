@@ -3,6 +3,7 @@
 
 #include "src/cpp_cb/common/call_operations.h"
 
+#include <grpc/support/alloc.h>  // for gpr_free()
 #include <grpc_cb/support/status.h>
 
 #include "src/cpp_cb/proto/proto_utils.h"
@@ -11,10 +12,16 @@ namespace grpc_cb {
 
 CallOperations::CallOperations()
     : send_buf_(nullptr) {
+  grpc_metadata_array_init(&recv_initial_metadata_arr_);
+  grpc_metadata_array_init(&recv_trailing_metadata_arr_);
 }
 
 CallOperations::~CallOperations() {
   grpc_byte_buffer_destroy(send_buf_);
+  grpc_metadata_array_destroy(&recv_initial_metadata_arr_);
+  grpc_byte_buffer_destroy(recv_buf_);
+  grpc_metadata_array_destroy(&recv_trailing_metadata_arr_);
+  gpr_free(status_details_);
 }
 
 Status CallOperations::SendMessage(
@@ -36,24 +43,31 @@ void CallOperations::SendInitialMetadata() {
 }
 
 void CallOperations::RecvInitialMetadata() {
+  grpc_op op{GRPC_OP_RECV_INITIAL_METADATA, 0, 0};
+  op.data.recv_initial_metadata = &recv_initial_metadata_arr_;
+  cops_.push_back(op);
 }
 
-void CallOperations::RecvMessage(grpc_byte_buffer** recv_buf) {
+void CallOperations::RecvMessage() {
   grpc_op op = {GRPC_OP_RECV_MESSAGE, 0, 0};
-  op.data.recv_message = recv_buf;
+  op.data.recv_message = &recv_buf_;
   cops_.push_back(op);
 }
 
 void CallOperations::ClientSendClose() {
+  grpc_op op{GRPC_OP_SEND_CLOSE_FROM_CLIENT, 0, 0};
+  cops_.push_back(op);
 }
 
-void CallOperations::ClientRecvStatus(Status* status) {
+void CallOperations::ClientRecvStatus() {
 
   grpc_op op = {GRPC_OP_RECV_STATUS_ON_CLIENT, 0, 0};
-  op.data.recv_status_on_client.trailing_metadata = nullptr;
-  op.data.recv_status_on_client.status = nullptr;
-  op.data.recv_status_on_client.status_details = nullptr;
-  op.data.recv_status_on_client.status_details_capacity = nullptr;
+  op.data.recv_status_on_client.trailing_metadata =
+    &recv_trailing_metadata_arr_;
+  op.data.recv_status_on_client.status = &status_code_;
+  op.data.recv_status_on_client.status_details = &status_details_;
+  op.data.recv_status_on_client.status_details_capacity =
+        &status_details_capacity_;
   cops_.push_back(op);
 }
 
