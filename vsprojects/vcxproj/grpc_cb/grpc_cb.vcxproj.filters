@@ -17,7 +17,7 @@
       <Filter>src\cpp_cb\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc">
-      <Filter>src\proto</Filter>
+      <Filter>src\cpp_cb\proto</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,7 +58,7 @@
       <Filter>src\cpp_cb\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h">
-      <Filter>src\proto</Filter>
+      <Filter>src\cpp_cb\proto</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +89,7 @@
     <Filter Include="src\cpp_cb\common">
       <UniqueIdentifier>{4e297266-df23-469b-b955-5dd2be3e9cce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\proto">
+    <Filter Include="src\cpp_cb\proto">
       <UniqueIdentifier>{113b0579-7074-4a6b-b98e-656b0913c067}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

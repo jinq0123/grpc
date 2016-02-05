@@ -29,6 +29,10 @@ Status CallOperations::SendMessage(
 }
 
 void CallOperations::SendInitialMetadata() {
+  grpc_op op{GRPC_OP_SEND_INITIAL_METADATA, 0, 0};
+  op.data.send_initial_metadata.count = 0;
+  op.data.send_initial_metadata.metadata = nullptr;
+  cops_.push_back(op);
 }
 
 void CallOperations::RecvInitialMetadata() {

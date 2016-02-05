@@ -39,6 +39,7 @@ class CallOperations GRPC_FINAL {
   std::vector<grpc_op> cops_;
 
  private:
+  // std::vector<grpc_metadata> initial_metadata_;
   grpc_byte_buffer* send_buf_;
 };
 

@@ -23,22 +23,22 @@ Call::~Call() {
 }
 
 Status Call::StartBatch(const protobuf::Message& request) {
-  CallOperations ops;
+  static CallOperations ops;
 
+  ops.SendInitialMetadata();
   Status status = ops.SendMessage(request);
   if (!status.ok()) {
     return status;
   }
-  ops.SendInitialMetadata();
   ops.RecvInitialMetadata();
   grpc_byte_buffer* recv_buf = nullptr;
   ops.RecvMessage(&recv_buf);
   ops.ClientSendClose();
   ops.ClientRecvStatus(&status);
 
-  // ops->FillOps(cops, &nops);
   grpc_call_error result = grpc_call_start_batch(
     call_, ops.GetOps(), ops.GetOpsNum(), (void*)1234, nullptr);
+  grpc_byte_buffer_destroy(recv_buf);
   if (GRPC_CALL_OK == result) {
     return Status::OK;
   }
