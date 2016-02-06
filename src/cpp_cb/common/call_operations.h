@@ -31,7 +31,7 @@ class CallOperations GRPC_FINAL {
   Status SendMessage(const protobuf::Message& message) GRPC_MUST_USE_RESULT;
   void SendInitialMetadata();
   void RecvInitialMetadata();
-  void RecvMessage();
+  void RecvMessage(grpc_byte_buffer** recv_buf);
   void ClientSendClose();
   void ClientRecvStatus();
 
@@ -42,7 +42,6 @@ class CallOperations GRPC_FINAL {
   // std::vector<grpc_metadata> initial_metadata_;
   grpc_byte_buffer* send_buf_;
   grpc_metadata_array recv_initial_metadata_arr_;
-  grpc_byte_buffer* recv_buf_;
   grpc_metadata_array recv_trailing_metadata_arr_;
   grpc_status_code status_code_;
   char* status_details_;

@@ -19,7 +19,6 @@ CallOperations::CallOperations()
 CallOperations::~CallOperations() {
   grpc_byte_buffer_destroy(send_buf_);
   grpc_metadata_array_destroy(&recv_initial_metadata_arr_);
-  grpc_byte_buffer_destroy(recv_buf_);
   grpc_metadata_array_destroy(&recv_trailing_metadata_arr_);
   gpr_free(status_details_);
 }
@@ -48,9 +47,9 @@ void CallOperations::RecvInitialMetadata() {
   cops_.push_back(op);
 }
 
-void CallOperations::RecvMessage() {
+void CallOperations::RecvMessage(grpc_byte_buffer** recv_buf) {
   grpc_op op = {GRPC_OP_RECV_MESSAGE, 0, 0};
-  op.data.recv_message = &recv_buf_;
+  op.data.recv_message = recv_buf;
   cops_.push_back(op);
 }
 

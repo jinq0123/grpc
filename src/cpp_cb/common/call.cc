@@ -9,17 +9,22 @@
 #include <grpc_cb/support/status.h>
 
 #include "src/cpp_cb/common/call_operations.h"  // for CallOperations
+#include "src/cpp_cb/proto/proto_utils.h"  // for DeserializeProto()
 
 namespace grpc_cb {
 
+int Call::default_max_message_size_ = -1;
+
 Call::Call(grpc_call* call)
-    : call_(call) {
+    : call_(call), recv_buf_(nullptr)
+    , max_message_size_(default_max_message_size_) {
   assert(call);
 }
 
 Call::~Call() {
   assert(call_);
   grpc_call_destroy(call_);
+  grpc_byte_buffer_destroy(recv_buf_);
 }
 
 Status Call::StartBatch(const protobuf::Message& request) {
@@ -32,7 +37,7 @@ Status Call::StartBatch(const protobuf::Message& request) {
     return status;
   }
   ops.RecvInitialMetadata();
-  ops.RecvMessage();
+  ops.RecvMessage(&recv_buf_);
   ops.ClientSendClose();
   ops.ClientRecvStatus();
 
@@ -42,6 +47,11 @@ Status Call::StartBatch(const protobuf::Message& request) {
     return Status::OK;
   }
   return Status::InternalError("grpc_call_start_batch() failed");
+}
+
+Status Call::GetResponse(protobuf::Message* response) const {
+  assert(response);
+  return DeserializeProto(recv_buf_, response, max_message_size_);
 }
 
 }  // namespace grpc_cb

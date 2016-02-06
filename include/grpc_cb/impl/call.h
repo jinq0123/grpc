@@ -7,6 +7,7 @@
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
 #include <grpc_cb/support/config_protobuf.h>  // for Message
 
+struct grpc_byte_buffer;
 struct grpc_call;
 
 namespace grpc_cb {
@@ -25,8 +26,13 @@ class Call GRPC_FINAL {
 
  public:
   Status StartBatch(const protobuf::Message& request);
+  Status GetResponse(protobuf::Message* response) const;
 
- public: 
+  inline int GetMaxMessageSize() const { return max_message_size_; }
+  inline void SetMaxMessageSize(int size) { max_message_size_ = size; }
+  static void SetDefaultMaxMessageSize(int size) { default_max_message_size_ = size; }
+
+ public:
   inline grpc_call* call() const { return call_; }
 
  private:
@@ -34,6 +40,11 @@ class Call GRPC_FINAL {
 
  private:
   std::shared_ptr<CallOperations> ops_;
+  grpc_byte_buffer* recv_buf_;
+  int max_message_size_;
+
+private:
+  static int default_max_message_size_;  // for all call
 };
 
 }  // namespace grpc_cb
