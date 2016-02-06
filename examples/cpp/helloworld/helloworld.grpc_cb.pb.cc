@@ -11,9 +11,9 @@
 
 namespace helloworld {
 
-// static const char* Greeter_method_names[] = {
-//  "/helloworld.Greeter/SayHello",
-//};
+static const char* Greeter_method_names[] = {
+  "/helloworld.Greeter/SayHello",
+};
 
 std::unique_ptr< Greeter::Stub> Greeter::NewStub(const ::grpc_cb::ChannelPtr& channel) {
   std::unique_ptr< Greeter::Stub> stub(new Greeter::Stub(channel));
@@ -29,7 +29,7 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
   grpc_cb::CompletionQueue cq;
-  grpc_cb::Call call(channel_->CreateCall("/helloworld.Greeter/SayHello", cq.cq()));
+  grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq.cq()));
   grpc_cb::Status status = call.StartBatch(request);
   if (!status.ok()) return status;
   cq.Pluck(1234);

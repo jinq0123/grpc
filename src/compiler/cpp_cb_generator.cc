@@ -753,12 +753,12 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   (*vars)["Service"] = service->name();
 
   printer->Print(*vars,
-                 "// static const char* $prefix$$Service$_method_names[] = {\n");
+                 "static const char* $prefix$$Service$_method_names[] = {\n");
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Method"] = service->method(i)->name();
-    printer->Print(*vars, "//  \"/$Package$$Service$/$Method$\",\n");
+    printer->Print(*vars, "  \"/$Package$$Service$/$Method$\",\n");
   }
-  printer->Print(*vars, "//};\n\n");
+  printer->Print(*vars, "};\n\n");
 
   printer->Print(*vars,
                  "std::unique_ptr< $ns$$Service$::Stub> $ns$$Service$::NewStub("
