@@ -26,12 +26,6 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
   {}
 
 ::grpc_cb::Status Greeter::Stub::SayHello(
-    const ::helloworld::HelloRequest& request) {
-  ::helloworld::HelloReply response;
-  return SayHello(request, &response);
-}
-
-::grpc_cb::Status Greeter::Stub::SayHello(
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
   assert(response);
