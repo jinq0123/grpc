@@ -26,15 +26,28 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
   {}
 
 ::grpc_cb::Status Greeter::Stub::SayHello(
+    const ::helloworld::HelloRequest& request) {
+  ::helloworld::HelloReply response;
+  return SayHello(request, &response);
+}
+
+::grpc_cb::Status Greeter::Stub::SayHello(
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
   assert(response);
-  grpc_cb::CompletionQueue cq;
-  grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq.cq()));
+  ::grpc_cb::CompletionQueue cq;
+  ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq.cq()));
   grpc_cb::Status status = call.StartBatch(request);
   if (!status.ok()) return status;
   cq.Pluck(1234);
   return call.GetResponse(response);
+}
+
+void Greeter::Stub::AsyncSayHello(
+    const ::helloworld::HelloRequest& request,
+    const SayHelloCallback& cb,
+    const SayHelloErrorCallback& err_cb) {
+  // TODO
 }
 
 // Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}

@@ -508,7 +508,9 @@ grpc::string GetSourceIncludes(const grpc::protobuf::FileDescriptor *file,
     grpc::protobuf::io::Printer printer(&output_stream, '$');
     std::map<grpc::string, grpc::string> vars;
 
-    printer.Print(vars, "#include <grpc_cb/channel.h>\n");
+    printer.Print("#include <grpc_cb/channel.h>\n");
+    printer.Print("#include <grpc_cb/completion_queue.h>\n");
+    printer.Print("#include <grpc_cb/impl/call.h>\n");
     printer.Print("\n");
 
     if (!file->package().empty()) {
@@ -536,27 +538,32 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
       grpc_cpp_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(*vars,
-                   "::grpc_cb::Status $ns$$Service$::Stub::$Method$("
-                   "::grpc_cb::ClientContext* context, "
-                   "const $Request$& request, $Response$* response) {\n");
+        "::grpc_cb::Status $ns$$Service$::Stub::$Method$(\n"
+        "    const $Request$& request) {\n"
+        "  $Response$ response;\n"
+        "  return $Method$(request, &response);\n"
+        "}\n"
+        "\n"
+        "::grpc_cb::Status $ns$$Service$::Stub::$Method$(\n"
+        "    const $Request$& request,\n"
+        "    $Response$* response) {\n"
+        "  assert(response);\n"
+        "  ::grpc_cb::CompletionQueue cq;\n"
+        "  ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[$Idx$], cq.cq()));\n"
+        "  grpc_cb::Status status = call.StartBatch(request);\n"
+        "  if (!status.ok()) return status;\n"
+        "  cq.Pluck(1234);\n"
+        "  return call.GetResponse(response);\n"
+        "}\n"
+        "\n");
     printer->Print(*vars,
-                   "  return ::grpc_cb::BlockingUnaryCall(channel_.get(), "
-                   "rpcmethod_$Method$_, "
-                   "context, request, response);\n"
-                   "}\n\n");
-    printer->Print(
-        *vars,
-        "::grpc_cb::ClientAsyncResponseReader< $Response$>* "
-        "$ns$$Service$::Stub::Async$Method$Raw(::grpc_cb::ClientContext* context, "
-        "const $Request$& request, "
-        "::grpc_cb::CompletionQueue* cq) {\n");
-    printer->Print(*vars,
-                   "  return new "
-                   "::grpc_cb::ClientAsyncResponseReader< $Response$>("
-                   "channel_.get(), cq, "
-                   "rpcmethod_$Method$_, "
-                   "context, request);\n"
-                   "}\n\n");
+        "void $ns$$Service$::Stub::Async$Method$(\n"
+        "    const $Request$& request,\n"
+        "    const SayHelloCallback& cb,\n"
+        "    const SayHelloErrorCallback& err_cb) {\n"
+        "  // TODO\n"
+        "}\n"
+        "\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
                    "::grpc_cb::ClientWriter< $Request$>* "
@@ -796,7 +803,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
 
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Idx"] = as_string(i);
-    // PrintSourceClientMethod(printer, service->method(i), vars);
+    PrintSourceClientMethod(printer, service->method(i), vars);
   }
 
   (*vars)["MethodCount"] = as_string(service->method_count());
