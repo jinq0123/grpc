@@ -267,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\client\service_stub.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call_operations.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc" />
