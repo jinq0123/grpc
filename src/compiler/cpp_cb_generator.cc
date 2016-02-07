@@ -148,15 +148,18 @@ void PrintHeaderClientMethodPublic(
 
   if (NoStreaming(method)) {
       printer->Print(*vars,
-          "inline ::grpc_cb::Status $Method$(const $Request$& request) {  // Ignore response.\n"
-          "    $Response$ response;\n"
-          "    return $Method$(request, &response);\n"
+          "inline ::grpc_cb::Status $Method$(const $Request$& request) {\n"
+          "  $Response$ response;\n"
+          "  return $Method$(request, &response);  // Ignore response.\n"
           "}\n"
           "::grpc_cb::Status $Method$(const $Request$& request, $Response$* response);\n"
+          "\n"
           "typedef std::function<void (const $Response$& response)> $Method$Callback;\n"
-          "void Async$Method$(const $Request$& request);  // Ignore response and use default error callback.\n"
-          "inline void Async$Method$(const $Request$& request, const $Method$Callback& cb) {  // Use default error callback.\n"
-          "    return Async$Method$(request, cb, error_callback_);\n"
+          "inline void Async$Method$(const $Request$& request) {\n"
+          "  return Async$Method$(request, &IgnoreResponse<$Response$>);\n"
+          "}\n"
+          "inline void Async$Method$(const $Request$& request, const $Method$Callback& cb) {\n"
+          "  return Async$Method$(request, cb, error_callback_);  // Use default error callback.\n"
           "}\n"
           "void Async$Method$(const $Request$& request, const $Method$Callback& cb, const ::grpc_cb::ErrorCallback& err_cb);\n");
   } else if (ClientOnlyStreaming(method)) {

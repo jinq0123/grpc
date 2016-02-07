@@ -41,7 +41,13 @@ class ServiceStub {
     default_error_callback_ = cb;
   }
   // Default ignore error.
-  static void IgnoreError(const Status& error_status) {};
+  static void IgnoreError(const Status&) {
+  }
+
+ public:
+  template <class ResponseType>
+  static void IgnoreResponse(const ResponseType&) {
+  }
 
  protected:
   ChannelPtr channel_;

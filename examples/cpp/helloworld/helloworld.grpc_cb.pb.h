@@ -23,15 +23,18 @@ class Stub : public ::grpc_cb::ServiceStub {
  public:
   Stub(const ::grpc_cb::ChannelPtr& channel);
 
-  inline ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request) {  // Ignore response.
-      ::helloworld::HelloReply response;
-      return SayHello(request, &response);
+  inline ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request) {
+    ::helloworld::HelloReply response;
+    return SayHello(request, &response);  // Ignore response.
   }
   ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
+
   typedef std::function<void (const ::helloworld::HelloReply& response)> SayHelloCallback;
-  void AsyncSayHello(const ::helloworld::HelloRequest& request);  // Ignore response and use default error callback.
-  inline void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb) {  // Use default error callback.
-      return AsyncSayHello(request, cb, error_callback_);
+  inline void AsyncSayHello(const ::helloworld::HelloRequest& request) {
+    return AsyncSayHello(request, &IgnoreResponse<::helloworld::HelloReply>);
+  }
+  inline void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb) {
+    return AsyncSayHello(request, cb, error_callback_);  // Use default error callback.
   }
   void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb, const ::grpc_cb::ErrorCallback& err_cb);
 
