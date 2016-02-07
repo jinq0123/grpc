@@ -6,9 +6,8 @@
 
 #include "helloworld.pb.h"
 
-#include <functional>  // for std::function()
-
 #include <grpc_cb/channel_ptr.h>
+#include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/service_stub.h>
 #include <grpc_cb/support/status.h>
 
@@ -27,10 +26,9 @@ class Stub : public ::grpc_cb::ServiceStub {
   ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request);  // Ignore response.
   ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
   typedef std::function<void (const ::helloworld::HelloReply& response)> SayHelloCallback;
-  typedef std::function<void (const ::grpc_cb::Status& error_status)> SayHelloErrorCallback;
   void AsyncSayHello(const ::helloworld::HelloRequest& request);  // Ignore response and use default error callback.
   void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb);  // Use default error callback.
-  void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb, const SayHelloErrorCallback& err_cb);
+  void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb, const ::grpc_cb::ErrorCallback& err_cb);
 
  private:
   // const ::grpc_cb::RpcMethod rpcmethod_SayHello_;

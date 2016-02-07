@@ -112,9 +112,8 @@ grpc::string GetHeaderPrologue(const grpc::protobuf::FileDescriptor *file,
 grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
                                const Parameters &params) {
   grpc::string temp =
-      "#include <functional>  // for std::function()\n"
-      "\n"
       "#include <grpc_cb/channel_ptr.h>\n"
+      "#include <grpc_cb/error_callback.h>  // for ErrorCallback\n"
       "#include <grpc_cb/service_stub.h>\n"
       "#include <grpc_cb/support/status.h>\n"
       "\n"
@@ -149,18 +148,12 @@ void PrintHeaderClientMethodPublic(
 
   if (NoStreaming(method)) {
       printer->Print(*vars,
-          "::grpc_cb::Status $Method$(const $Request$& request);  // Ignore response.\n");
-      printer->Print(*vars,
-          "::grpc_cb::Status $Method$(const $Request$& request, $Response$* response);\n");
-      printer->Print(*vars,
+          "::grpc_cb::Status $Method$(const $Request$& request);  // Ignore response.\n"
+          "::grpc_cb::Status $Method$(const $Request$& request, $Response$* response);\n"
           "typedef std::function<void (const $Response$& response)> $Method$Callback;\n"
-          "typedef std::function<void (const ::grpc_cb::Status& error_status)> $Method$ErrorCallback;\n");
-      printer->Print(*vars,
-          "void Async$Method$(const $Request$& request);  // Ignore response and use default error callback.\n");
-      printer->Print(*vars,
-          "void Async$Method$(const $Request$& request, const $Method$Callback& cb);  // Use default error callback.\n");
-      printer->Print(*vars,
-          "void Async$Method$(const $Request$& request, const $Method$Callback& cb, const $Method$ErrorCallback& err_cb);\n");
+          "void Async$Method$(const $Request$& request);  // Ignore response and use default error callback.\n"
+          "void Async$Method$(const $Request$& request, const $Method$Callback& cb);  // Use default error callback.\n"
+          "void Async$Method$(const $Request$& request, const $Method$Callback& cb, const ::grpc_cb::ErrorCallback& err_cb);\n");
   } else if (ClientOnlyStreaming(method)) {
       printer->Print(
           *vars,
@@ -560,7 +553,7 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
         "void $ns$$Service$::Stub::Async$Method$(\n"
         "    const $Request$& request,\n"
         "    const SayHelloCallback& cb,\n"
-        "    const SayHelloErrorCallback& err_cb) {\n"
+        "    const ::grpc_cb::ErrorCallback& err_cb) {\n"
         "  // TODO\n"
         "}\n"
         "\n");

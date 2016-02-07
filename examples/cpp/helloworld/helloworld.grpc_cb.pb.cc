@@ -46,7 +46,7 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
 void Greeter::Stub::AsyncSayHello(
     const ::helloworld::HelloRequest& request,
     const SayHelloCallback& cb,
-    const SayHelloErrorCallback& err_cb) {
+    const ::grpc_cb::ErrorCallback& err_cb) {
   // TODO
 }
 

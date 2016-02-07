@@ -60,6 +60,9 @@
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h">
       <Filter>src\cpp_cb\proto</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\error_callback.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
