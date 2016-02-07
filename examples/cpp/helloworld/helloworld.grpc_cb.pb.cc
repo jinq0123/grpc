@@ -41,7 +41,12 @@ void Greeter::Stub::AsyncSayHello(
     const ::helloworld::HelloRequest& request,
     const SayHelloCallback& cb,
     const ::grpc_cb::ErrorCallback& err_cb) {
-  // TODO
+  assert(cb && err_cb && cq_);
+  ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq_->cq()));
+  grpc_cb::Status status = call.StartBatch(request);
+  if (!status.ok()) {
+    err_cb(status);
+  }
 }
 
 // Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}
