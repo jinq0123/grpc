@@ -51,5 +51,13 @@ int main(int argc, char** argv) {
   std::string reply = greeter.SayHello(user);
   std::cout << "Greeter received: " << reply << std::endl;
 
+  // Async client.
+  helloworld::Greeter::Stub stub(channel);
+  HelloRequest request;
+  request.set_name("async_world");
+  stub.AsyncSayHello(request, [](const helloworld::HelloReply& resp) {
+      std::cout << "Async greeter received: " << resp.message() << std::endl;
+    });
+  stub.Run();  // Blocking.
   return 0;
 }

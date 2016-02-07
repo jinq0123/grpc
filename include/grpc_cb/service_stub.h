@@ -11,16 +11,13 @@
 
 namespace grpc_cb {
 
+class CompletionQueue;
+
 // The base of generated service stubs.
 class ServiceStub {
  public:
-  inline explicit ServiceStub(const ChannelPtr& channel)
-      : channel_(channel)  // copy shared_ptr
-      , error_callback_(default_error_callback_) {
-    assert(channel);
-    assert(error_callback_);
-  }
-  inline virtual ~ServiceStub() {}
+  explicit ServiceStub(const ChannelPtr& channel);
+  virtual ~ServiceStub();
 
  public:
   inline ChannelPtr GetChannelPtr() const { return channel_; }
@@ -49,9 +46,15 @@ class ServiceStub {
   static void IgnoreResponse(const ResponseType&) {
   }
 
+ public:
+  void Run();  // Blocking.
+  // Request the shutdown of all runs.
+  void Shutdown();
+
  protected:
   ChannelPtr channel_;
   ErrorCallback error_callback_;
+  std::unique_ptr<CompletionQueue> cq_;
 
  protected:
   static ErrorCallback default_error_callback_;
