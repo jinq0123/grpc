@@ -544,11 +544,12 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
         "    $Response$* response) {\n"
         "  assert(response);\n"
         "  ::grpc_cb::CompletionQueue cq;\n"
-        "  ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[$Idx$], cq.cq()));\n"
-        "  grpc_cb::Status status = call.StartBatch(request);\n"
+        "  ::grpc_cb::CallUptr call(channel_->CreateCall(Greeter_method_names[$Idx$], cq.cq()));\n"
+        "  void* tag = call.get();\n"
+        "  grpc_cb::Status status = call->StartBatch(request, tag);\n"
         "  if (!status.ok()) return status;\n"
-        "  cq.Pluck(1234);\n"
-        "  return call.GetResponse(response);\n"
+        "  cq.Pluck(tag);\n"
+      "  return call->GetResponse(response);\n"
         "}\n"
         "\n");
     printer->Print(*vars,
@@ -556,7 +557,14 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
         "    const $Request$& request,\n"
         "    const SayHelloCallback& cb,\n"
         "    const ::grpc_cb::ErrorCallback& err_cb) {\n"
-        "  // TODO\n"
+        "  assert(cb && err_cb && cq_);\n"
+        "  ::grpc_cb::CallUptr call(channel_->CreateCall(Greeter_method_names[$Idx$], cq_->cq()));\n"
+        "  void* tag = call.get();\n"
+        "  grpc_cb::Status status = call->StartBatch(request, tag);\n"
+        "  if (!status.ok()) {\n"
+        "    err_cb(status);\n"
+        "  }\n"
+        "  call_map_[tag] = std::move(call);\n"
         "}\n"
         "\n");
   } else if (ClientOnlyStreaming(method)) {

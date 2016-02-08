@@ -4,6 +4,7 @@
 #ifndef GRPC_CB_IMPL_CALL_H
 #define GRPC_CB_IMPL_CALL_H
 
+#include <grpc_cb/impl/call_uptr.h>
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
 #include <grpc_cb/support/config_protobuf.h>  // for Message
 
