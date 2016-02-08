@@ -36,8 +36,7 @@
 #include <memory>
 
 #include <grpc/grpc.h>
-#include <grpc/support/log.h>
-#include <grpc++/support/time.h>
+#include <grpc_cb/support/time.h>
 
 namespace grpc_cb {
 
@@ -64,28 +63,5 @@ grpc_event CompletionQueue::NextInternal(gpr_timespec deadline) {
 grpc_event CompletionQueue::PluckInternal(void* tag, gpr_timespec deadline) {
   return grpc_completion_queue_pluck(cq_, tag, deadline, nullptr);
 }
-
-//bool CompletionQueue::Pluck(const Tag& tag) {
-//  auto deadline = gpr_inf_future(GPR_CLOCK_REALTIME);
-//  void* c_tag = reinterpret_cast<void*>(tag);
-//  auto ev = grpc_completion_queue_pluck(cq_, c_tag, deadline, nullptr);
-//  // bool ok = ev.success != 0;
-//  // void* ignored = c_tag;
-//  // GPR_ASSERT(tag->FinalizeResult(&ignored, &ok));
-//  // GPR_ASSERT(ignored == c_tag);
-//  // Ignore mutations by FinalizeResult: Pluck returns the C API status
-//  return ev.success != 0;
-//}
-
-//void CompletionQueue::TryPluck(const Tag& tag) {
-//  auto deadline = gpr_time_0(GPR_CLOCK_REALTIME);
-//  void* c_tag = reinterpret_cast<void*>(tag);
-//  auto ev = grpc_completion_queue_pluck(cq_, c_tag, deadline, nullptr);
-//  // if (ev.type == GRPC_QUEUE_TIMEOUT) return;
-//  // bool ok = ev.success != 0;
-//  // void* ignored = tag;
-//  // the tag must be swallowed if using TryPluck
-//  // GPR_ASSERT(!tag->FinalizeResult(&ignored, &ok));
-//}
 
 }  // namespace grpc_cb

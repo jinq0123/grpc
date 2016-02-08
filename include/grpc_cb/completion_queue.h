@@ -40,7 +40,6 @@
 
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
-#include <grpc/support/time.h>  // for gpr_inf_future()
 
 struct grpc_completion_queue;
 struct grpc_event;
