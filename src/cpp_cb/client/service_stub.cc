@@ -35,10 +35,14 @@ void ServiceStub::Run() {
         call_map_.erase(ev.tag);
         break;
       }  // case
-      case GRPC_QUEUE_TIMEOUT:
-        break;
       case GRPC_QUEUE_SHUTDOWN:
         return;
+      case GRPC_QUEUE_TIMEOUT:
+        assert(false);
+        break;
+      default:
+        assert(false);
+        break;
     }  // switch
   }
 }
