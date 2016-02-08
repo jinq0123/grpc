@@ -2,8 +2,10 @@
 // If you make any local change, they will be lost.
 // source: helloworld.proto
 
-#include "helloworld.pb.h"
 #include "helloworld.grpc_cb.pb.h"
+
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/stubs/once.h>
 
 #include <grpc_cb/channel.h>
 #include <grpc_cb/completion_queue.h>
@@ -11,26 +13,30 @@
 
 namespace helloworld {
 
-static const char* Greeter_method_names[] = {
+namespace Greeter {
+
+static const ::google::protobuf::ServiceDescriptor* service_descriptor = nullptr;
+
+static const char* method_names[] = {
   "/helloworld.Greeter/SayHello",
 };
 
-std::unique_ptr< Greeter::Stub> Greeter::NewStub(const ::grpc_cb::ChannelPtr& channel) {
-  std::unique_ptr< Greeter::Stub> stub(new Greeter::Stub(channel));
+std::unique_ptr< Stub> NewStub(const ::grpc_cb::ChannelPtr& channel) {
+  std::unique_ptr< Stub> stub(new Stub(channel));
   return stub;
 }
 
-Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
+Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
   : ::grpc_cb::ServiceStub(channel)
-    // , rpcmethod_SayHello_(Greeter_method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
+    // , rpcmethod_SayHello_(method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc_cb::Status Greeter::Stub::SayHello(
+::grpc_cb::Status Stub::SayHello(
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
   assert(response);
   ::grpc_cb::CompletionQueue cq;
-  ::grpc_cb::CallUptr call(channel_->CreateCall(Greeter_method_names[0], cq.cq()));
+  ::grpc_cb::CallUptr call(channel_->CreateCall(method_names[0], cq.cq()));
   void* tag = call.get();
   grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) return status;
@@ -38,12 +44,12 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
   return call->GetResponse(response);
 }
 
-void Greeter::Stub::AsyncSayHello(
+void Stub::AsyncSayHello(
     const ::helloworld::HelloRequest& request,
     const SayHelloCallback& cb,
     const ::grpc_cb::ErrorCallback& err_cb) {
   assert(cb && err_cb && cq_);
-  ::grpc_cb::CallUptr call(channel_->CreateCall(Greeter_method_names[0], cq_->cq()));
+  ::grpc_cb::CallUptr call(channel_->CreateCall(method_names[0], cq_->cq()));
   void* tag = call.get();
   grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) {
@@ -52,20 +58,21 @@ void Greeter::Stub::AsyncSayHello(
   call_map_[tag] = std::move(call);
 }
 
-// Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}
+// AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(method_names, 1) {}
 
-Greeter::Service::Service() {
+Service::Service() {
 }
 
-Greeter::Service::~Service() {
+Service::~Service() {
 }
 
-::grpc_cb::Status Greeter::Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
+::grpc_cb::Status Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
   (void) request;
   (void) response;
   return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 
+}  // namespace Greeter
 
 }  // namespace helloworld
 

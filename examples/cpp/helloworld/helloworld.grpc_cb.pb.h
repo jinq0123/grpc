@@ -4,12 +4,19 @@
 #ifndef GRPC_CB_helloworld_2eproto__INCLUDED
 #define GRPC_CB_helloworld_2eproto__INCLUDED
 
-#include "helloworld.pb.h"
-
 #include <grpc_cb/channel_ptr.h>
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/service_stub.h>
 #include <grpc_cb/support/status.h>
+
+#include "helloworld.pb.h"
+
+namespace google {
+namespace protobuf {
+class ServiceDescriptor;
+// class MethodDescriptor;
+}  // namespace protobuf
+}  // namespace google
 
 namespace grpc_cb {
 class RpcService;
@@ -18,6 +25,8 @@ class RpcService;
 namespace helloworld {
 
 namespace Greeter {
+
+const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor();
 
 class Stub : public ::grpc_cb::ServiceStub {
  public:
