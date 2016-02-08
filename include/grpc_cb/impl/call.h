@@ -37,7 +37,6 @@ class Call GRPC_FINAL {
 
  private:
   std::unique_ptr<grpc_call, void (*)(grpc_call*)> call_;  // owned
-  // grpc_call* const call_;  // owned
 
  private:
   std::shared_ptr<CallOperations> ops_;

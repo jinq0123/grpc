@@ -50,6 +50,7 @@ Status Call::StartBatch(const protobuf::Message& request, void* tag) {
 
 Status Call::GetResponse(protobuf::Message* response) const {
   assert(response);
+  // TODO: check status first...
   return DeserializeProto(recv_buf_, response, max_message_size_);
 }
 
