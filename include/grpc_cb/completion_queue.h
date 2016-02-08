@@ -40,8 +40,10 @@
 
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
+#include <grpc/support/time.h>  // for gpr_inf_future()
 
 struct grpc_completion_queue;
+struct grpc_event;
 
 namespace grpc_cb {
 
@@ -62,45 +64,38 @@ class CompletionQueue : public GrpcLibrary {
   virtual ~CompletionQueue() GRPC_OVERRIDE;
 
  public:
-  /// Tri-state return for AsyncNext: SHUTDOWN, GOT_EVENT, TIMEOUT.
-  enum NextStatus {
-    SHUTDOWN,   ///< The completion queue has been shutdown.
-    GOT_EVENT,  ///< Got a new event; \a tag will be filled in with its
-                ///< associated value; \a ok indicating its success.
-    TIMEOUT     ///< deadline was reached.
-  };
-
- public:
-  typedef uintptr_t Tag;
-  static_assert(sizeof(Tag) == sizeof(void*), "Tag size is wrong.");
-
- public:
-  /// Read from the queue, blocking up to \a deadline (or the queue's shutdown).
-  /// Both \a tag and \a ok are updated upon success (if an event is available
-  /// within the \a deadline).  A \a tag points to an arbitrary location usually
-  /// employed to uniquely identify an event.
-  ///
-  /// \param tag[out] Upon sucess, updated to point to the event's tag.
-  /// \param ok[out] Upon sucess, true if read a regular event, false otherwise.
+  /// Wraps \a grpc_completion_queue_next.
   /// \param deadline[in] How long to block in wait for an event.
-  ///
-  /// \return The type of event read.
   template <typename T>
-  NextStatus AsyncNext(bool* ok, const T& deadline) {
+  grpc_event Next(const T& deadline) {
     TimePoint<T> deadline_tp(deadline);
-    return AsyncNextInternal(ok, deadline_tp.raw_time());
+    return NextInternal(deadline_tp.raw_time());
   }
 
-  /// Read from the queue, blocking until an event is available or the queue is
-  /// shutting down.
-  ///
-  /// \param tag[out] Updated to point to the read event's tag.
-  /// \param ok[out] true if read a regular event, false otherwise.
-  ///
-  /// \return true if read a regular event, false if the queue is shutting down.
-  bool Next(bool* ok) {
-    return (AsyncNextInternal(ok, gpr_inf_future(GPR_CLOCK_REALTIME)) !=
-            SHUTDOWN);
+  grpc_event Next() {
+    return NextInternal(gpr_inf_future(GPR_CLOCK_REALTIME));
+  }
+  grpc_event TryNext() {
+    return NextInternal(gpr_time_0(GPR_CLOCK_REALTIME));
+  }
+
+  /// Wraps \a grpc_completion_queue_pluck.
+  /// \warning Must not be mixed with calls to \a Next.
+  template <typename T>
+  grpc_event Pluck(void* tag, const T& deadline) {
+    TimePoint<T> deadline_tp(deadline);
+    return PluckInternal(tag, deadline_tp.raw_time());
+  }
+
+  /// Wraps \a grpc_completion_queue_pluck.
+  /// \warning Must not be mixed with calls to \a Next.
+  grpc_event Pluck(void* tag) {
+    return PluckInternal(tag, gpr_inf_future(GPR_CLOCK_REALTIME));
+  }
+
+  /// Performs a single polling pluck on \a tag.
+  grpc_event TryPluck(void* tag) {
+    return PluckInternal(tag, gpr_time_0(GPR_CLOCK_REALTIME));
   }
 
   /// Request the shutdown of the queue.
@@ -119,15 +114,9 @@ class CompletionQueue : public GrpcLibrary {
     return *cq_;
   }
 
- public:
-  NextStatus AsyncNextInternal(bool* ok, gpr_timespec deadline);
-
-  /// Wraps \a grpc_completion_queue_pluck.
-  /// \warning Must not be mixed with calls to \a Next.
-  bool Pluck(const Tag& tag);
-
-  /// Performs a single polling pluck on \a tag.
-  void TryPluck(const Tag& tag);
+ private:
+  grpc_event NextInternal(gpr_timespec deadline);
+  grpc_event PluckInternal(void* tag, gpr_timespec deadline);
 
  private:
   grpc_completion_queue* const cq_;  // owned

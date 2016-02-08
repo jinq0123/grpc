@@ -25,7 +25,7 @@ class Call GRPC_FINAL {
   ~Call();
 
  public:
-  Status StartBatch(const protobuf::Message& request);
+  Status StartBatch(const protobuf::Message& request, void* tag);
   Status GetResponse(protobuf::Message* response) const;
 
   inline int GetMaxMessageSize() const { return max_message_size_; }

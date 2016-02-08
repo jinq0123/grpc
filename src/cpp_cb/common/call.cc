@@ -27,7 +27,7 @@ Call::~Call() {
   grpc_byte_buffer_destroy(recv_buf_);
 }
 
-Status Call::StartBatch(const protobuf::Message& request) {
+Status Call::StartBatch(const protobuf::Message& request, void* tag) {
   ops_.reset(new CallOperations);
   CallOperations& ops = *ops_;
 
@@ -42,7 +42,7 @@ Status Call::StartBatch(const protobuf::Message& request) {
   ops.ClientRecvStatus();
 
   grpc_call_error result = grpc_call_start_batch(
-    call_, ops.GetOps(), ops.GetOpsNum(), (void*)1234, nullptr);
+    call_, ops.GetOps(), ops.GetOpsNum(), tag, nullptr);
   if (GRPC_CALL_OK == result) {
     return Status::OK;
   }

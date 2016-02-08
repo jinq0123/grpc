@@ -31,9 +31,10 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
   assert(response);
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq.cq()));
-  grpc_cb::Status status = call.StartBatch(request);
+  void* tag = &call;
+  grpc_cb::Status status = call.StartBatch(request, tag);
   if (!status.ok()) return status;
-  cq.Pluck(1234);
+  cq.Pluck(tag);
   return call.GetResponse(response);
 }
 
@@ -43,7 +44,7 @@ void Greeter::Stub::AsyncSayHello(
     const ::grpc_cb::ErrorCallback& err_cb) {
   assert(cb && err_cb && cq_);
   ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq_->cq()));
-  grpc_cb::Status status = call.StartBatch(request);
+  grpc_cb::Status status = call.StartBatch(request, (void*)12345);
   if (!status.ok()) {
     err_cb(status);
   }
