@@ -4,6 +4,7 @@
 #include <grpc_cb/service_stub.h>
 
 #include <grpc_cb/completion_queue.h>
+#include <grpc_cb/impl/call.h>
 
 namespace grpc_cb {
 
@@ -28,12 +29,16 @@ void ServiceStub::Run() {
   while (true) {
     grpc_event ev = cq.Next();
     switch (ev.type) {
-    case GRPC_OP_COMPLETE:
-      break;
-    case GRPC_QUEUE_TIMEOUT:
-      break;
-    case GRPC_QUEUE_SHUTDOWN:
-      return;
+      case GRPC_OP_COMPLETE: {
+        const CallUptr& call = call_map_[ev.tag];
+        assert(call);
+        call_map_.erase(ev.tag);
+        break;
+      }  // case
+      case GRPC_QUEUE_TIMEOUT:
+        break;
+      case GRPC_QUEUE_SHUTDOWN:
+        return;
     }  // switch
   }
 }

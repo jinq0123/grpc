@@ -44,10 +44,12 @@ void Greeter::Stub::AsyncSayHello(
     const ::grpc_cb::ErrorCallback& err_cb) {
   assert(cb && err_cb && cq_);
   ::grpc_cb::CallUptr call(channel_->CreateCall(Greeter_method_names[0], cq_->cq()));
-  grpc_cb::Status status = call->StartBatch(request, (void*)12345);
+  void* tag = call.get();
+  grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) {
     err_cb(status);
   }
+  call_map_[tag] = std::move(call);
 }
 
 // Greeter::AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(Greeter_method_names, 1) {}

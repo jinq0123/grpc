@@ -5,9 +5,11 @@
 #define GRPC_CB_SERVICE_STUB_H
 
 #include <cassert>
+#include <unordered_map>
 
 #include <grpc_cb/channel_ptr.h>
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
+#include <grpc_cb/impl/call_uptr.h>  // for CallUptr
 
 namespace grpc_cb {
 
@@ -55,6 +57,8 @@ class ServiceStub {
   ChannelPtr channel_;
   ErrorCallback error_callback_;
   std::unique_ptr<CompletionQueue> cq_;
+  typedef std::unordered_map<void*, CallUptr> CallMap;
+  CallMap call_map_;
 
  protected:
   static ErrorCallback default_error_callback_;
