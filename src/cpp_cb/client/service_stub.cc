@@ -27,7 +27,14 @@ void ServiceStub::Run() {
   bool ok = false;
   while (true) {
     grpc_event ev = cq.Next();
-    ;  // TODO
+    switch (ev.type) {
+    case GRPC_OP_COMPLETE:
+      break;
+    case GRPC_QUEUE_TIMEOUT:
+      break;
+    case GRPC_QUEUE_SHUTDOWN:
+      return;
+    }  // switch
   }
 }
 

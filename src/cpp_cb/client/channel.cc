@@ -28,13 +28,13 @@ Channel::~Channel() {
   grpc_channel_destroy(c_channel_);
 }
 
-Call Channel::CreateCall(
+CallUptr Channel::CreateCall(
     const std::string& method,
     grpc_completion_queue& cp) {
   grpc_call* c_call = grpc_channel_create_call(
     c_channel_, nullptr, GRPC_PROPAGATE_DEFAULTS, &cp, method.c_str(), nullptr,
     gpr_inf_future(GPR_CLOCK_REALTIME), nullptr);
-  return Call(c_call);
+  return CallUptr(new Call(c_call));
 }
 
 }  // namespace grpc_cb

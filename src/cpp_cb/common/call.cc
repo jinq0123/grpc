@@ -15,15 +15,14 @@ namespace grpc_cb {
 
 int Call::default_max_message_size_ = -1;
 
-Call::Call(grpc_call* call)
-    : call_(call), recv_buf_(nullptr)
-    , max_message_size_(default_max_message_size_) {
+Call::Call(grpc_call* call) :
+    call_(call, grpc_call_destroy),
+    recv_buf_(nullptr),
+    max_message_size_(default_max_message_size_) {
   assert(call);
 }
 
 Call::~Call() {
-  assert(call_);
-  grpc_call_destroy(call_);
   grpc_byte_buffer_destroy(recv_buf_);
 }
 
@@ -42,7 +41,7 @@ Status Call::StartBatch(const protobuf::Message& request, void* tag) {
   ops.ClientRecvStatus();
 
   grpc_call_error result = grpc_call_start_batch(
-    call_, ops.GetOps(), ops.GetOpsNum(), tag, nullptr);
+    call(), ops.GetOps(), ops.GetOpsNum(), tag, nullptr);
   if (GRPC_CALL_OK == result) {
     return Status::OK;
   }

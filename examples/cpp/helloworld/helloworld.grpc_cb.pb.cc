@@ -30,12 +30,12 @@ Greeter::Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
     ::helloworld::HelloReply* response) {
   assert(response);
   ::grpc_cb::CompletionQueue cq;
-  ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq.cq()));
-  void* tag = &call;
-  grpc_cb::Status status = call.StartBatch(request, tag);
+  ::grpc_cb::CallUptr call(channel_->CreateCall(Greeter_method_names[0], cq.cq()));
+  void* tag = call.get();
+  grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) return status;
   cq.Pluck(tag);
-  return call.GetResponse(response);
+  return call->GetResponse(response);
 }
 
 void Greeter::Stub::AsyncSayHello(
@@ -43,8 +43,8 @@ void Greeter::Stub::AsyncSayHello(
     const SayHelloCallback& cb,
     const ::grpc_cb::ErrorCallback& err_cb) {
   assert(cb && err_cb && cq_);
-  ::grpc_cb::Call call(channel_->CreateCall(Greeter_method_names[0], cq_->cq()));
-  grpc_cb::Status status = call.StartBatch(request, (void*)12345);
+  ::grpc_cb::CallUptr call(channel_->CreateCall(Greeter_method_names[0], cq_->cq()));
+  grpc_cb::Status status = call->StartBatch(request, (void*)12345);
   if (!status.ok()) {
     err_cb(status);
   }

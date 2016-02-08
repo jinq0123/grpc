@@ -69,6 +69,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

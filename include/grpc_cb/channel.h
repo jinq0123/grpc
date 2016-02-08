@@ -4,11 +4,14 @@
 #ifndef GRPC_CB_CHANNEL_H
 #define GRPC_CB_CHANNEL_H
 
+#include <memory>  // for unique_ptr<>
 #include <string>
 
 #include <grpc_cb/channel_ptr.h>
+#include <grpc_cb/impl/call_uptr.h>  // for CallUptr
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
+
 
 struct grpc_channel;
 struct grpc_completion_queue;
@@ -25,7 +28,8 @@ class Channel : public GrpcLibrary,
   virtual ~Channel() GRPC_OVERRIDE;
 
  public:
-  Call CreateCall(const std::string& method,
+  CallUptr CreateCall(
+    const std::string& method,
     grpc_completion_queue& cp);
 
  private:
