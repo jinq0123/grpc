@@ -93,6 +93,7 @@ class CppcbGrpcGenerator : public grpc::protobuf::compiler::CodeGenerator {
     grpc::string source_code =
         grpc_cpp_cb_generator::GetSourcePrologue(file, generator_parameters) +
         grpc_cpp_cb_generator::GetSourceIncludes(file, generator_parameters) +
+        grpc_cpp_cb_generator::GetSourceDescriptors(file, generator_parameters) +
         grpc_cpp_cb_generator::GetSourceServices(file, generator_parameters) +
         grpc_cpp_cb_generator::GetSourceEpilogue(file, generator_parameters);
     std::unique_ptr<grpc::protobuf::io::ZeroCopyOutputStream> source_output(

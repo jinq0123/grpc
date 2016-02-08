@@ -68,6 +68,10 @@ grpc::string GetSourcePrologue(const grpc::protobuf::FileDescriptor *file,
 grpc::string GetSourceIncludes(const grpc::protobuf::FileDescriptor *file,
     const Parameters &params);
 
+// Return the descriptor for generated source file.
+grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
+    const Parameters &params);
+
 // Return the services for generated source file.
 grpc::string GetSourceServices(const grpc::protobuf::FileDescriptor *file,
                                const Parameters &params);
