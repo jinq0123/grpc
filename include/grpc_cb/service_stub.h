@@ -10,6 +10,13 @@
 #include <grpc_cb/channel_sptr.h>
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/impl/call_uptr.h>  // for CallUptr
+#include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
+
+namespace google {
+namespace protobuf {
+class Descriptor;
+}  // namespace protobuf
+}  // namespace google
 
 namespace grpc_cb {
 
@@ -53,16 +60,75 @@ class ServiceStub {
   // Request the shutdown of all runs.
   void Shutdown();
 
+ public:
+  template <class ResponseCallback>
+  void* AddCompletionCb(
+      CallUptr&& call,
+      const ::google::protobuf::Descriptor* resp_desc,
+      const ResponseCallback& cb,
+      const ErrorCallback& ecb);
+  void EraseCompletionCb(void* tag) {
+    cb_map_.erase(tag);
+  }
+
  protected:
   ChannelSptr channel_;
   ErrorCallback error_callback_;
   std::unique_ptr<CompletionQueue> cq_;
-  typedef std::unordered_map<void*, CallUptr> CallMap;
-  CallMap call_map_;
 
  protected:
   static ErrorCallback default_error_callback_;
+
+ private:
+  class CompletionCbInterface {
+   public:
+    CompletionCbInterface() {};
+    virtual ~CompletionCbInterface() {};
+    virtual void DoHandleResponse() = 0;
+  };
+  template <class ResponseCallback>
+  class CompletionCb : public CompletionCbInterface {
+   public:
+    CompletionCb(CallUptr&& call,
+                 const google::protobuf::Descriptor* response_descriptor,
+                 const ResponseCallback& cb,
+                 const ErrorCallback& ecb) :
+        call_(std::forward<CallUptr>(call)),
+        response_descriptor_(response_descriptor),
+        cb_(cb),
+        ecb_(ecb) {
+    };
+    virtual ~CompletionCb() GRPC_OVERRIDE {};
+    virtual void DoHandleResponse() GRPC_OVERRIDE;
+   private:
+    CallUptr call_;
+    const google::protobuf::Descriptor* response_descriptor_;
+    ResponseCallback cb_;
+    ErrorCallback ecb_;
+  };
+
+  typedef std::shared_ptr<CompletionCbInterface> CompletionCbSptr;
+  typedef std::unordered_map<void*, CompletionCbSptr> CompletionCbMap;
+  CompletionCbMap cb_map_;
 };
+
+template <class ResponseCallback>
+void* ServiceStub::AddCompletionCb(
+    CallUptr&& call,
+    const ::google::protobuf::Descriptor* resp_desc,
+    const ResponseCallback& cb,
+    const ErrorCallback& ecb) {
+  assert(call && resp_desc && cb && ecb);
+  CompletionCbSptr tag(new CompletionCb<ResponseCallback>(
+    std::forward<CallUptr>(call), resp_desc, cb, ecb));
+  cb_map_[tag.get()] = tag;
+  return tag.get();
+}
+
+template <class ResponseCallback>
+void ServiceStub::CompletionCb<ResponseCallback>::DoHandleResponse() {
+  // TODO
+}
 
 }  // namespace grpc_cb
 

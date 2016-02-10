@@ -30,9 +30,10 @@ void ServiceStub::Run() {
     grpc_event ev = cq.Next();
     switch (ev.type) {
       case GRPC_OP_COMPLETE: {
-        const CallUptr& call = call_map_[ev.tag];
-        assert(call);
-        call_map_.erase(ev.tag);
+        CompletionCbSptr cb = cb_map_[ev.tag];
+        assert(cb);
+        cb->DoHandleResponse();
+        EraseCompletionCb(ev.tag);
         break;
       }  // case
       case GRPC_QUEUE_SHUTDOWN:
