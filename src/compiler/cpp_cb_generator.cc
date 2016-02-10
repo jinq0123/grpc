@@ -902,6 +902,13 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   printer->Print(*vars, "};\n\n");
 
   printer->Print(*vars,
+                 "const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor() {\n"
+                 "  AssignDescriptorsOnce();\n"
+                 "  assert(service_descriptor_$Service$);\n"
+                 "  return *service_descriptor_$Service$;\n"
+                 "}\n\n");
+
+  printer->Print(*vars,
                  "std::unique_ptr< Stub> NewStub("
                  "const ::grpc_cb::ChannelPtr& channel) {\n"
                  "  std::unique_ptr< Stub> stub(new Stub(channel));\n"

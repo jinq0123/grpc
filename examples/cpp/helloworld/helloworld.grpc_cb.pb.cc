@@ -49,6 +49,12 @@ static const char* method_names[] = {
   "/helloworld.Greeter/SayHello",
 };
 
+const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor() {
+  AssignDescriptorsOnce();
+  assert(service_descriptor_Greeter);
+  return *service_descriptor_Greeter;
+}
+
 std::unique_ptr< Stub> NewStub(const ::grpc_cb::ChannelPtr& channel) {
   std::unique_ptr< Stub> stub(new Stub(channel));
   return stub;
