@@ -13,6 +13,53 @@
 
 namespace helloworld {
 
+void AssignDesc_helloworld_2eproto() {
+  // Get the file's descriptor from the pool.
+  const ::google::protobuf::FileDescriptor* file =
+    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
+      "helloworld.proto");
+  // Note that this GOOGLE_CHECK is necessary to prevent a warning about "file"
+  // being unused when compiling an empty .proto file.
+  GOOGLE_CHECK(file != NULL);
+Greeter_descriptor = file->service(0);
+}  // AssignDesc_helloworld_2eproto()
+
+namespace {
+
+GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);
+inline void protobuf_AssignDescriptorsOnce() {
+  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,
+                 &AssignDesc_helloworld_2eproto);
+}
+
+void protobuf_RegisterTypes(const ::std::string&) {
+  protobuf_AssignDescriptorsOnce();
+}
+
+}  // namespace
+
+void ShutdownFile_helloworld_2eproto() {
+}
+
+void AddDesc_helloworld_2eproto() {
+  // We don't need any special synchronization here because this code is
+  // called at static init time before any threads exist.
+  static bool already_here = false;
+  if (already_here) return;
+  already_here = true;
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
+    "\n\020helloworld.proto\022\nhelloworld\"\"\n\014HelloR"
+    "equest\022\022\n\004name\030\001 \001(\tR\004name\"&\n\nHelloReply"
+    "\022\030\n\007message\030\001 \001(\tR\007message2I\n\007Greeter\022>\n"
+    "\010SayHello\022\030.helloworld.HelloRequest\032\026.he"
+    "lloworld.HelloReply\"\000B\030\n\020io.grpc.example"
+    "s\242\002\003HLWb\006proto3", 215);
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
+    "helloworld.proto", &protobuf_RegisterTypes);
+  ::google::protobuf::internal::OnShutdown(&ShutdownFile_helloworld_2eproto);
+}
 namespace Greeter {
 
 static const ::google::protobuf::ServiceDescriptor* service_descriptor = nullptr;
