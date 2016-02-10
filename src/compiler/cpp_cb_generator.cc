@@ -595,7 +595,7 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
     for (int i = 0; i < file->service_count(); i++) {
       vars["Service"] = file->service(i)->name();
       printer.Print(vars,
-        "const ::google::protobuf::ServiceDescriptor* $Service$_descriptor = nullptr;\n");
+        "const ::google::protobuf::ServiceDescriptor* service_descriptor_$Service$ = nullptr;\n");
     }
     printer.Print(
       "}  // namespace\n"
@@ -607,9 +607,10 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
         "  // Get the file's descriptor from the pool.\n"
         "  const ::google::protobuf::FileDescriptor* file =\n"
         "    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(\n"
-        "      \"$filename$\");\n"
-        "  // Note that this GOOGLE_CHECK is necessary to prevent a warning about \"file\"\n"
-        "  // being unused when compiling an empty .proto file.\n"
+        "      \"$filename$\");\n");
+      // Note that this GOOGLE_CHECK is necessary to prevent a warning about \"file\"
+      // being unused when compiling an empty .proto file.
+      printer.Print(
         "  GOOGLE_CHECK(file != NULL);\n");
 
       // Go through all the stuff defined in this file and generated code to
@@ -618,7 +619,7 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
         vars["Service"] = file->service(i)->name();
         vars["Idx"] = as_string(i);
         printer.Print(vars,
-          "  $Service$_descriptor = file->service($Idx$);\n");
+          "  service_descriptor_$Service$ = file->service($Idx$);\n");
       }
 
       printer.Print(vars,
@@ -963,8 +964,6 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   printer->Print(*vars,
                  "namespace $Service$ {\n"
                  "\n");
-  printer->Print("static const ::google::protobuf::ServiceDescriptor* service_descriptor = nullptr;\n"
-                  "\n");
   printer->Print(*vars,
                  "static const char* method_names[] = {\n");
   for (int i = 0; i < service->method_count(); ++i) {
