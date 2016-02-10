@@ -4,7 +4,7 @@
 #ifndef GRPC_CB_helloworld_2eproto__INCLUDED
 #define GRPC_CB_helloworld_2eproto__INCLUDED
 
-#include <grpc_cb/channel_ptr.h>
+#include <grpc_cb/channel_sptr.h>
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/service_stub.h>
 #include <grpc_cb/support/status.h>
@@ -30,7 +30,7 @@ const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor();
 
 class Stub : public ::grpc_cb::ServiceStub {
  public:
-  Stub(const ::grpc_cb::ChannelPtr& channel);
+  Stub(const ::grpc_cb::ChannelSptr& channel);
 
   inline ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request) {
     ::helloworld::HelloReply response;
@@ -51,7 +51,7 @@ class Stub : public ::grpc_cb::ServiceStub {
   // const ::grpc_cb::RpcMethod rpcmethod_SayHello_;
 };
 
-std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelPtr& channel);
+std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelSptr& channel);
 
 class Service {
  public:

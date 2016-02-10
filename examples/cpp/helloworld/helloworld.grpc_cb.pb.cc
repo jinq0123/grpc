@@ -47,12 +47,12 @@ const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor() {
   return *service_descriptor_Greeter;
 }
 
-std::unique_ptr< Stub> NewStub(const ::grpc_cb::ChannelPtr& channel) {
+std::unique_ptr< Stub> NewStub(const ::grpc_cb::ChannelSptr& channel) {
   std::unique_ptr< Stub> stub(new Stub(channel));
   return stub;
 }
 
-Stub::Stub(const ::grpc_cb::ChannelPtr& channel)
+Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   : ::grpc_cb::ServiceStub(channel)
     // , rpcmethod_SayHello_(method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
   {}

@@ -7,7 +7,7 @@
 #include "helloworld.grpc_cb.pb.h"
 
 using grpc_cb::Channel;
-using grpc_cb::ChannelPtr;
+using grpc_cb::ChannelSptr;
 using grpc_cb::Status;
 
 using helloworld::HelloRequest;
@@ -16,7 +16,7 @@ namespace Greeter = helloworld::Greeter;
 
 class GreeterClient {
  public:
-  GreeterClient(ChannelPtr channel)
+  GreeterClient(ChannelSptr channel)
       : stub_(Greeter::NewStub(channel)) {}
 
   // Assambles the client's payload, sends it and presents the response back
@@ -45,7 +45,7 @@ class GreeterClient {
 };
 
 int main(int argc, char** argv) {
-  ChannelPtr channel(new Channel("localhost:50051"));
+  ChannelSptr channel(new Channel("localhost:50051"));
   GreeterClient greeter(channel);
   std::string user("world");
   std::string reply = greeter.SayHello(user);

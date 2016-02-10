@@ -30,9 +30,6 @@
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\channel.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\channel_ptr.h">
-      <Filter>include\grp_cb</Filter>
-    </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\grpc_cb.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
@@ -71,6 +68,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h">
       <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\channel_sptr.h">
+      <Filter>include\grp_cb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

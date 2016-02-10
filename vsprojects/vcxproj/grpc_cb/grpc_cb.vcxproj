@@ -251,10 +251,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\channel.h" />
-    <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\channel_ptr.h" />
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\grpc_cb.h" />
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h" />
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\service_stub.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\channel_sptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client_context.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\error_callback.h" />

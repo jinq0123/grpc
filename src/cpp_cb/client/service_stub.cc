@@ -10,7 +10,7 @@ namespace grpc_cb {
 
 ErrorCallback ServiceStub::default_error_callback_(&ServiceStub::IgnoreError);
 
-ServiceStub::ServiceStub(const ChannelPtr& channel) :
+ServiceStub::ServiceStub(const ChannelSptr& channel) :
     channel_(channel),  // copy shared_ptr
     error_callback_(default_error_callback_),
     cq_(new CompletionQueue) {

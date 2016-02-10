@@ -108,7 +108,7 @@ class ClientContext {
   ClientContext(const ClientContext&);
   ClientContext& operator=(const ClientContext&);
 
-  ChannelPtr channel_;
+  ChannelSptr channel_;
   grpc::mutex mu_;
   gpr_timespec deadline_;
   grpc_compression_algorithm compression_algorithm_;

@@ -7,7 +7,7 @@
 #include <memory>  // for unique_ptr<>
 #include <string>
 
-#include <grpc_cb/channel_ptr.h>
+#include <grpc_cb/channel_sptr.h>
 #include <grpc_cb/impl/call_uptr.h>  // for CallUptr
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE

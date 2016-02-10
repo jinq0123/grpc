@@ -7,7 +7,7 @@
 #include <cassert>
 #include <unordered_map>
 
-#include <grpc_cb/channel_ptr.h>
+#include <grpc_cb/channel_sptr.h>
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/impl/call_uptr.h>  // for CallUptr
 
@@ -18,11 +18,11 @@ class CompletionQueue;
 // The base of generated service stubs.
 class ServiceStub {
  public:
-  explicit ServiceStub(const ChannelPtr& channel);
+  explicit ServiceStub(const ChannelSptr& channel);
   virtual ~ServiceStub();
 
  public:
-  inline ChannelPtr GetChannelPtr() const { return channel_; }
+  inline ChannelSptr GetChannelSptr() const { return channel_; }
   inline const ErrorCallback& GetErrorCallback() const {
     return error_callback_;
   }
@@ -54,7 +54,7 @@ class ServiceStub {
   void Shutdown();
 
  protected:
-  ChannelPtr channel_;
+  ChannelSptr channel_;
   ErrorCallback error_callback_;
   std::unique_ptr<CompletionQueue> cq_;
   typedef std::unordered_map<void*, CallUptr> CallMap;
