@@ -575,15 +575,15 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
     vars["AssignDescriptorsName"] = AssignDescriptorsName(file->name());
 
     printer.Print(vars,
-      "namespace {\n");
+      "namespace {\n"
+      "\n");
+
     for (int i = 0; i < file->service_count(); i++) {
       vars["Service"] = file->service(i)->name();
       printer.Print(vars,
         "const ::google::protobuf::ServiceDescriptor* service_descriptor_$Service$ = nullptr;\n");
     }
-    printer.Print(
-      "}  // namespace\n"
-      "\n");
+    printer.Print("\n");
 
     if (HasDescriptorMethods(file)) {
       printer.Print(vars,
@@ -608,11 +608,6 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
 
       printer.Print(vars,
         "}  // $AssignDescriptorsName$()\n"
-        "\n");
-
-      // ---------------------------------------------------------------
-      printer.Print(
-        "namespace {\n"
         "\n");
 
       // AssignDescriptorsOnce():  The first time it is called, calls

@@ -14,8 +14,8 @@
 namespace helloworld {
 
 namespace {
+
 const ::google::protobuf::ServiceDescriptor* service_descriptor_Greeter = nullptr;
-}  // namespace
 
 void AssignDesc_helloworld_2eproto() {
   // Get the file's descriptor from the pool.
@@ -25,8 +25,6 @@ void AssignDesc_helloworld_2eproto() {
   GOOGLE_CHECK(file != NULL);
   service_descriptor_Greeter = file->service(0);
 }  // AssignDesc_helloworld_2eproto()
-
-namespace {
 
 GOOGLE_PROTOBUF_DECLARE_ONCE(grpc_cb_AssignDescriptors_once_);
 inline void AssignDescriptorsOnce() {
