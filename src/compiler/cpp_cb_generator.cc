@@ -632,18 +632,12 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
       printer.Print(vars,
         "GOOGLE_PROTOBUF_DECLARE_ONCE(grpc_cb_AssignDescriptors_once_);\n"
         "inline void AssignDescriptorsOnce() {\n"
-        "  ::google::protobuf::GoogleOnceInit(&grpc_cb_AssignDescriptors_once_,\n"
-        "                 &$AssignDescriptorsName$);\n"
+        "  ::google::protobuf::GoogleOnceInit(\n"
+        "    &grpc_cb_AssignDescriptors_once_,\n"
+        "    &$AssignDescriptorsName$);\n"
         "}\n"
         "\n");
 
-      // RegisterTypes():  Calls
-      // MessageFactory::InternalRegisterGeneratedType() for each message type.
-      printer.Print(
-        "void RegisterTypes(const ::std::string&) {\n"
-        "  AssignDescriptorsOnce();\n"
-        "}\n"
-        "\n");
       printer.Print(
         "}  // namespace\n"
         "\n");

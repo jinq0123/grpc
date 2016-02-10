@@ -30,12 +30,9 @@ namespace {
 
 GOOGLE_PROTOBUF_DECLARE_ONCE(grpc_cb_AssignDescriptors_once_);
 inline void AssignDescriptorsOnce() {
-  ::google::protobuf::GoogleOnceInit(&grpc_cb_AssignDescriptors_once_,
-                 &AssignDesc_helloworld_2eproto);
-}
-
-void RegisterTypes(const ::std::string&) {
-  AssignDescriptorsOnce();
+  ::google::protobuf::GoogleOnceInit(
+    &grpc_cb_AssignDescriptors_once_,
+    &AssignDesc_helloworld_2eproto);
 }
 
 }  // namespace
