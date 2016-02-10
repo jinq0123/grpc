@@ -552,11 +552,6 @@ grpc::string GetSourceIncludes(const grpc::protobuf::FileDescriptor *file,
   return output;
 }
 
-// Return the name of the AddDescriptors() function for a given file.
-grpc::string AddDescriptorsName(const grpc::string& filename) {
-  return "AddDesc_" + FilenameIdentifier(filename);
-}
-
 // Return the name of the AssignDescriptors() function for a given file.
 grpc::string AssignDescriptorsName(const grpc::string& filename) {
   return "AssignDesc_" + FilenameIdentifier(filename);
@@ -631,22 +626,22 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
         "namespace {\n"
         "\n");
 
-      // protobuf_AssignDescriptorsOnce():  The first time it is called, calls
+      // AssignDescriptorsOnce():  The first time it is called, calls
       // AssignDescriptors().  All later times, waits for the first call to
       // complete and then returns.
       printer.Print(vars,
-        "GOOGLE_PROTOBUF_DECLARE_ONCE(protobuf_AssignDescriptors_once_);\n"
-        "inline void protobuf_AssignDescriptorsOnce() {\n"
-        "  ::google::protobuf::GoogleOnceInit(&protobuf_AssignDescriptors_once_,\n"
+        "GOOGLE_PROTOBUF_DECLARE_ONCE(grpc_cb_AssignDescriptors_once_);\n"
+        "inline void AssignDescriptorsOnce() {\n"
+        "  ::google::protobuf::GoogleOnceInit(&grpc_cb_AssignDescriptors_once_,\n"
         "                 &$AssignDescriptorsName$);\n"
         "}\n"
         "\n");
 
-      // protobuf_RegisterTypes():  Calls
+      // RegisterTypes():  Calls
       // MessageFactory::InternalRegisterGeneratedType() for each message type.
       printer.Print(
-        "void protobuf_RegisterTypes(const ::std::string&) {\n"
-        "  protobuf_AssignDescriptorsOnce();\n"
+        "void RegisterTypes(const ::std::string&) {\n"
+        "  AssignDescriptorsOnce();\n"
         "}\n"
         "\n");
       printer.Print(
@@ -654,77 +649,11 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
         "\n");
     }  // if (HasDescriptorMethods())
 
-    // -----------------------------------------------------------------
-
     // ShutdownFile():  Deletes descriptors, default instances, etc. on shutdown.
     printer.Print(vars,
       "void $ShutdownFileName$() {\n"
       "}\n"
       "\n");
-
-    // -----------------------------------------------------------------
-
-    // Now generate the AddDescriptors() function.
-    vars["AddDescriptorsName"] = AddDescriptorsName(file->name());
-    printer.Print(vars,
-      "void $AddDescriptorsName$() {\n"
-      "  // We don't need any special synchronization here because this code is\n"
-      "  // called at static init time before any threads exist.\n"
-      "  static bool already_here = false;\n"
-      "  if (already_here) return;\n"
-      "  already_here = true;\n"
-      "  GOOGLE_PROTOBUF_VERIFY_VERSION;\n"
-      "\n");
-    printer.Indent();
-
-    // Call the AddDescriptors() methods for all of our dependencies, to make
-    // sure they get added first.
-    for (int i = 0; i < file->dependency_count(); i++) {
-      const grpc::protobuf::FileDescriptor* dependency = file->dependency(i);
-      // Print the namespace prefix for the dependency.
-      grpc::string package = dependency->package();
-      vars["DepNs"] = package.empty() ? "" :
-        "::" + grpc_cpp_generator::DotsToColons(package) + "::";
-      // Call its AddDescriptors function.
-      vars["AddDepDescriptorsName"] = AddDescriptorsName(dependency->name());
-      printer.Print(vars,
-        "$DepNs$$AddDepDescriptorsName$();\n");
-    }
-
-    if (HasDescriptorMethods(file)) {
-      // Embed the descriptor.  We simply serialize the entire FileDescriptorProto
-      // and embed it as a string literal, which is parsed and built into real
-      // descriptors at initialization time.
-      // TODO: Use custom FileDescriptorProto.
-      google::protobuf::FileDescriptorProto file_proto;
-      file->CopyTo(&file_proto);
-      grpc::string file_data;
-      file_proto.SerializeToString(&file_data);
-
-      printer.Print(
-        "::google::protobuf::DescriptorPool::InternalAddGeneratedFile(");
-
-      // Only write 40 bytes per line.
-      static const int kBytesPerLine = 40;
-      for (size_t i = 0; i < file_data.size(); i += kBytesPerLine) {
-        vars["Data"] = EscapeTrigraphs(google::protobuf::CEscape(file_data.substr(i, kBytesPerLine)));
-        printer.Print(vars,
-          "\n  \"$Data$\"");
-      }
-      vars["Size"] = as_string(file_data.size());
-      printer.Print(vars,
-        ", $Size$);\n");
-
-      // Call MessageFactory::InternalRegisterGeneratedFile().
-      printer.Print(vars,
-        "::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(\n"
-        "  \"$filename$\", &protobuf_RegisterTypes);\n");
-    }
-
-    printer.Print(vars,
-      "::google::protobuf::internal::OnShutdown(&$ShutdownFileName$);\n");
-    printer.Outdent();
-    printer.Print("}\n");
   }
   return output;
 }
