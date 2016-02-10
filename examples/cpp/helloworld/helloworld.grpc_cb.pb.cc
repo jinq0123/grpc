@@ -37,9 +37,6 @@ inline void AssignDescriptorsOnce() {
 
 }  // namespace
 
-void ShutdownFile_helloworld_2eproto() {
-}
-
 namespace Greeter {
 
 static const char* method_names[] = {

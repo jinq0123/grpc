@@ -557,16 +557,6 @@ grpc::string AssignDescriptorsName(const grpc::string& filename) {
   return "AssignDesc_" + FilenameIdentifier(filename);
 }
 
-// Return the name of the ShutdownFile() function for a given file.
-grpc::string ShutdownFileName(const grpc::string& filename) {
-  return "ShutdownFile_" + FilenameIdentifier(filename);
-}
-
-// Escape C++ trigraphs by escaping question marks to \?
-grpc::string EscapeTrigraphs(const grpc::string& to_escape) {
-  return grpc_generator::StringReplace(to_escape, "?", "\\?", true);
-}
-
 // Do message classes in this file have descriptor and reflection methods?
 inline bool HasDescriptorMethods(const grpc::protobuf::FileDescriptor *file) {
   // TODO: Use GRPC_CUSTOM_FILEOPTIONS.
@@ -583,7 +573,6 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
     std::map<grpc::string, grpc::string> vars;
     vars["filename"] = file->name();
     vars["AssignDescriptorsName"] = AssignDescriptorsName(file->name());
-    vars["ShutdownFileName"] = ShutdownFileName(file->name());
 
     printer.Print(vars,
       "namespace {\n");
@@ -642,12 +631,6 @@ grpc::string GetSourceDescriptors(const grpc::protobuf::FileDescriptor *file,
         "}  // namespace\n"
         "\n");
     }  // if (HasDescriptorMethods())
-
-    // ShutdownFile():  Deletes descriptors, default instances, etc. on shutdown.
-    printer.Print(vars,
-      "void $ShutdownFileName$() {\n"
-      "}\n"
-      "\n");
   }
   return output;
 }
