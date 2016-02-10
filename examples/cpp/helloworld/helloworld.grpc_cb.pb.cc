@@ -13,6 +13,10 @@
 
 namespace helloworld {
 
+namespace {
+const ::google::protobuf::ServiceDescriptor* Greeter_descriptor = nullptr;
+}  // namespace
+
 void AssignDesc_helloworld_2eproto() {
   // Get the file's descriptor from the pool.
   const ::google::protobuf::FileDescriptor* file =
@@ -21,7 +25,7 @@ void AssignDesc_helloworld_2eproto() {
   // Note that this GOOGLE_CHECK is necessary to prevent a warning about "file"
   // being unused when compiling an empty .proto file.
   GOOGLE_CHECK(file != NULL);
-Greeter_descriptor = file->service(0);
+  Greeter_descriptor = file->service(0);
 }  // AssignDesc_helloworld_2eproto()
 
 namespace {
