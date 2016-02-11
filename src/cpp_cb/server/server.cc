@@ -14,6 +14,7 @@ Server::Server()
       started_(false),
       shutdown_(false),
       server_(CreateServer()) {
+  assert(cq_ && server_);
 }
 
 Server::~Server() {
@@ -23,9 +24,17 @@ bool Server::RegisterService() {
   return true;
 }
 
-int Server::AddListeningPort(const grpc::string& addr) {
+int Server::AddListeningPort(
+    const grpc::string& addr,
+    const ServerCredentials& creds) {
   assert(!started_);
-  return 1;
+  assert(server_);
+  return creds->AddPortToServer(addr, server_.get());
+}
+
+int Server::AddListeningPort(
+    const grpc::string& addr) {
+  return AddListeningPort(addr, InsecureServerCredentials());
 }
 
 void Server::ShutdownInternal(gpr_timespec deadline) {

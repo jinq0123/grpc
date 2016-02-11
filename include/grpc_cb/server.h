@@ -17,6 +17,8 @@ struct grpc_server;
 namespace grpc_cb {
 
 class CompletionQueue;
+class ServerCredentials;
+class InsecureServerCredentials;
 
 /// Models a gRPC server.
 class Server GRPC_FINAL : public GrpcLibrary {
@@ -58,7 +60,9 @@ class Server GRPC_FINAL : public GrpcLibrary {
   /// \return bound port number on sucess, 0 on failure.
   ///
   /// \warning It's an error to call this method on an already started server.
-  int AddListeningPort(const grpc::string& addr/*, ServerCredentials* creds*/);
+  int AddListeningPort(const grpc::string& addr,
+                       const ServerCredentials& creds);
+  int AddListeningPort(const grpc::string& addr);  // with InsecureServerCredentials
 
  private:
   void ShutdownInternal(gpr_timespec deadline);
