@@ -12,12 +12,6 @@
 #include <grpc_cb/impl/call_uptr.h>  // for CallUptr
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
-namespace google {
-namespace protobuf {
-class Descriptor;
-}  // namespace protobuf
-}  // namespace google
-
 namespace grpc_cb {
 
 class CompletionQueue;
@@ -61,11 +55,10 @@ class ServiceStub {
   void Shutdown();
 
  public:
-  template <class ResponseCallback>
+  template <class ResponseType>
   void* AddCompletionCb(
       CallUptr&& call,
-      const ::google::protobuf::Descriptor* resp_desc,
-      const ResponseCallback& cb,
+      const std::function<void (const ResponseType&)>& cb,
       const ErrorCallback& ecb);
   void EraseCompletionCb(void* tag) {
     cb_map_.erase(tag);
@@ -82,24 +75,22 @@ class ServiceStub {
  private:
   class CompletionCbInterface {
    public:
-    virtual void DoHandleResponse() = 0;
+    virtual void DoComplete(bool success) = 0;
   };
-  template <class ResponseCallback>
+  template <class ResponseType>
   class CompletionCb : public CompletionCbInterface {
    public:
+    typedef std::function<void (const ResponseType&)> ResponseCallback;
     CompletionCb(CallUptr&& call,
-                 const google::protobuf::Descriptor* response_descriptor,
                  const ResponseCallback& cb,
                  const ErrorCallback& ecb) :
         call_(std::forward<CallUptr>(call)),
-        response_descriptor_(response_descriptor),
         cb_(cb),
         ecb_(ecb) {
     };
-    virtual void DoHandleResponse() GRPC_OVERRIDE;
+    virtual void DoComplete(bool success) GRPC_OVERRIDE;
    private:
     CallUptr call_;
-    const google::protobuf::Descriptor* response_descriptor_;
     ResponseCallback cb_;
     ErrorCallback ecb_;
   };
@@ -109,21 +100,28 @@ class ServiceStub {
   CompletionCbMap cb_map_;
 };
 
-template <class ResponseCallback>
+template <class ResponseType>
 void* ServiceStub::AddCompletionCb(
     CallUptr&& call,
-    const ::google::protobuf::Descriptor* resp_desc,
-    const ResponseCallback& cb,
+    const std::function<void (const ResponseType&)>& cb,
     const ErrorCallback& ecb) {
-  assert(call && resp_desc && cb && ecb);
-  CompletionCbSptr tag(new CompletionCb<ResponseCallback>(
-    std::forward<CallUptr>(call), resp_desc, cb, ecb));
+  assert(call && cb && ecb);
+  CompletionCbSptr tag(new CompletionCb<ResponseType>(
+    std::forward<CallUptr>(call), cb, ecb));
   cb_map_[tag.get()] = tag;
   return tag.get();
 }
 
-template <class ResponseCallback>
-void ServiceStub::CompletionCb<ResponseCallback>::DoHandleResponse() {
+template <class ResponseType>
+void ServiceStub::CompletionCb<ResponseType>::DoComplete(bool success) {
+  if (!success) {
+    assert(ecb_);
+    ecb_(Status::InternalError("Failed to complete"));
+    return;
+  }
+  assert(call_);
+  ResponseType response;
+  call_->GetResponse(&response);
   // TODO
 }
 

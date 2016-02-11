@@ -76,9 +76,7 @@ void Stub::AsyncSayHello(
     const ::grpc_cb::ErrorCallback& err_cb) {
   assert(cb && err_cb && cq_);
   ::grpc_cb::CallUptr call(channel_->CreateCall(method_names[0], cq_->cq()));
-  const ::google::protobuf::Descriptor* resp_desc =
-    GetServiceDescriptor().method(0)->output_type();
-  void* tag = AddCompletionCb(std::move(call), resp_desc, cb, err_cb);
+  void* tag = AddCompletionCb(std::move(call), cb, err_cb);
   grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) {
     err_cb(status);

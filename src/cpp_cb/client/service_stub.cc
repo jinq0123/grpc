@@ -32,7 +32,7 @@ void ServiceStub::Run() {
       case GRPC_OP_COMPLETE: {
         CompletionCbSptr cb = cb_map_[ev.tag];
         assert(cb);
-        cb->DoHandleResponse();
+        cb->DoComplete(0 != ev.success);
         EraseCompletionCb(ev.tag);
         break;
       }  // case
