@@ -181,8 +181,8 @@
     <ClInclude Include="..\..\..\examples\cpp\helloworld\helloworld.pb.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\grpc++\grpc++.vcxproj">
-      <Project>{c187a093-a0fe-489d-a40a-6e33de0f9feb}</Project>
+    <ProjectReference Include="..\grpc_cb\grpc_cb.vcxproj">
+      <Project>{c187a093-a0fe-489d-a40a-6e33de0f9fec}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

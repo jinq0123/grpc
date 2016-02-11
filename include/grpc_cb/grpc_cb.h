@@ -7,5 +7,7 @@
 #include <grpc/grpc.h>
 
 #include <grpc_cb/channel.h>
+#include <grpc_cb/error_callback.h>
+#include <grpc_cb/server.h>
 
 #endif  // GRPC_CB_GRPC_CB_H

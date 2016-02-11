@@ -22,6 +22,9 @@
     <ClCompile Include="..\..\..\src\cpp_cb\client\service_stub.cc">
       <Filter>src\cpp_cb\client</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\server\server.cc">
+      <Filter>src\cpp_cb\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -72,6 +75,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\channel_sptr.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -103,6 +109,9 @@
     </Filter>
     <Filter Include="src\cpp_cb\proto">
       <UniqueIdentifier>{113b0579-7074-4a6b-b98e-656b0913c067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\cpp_cb\server">
+      <UniqueIdentifier>{b1d610b0-7a34-4323-b843-c59e246ff079}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
