@@ -82,8 +82,6 @@ class ServiceStub {
  private:
   class CompletionCbInterface {
    public:
-    CompletionCbInterface() {};
-    virtual ~CompletionCbInterface() {};
     virtual void DoHandleResponse() = 0;
   };
   template <class ResponseCallback>
@@ -98,7 +96,6 @@ class ServiceStub {
         cb_(cb),
         ecb_(ecb) {
     };
-    virtual ~CompletionCb() GRPC_OVERRIDE {};
     virtual void DoHandleResponse() GRPC_OVERRIDE;
    private:
     CallUptr call_;
