@@ -659,13 +659,15 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
         "    const SayHelloCallback& cb,\n"
         "    const ::grpc_cb::ErrorCallback& err_cb) {\n"
         "  assert(cb && err_cb && cq_);\n"
-        "  ::grpc_cb::CallUptr call(channel_->CreateCall(method_names[$Idx$], cq_->cq()));\n"
-        "  void* tag = call.get();\n"
+        "  ::grpc_cb::CallUptr call_uptr(\n"
+        "      channel_->CreateCall(method_names[$Idx$], cq_->cq()));\n"
+        "  ::grpc_cb::Call* call = call_uptr.get();\n"
+        "  void* tag = AddCompletionCb(std::move(call_uptr), cb, err_cb);\n"
         "  grpc_cb::Status status = call->StartBatch(request, tag);\n"
         "  if (!status.ok()) {\n"
+        "    EraseCompletionCb(tag);\n"
         "    err_cb(status);\n"
         "  }\n"
-        "  call_map_[tag] = std::move(call);\n"
         "}\n"
         "\n");
   } else if (ClientOnlyStreaming(method)) {

@@ -79,12 +79,10 @@ void Stub::AsyncSayHello(
       channel_->CreateCall(method_names[0], cq_->cq()));
   ::grpc_cb::Call* call = call_uptr.get();
   void* tag = AddCompletionCb(std::move(call_uptr), cb, err_cb);
-
   grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) {
-    err_cb(status);
     EraseCompletionCb(tag);
-    return;
+    err_cb(status);
   }
 }
 
