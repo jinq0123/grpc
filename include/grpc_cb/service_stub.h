@@ -114,15 +114,18 @@ void* ServiceStub::AddCompletionCb(
 
 template <class ResponseType>
 void ServiceStub::CompletionCb<ResponseType>::DoComplete(bool success) {
+  assert(cb_ && ecb_ && call_);
   if (!success) {
-    assert(ecb_);
     ecb_(Status::InternalError("Failed to complete"));
     return;
   }
-  assert(call_);
   ResponseType response;
-  call_->GetResponse(&response);
-  // TODO
+  Status status = call_->GetResponse(&response);
+  if (status.ok()) {
+    cb_(response);
+    return;
+  }
+  ecb_(status);
 }
 
 }  // namespace grpc_cb
