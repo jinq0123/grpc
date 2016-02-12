@@ -20,6 +20,7 @@ Server::Server()
 }
 
 Server::~Server() {
+  Shutdown();
 }
 
 bool Server::RegisterService() {
@@ -46,9 +47,22 @@ int Server::AddListeningPort(
 }
 
 void Server::ShutdownInternal(gpr_timespec deadline) {
+  if (!started_) return;
+  if (shutdown_) return;
+  shutdown_ = true;
+
+  assert(cq_);
+  grpc_server_shutdown_and_notify(server_.get(), &cq_->cq(), this);
+  cq_->Pluck(this);
+  cq_->Shutdown();
 }
 
 void Server::Run() {
+  assert(!started_);
+  assert(!shutdown_);
+  assert(server_);
+  started_ = true;
+  grpc_server_start(server_.get());
 }
 
 Server::GrpcServerUptr Server::CreateServer() {
