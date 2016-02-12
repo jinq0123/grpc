@@ -25,7 +25,6 @@ ServiceStub::~ServiceStub() {
 void ServiceStub::Run() {
   assert(cq_);
   CompletionQueue& cq = *cq_;
-  bool ok = false;
   while (true) {
     grpc_event ev = cq.Next();
     switch (ev.type) {

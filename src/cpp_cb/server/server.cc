@@ -63,6 +63,25 @@ void Server::Run() {
   assert(server_);
   started_ = true;
   grpc_server_start(server_.get());
+
+  assert(cq_);
+  CompletionQueue& cq = *cq_;
+  while (true) {
+    grpc_event ev = cq.Next();
+    switch (ev.type) {
+      case GRPC_OP_COMPLETE: {
+        break;
+      }  // case
+      case GRPC_QUEUE_SHUTDOWN:
+        return;
+      case GRPC_QUEUE_TIMEOUT:
+        assert(false);
+        break;
+      default:
+        assert(false);
+        break;
+    }  // switch
+  }
 }
 
 Server::GrpcServerUptr Server::CreateServer() {
