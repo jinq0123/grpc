@@ -34,7 +34,4 @@
 #include <grpc_cb/security/server_credentials.h>
 
 namespace grpc_cb {
-
-ServerCredentials::~ServerCredentials() {}
-
 }  // namespace grpc_cb

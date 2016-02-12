@@ -6,6 +6,8 @@
 #include <grpc/grpc.h>
 
 #include <grpc_cb/completion_queue.h>  // for CompletionQueue
+#include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
+#include <grpc/grpc_security.h>
 
 namespace grpc_cb {
 
@@ -29,7 +31,13 @@ int Server::AddListeningPort(
     const ServerCredentials& creds) {
   assert(!started_);
   assert(server_);
-  return creds->AddPortToServer(addr, server_.get());
+  grpc_server_credentials* c_creds = creds.creds();
+  if (c_creds) {
+    return grpc_server_add_secure_http2_port(server_.get(), addr.c_str(), c_creds);
+  }
+  else {
+    return grpc_server_add_insecure_http2_port(server_.get(), addr.c_str());
+  }
 }
 
 int Server::AddListeningPort(
