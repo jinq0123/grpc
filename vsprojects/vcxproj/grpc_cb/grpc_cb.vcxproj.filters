@@ -25,6 +25,9 @@
     <ClCompile Include="..\..\..\src\cpp_cb\server\server.cc">
       <Filter>src\cpp_cb\server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\server\server_credentials.cc">
+      <Filter>src\cpp_cb\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -78,6 +81,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\server.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h">
+      <Filter>include\grp_cb\security</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -112,6 +118,9 @@
     </Filter>
     <Filter Include="src\cpp_cb\server">
       <UniqueIdentifier>{b1d610b0-7a34-4323-b843-c59e246ff079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\grp_cb\security">
+      <UniqueIdentifier>{36156f41-23a2-4c61-b9bf-d6c1f02b1058}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

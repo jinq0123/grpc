@@ -31,19 +31,18 @@
  *
  */
 
-#ifndef GRPCXX_SERVER_CREDENTIALS_H
-#define GRPCXX_SERVER_CREDENTIALS_H
+#ifndef GRPC_CB_SERVER_CREDENTIALS_H
+#define GRPC_CB_SERVER_CREDENTIALS_H
 
 #include <memory>
 #include <vector>
 
-#include <grpc++/security/auth_metadata_processor.h>
-#include <grpc++/support/config.h>
+#include <grpc_cb/security/auth_metadata_processor.h>
+#include <grpc_cb/support/config.h>
 
 struct grpc_server;
 
-namespace grpc {
-class Server;
+namespace grpc_cb {
 
 // Wrapper around \a grpc_server_credentials, a way to authenticate a server.
 class ServerCredentials {
@@ -56,8 +55,6 @@ class ServerCredentials {
       const std::shared_ptr<AuthMetadataProcessor>& processor) = 0;
 
  private:
-  friend class ::grpc::Server;
-
   /// Tries to bind \a server to the given \a addr (eg, localhost:1234,
   /// 192.168.1.1:31416, [::1]:27182, etc.)
   ///
@@ -87,6 +84,6 @@ std::shared_ptr<ServerCredentials> SslServerCredentials(
 /// Builds insecure server credentials.
 std::shared_ptr<ServerCredentials> InsecureServerCredentials();
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_SERVER_CREDENTIALS_H
+#endif  // GRPC_CB_SERVER_CREDENTIALS_H
