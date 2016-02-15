@@ -17,8 +17,9 @@ struct grpc_server;
 namespace grpc_cb {
 
 class CompletionQueue;
-class ServerCredentials;
 class InsecureServerCredentials;
+class ServerCredentials;
+class Service;
 
 /// Models a gRPC server.
 class Server GRPC_FINAL : public GrpcLibrary {
@@ -47,7 +48,8 @@ class Server GRPC_FINAL : public GrpcLibrary {
 
   /// Register a service. This call does not take ownership of the service.
   /// The service must exist for the lifetime of the Server instance.
-  bool RegisterService(/*const grpc::string* host, RpcService* service*/);
+  // bool RegisterService(/*const grpc::string* host, RpcService* service*/);
+  void RegisterService(Service& service);
 
   /// Tries to bind \a server to the given \a addr.
   ///

@@ -37,7 +37,7 @@ inline void AssignDescriptorsOnce() {
 
 namespace Greeter {
 
-static const char* method_names[] = {
+static const std::string method_names[] = {
   "/helloworld.Greeter/SayHello",
 };
 
@@ -92,6 +92,11 @@ Service::Service() {
 }
 
 Service::~Service() {
+}
+
+const std::string& Service::GetMethodName(size_t i) const {
+  assert(i < GetMethodCount());
+  return method_names[i];
 }
 
 ::grpc_cb::Status Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {

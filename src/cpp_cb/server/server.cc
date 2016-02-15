@@ -7,6 +7,7 @@
 
 #include <grpc_cb/completion_queue.h>  // for CompletionQueue
 #include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
+#include <grpc_cb/service.h>
 #include <grpc/grpc_security.h>
 
 namespace grpc_cb {
@@ -24,9 +25,11 @@ Server::~Server() {
   Shutdown();
 }
 
-bool Server::RegisterService() {
-  // TODO grpc_server_register_method
-  return true;
+void Server::RegisterService(Service& service) {
+  for (size_t i = 0; i < service.GetMethodCount(); ++i) {
+    const std::string& name = service.GetMethodName(i);
+    grpc_server_register_method(server_.get(), name.c_str(), nullptr);  // TODO: host
+  }
 }
 
 int Server::AddListeningPort(

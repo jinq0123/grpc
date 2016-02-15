@@ -262,6 +262,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\service.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />

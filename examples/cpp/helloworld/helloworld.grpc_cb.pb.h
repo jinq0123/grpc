@@ -6,6 +6,7 @@
 
 #include <grpc_cb/channel_sptr.h>
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
+#include <grpc_cb/service.h>
 #include <grpc_cb/service_stub.h>
 #include <grpc_cb/support/status.h>
 
@@ -53,12 +54,17 @@ class Stub : public ::grpc_cb::ServiceStub {
 
 std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelSptr& channel);
 
-class Service {
+class Service : public ::grpc_cb::Service {
  public:
   Service();
   virtual ~Service();
   virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
   // ::grpc_cb::RpcService* service() GRPC_OVERRIDE GRPC_FINAL;
+
+ public:
+  virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
+  virtual size_t GetMethodCount() const GRPC_OVERRIDE { return 1; }
+
  private:
   // std::unique_ptr< ::grpc_cb::RpcService> service_;
 };

@@ -63,7 +63,7 @@ void RunServer() {
   // Listen on the given address without any authentication mechanism.
   svr.AddListeningPort(server_address);
   // Register "service" as the instance through which we'll communicate with clients.
-  svr.RegisterService(/*service*/);
+  svr.RegisterService(service);
 
   std::cout << "Server listening on " << server_address << std::endl;
 

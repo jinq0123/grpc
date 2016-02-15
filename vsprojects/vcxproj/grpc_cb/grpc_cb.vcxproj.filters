@@ -84,6 +84,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h">
       <Filter>include\grp_cb\security</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\service.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
