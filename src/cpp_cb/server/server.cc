@@ -17,6 +17,7 @@ Server::Server()
       shutdown_(false),
       server_(CreateServer()) {
   assert(cq_ && server_);
+  grpc_server_register_completion_queue(server_.get(), &cq_->cq(), nullptr);
 }
 
 Server::~Server() {
@@ -24,6 +25,7 @@ Server::~Server() {
 }
 
 bool Server::RegisterService() {
+  // TODO grpc_server_register_method
   return true;
 }
 
