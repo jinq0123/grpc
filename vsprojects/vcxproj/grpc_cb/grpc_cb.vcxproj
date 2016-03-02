@@ -281,7 +281,6 @@
     <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_credentials.cc" />
-    <ClCompile Include="..\..\..\src\cpp_cb\server\server_method_call.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc" />
   </ItemGroup>
   <ItemGroup>
