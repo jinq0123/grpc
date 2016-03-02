@@ -3,6 +3,8 @@
 
 #include <grpc_cb/server.h>
 
+#include <algorithm>  // for for_each()
+
 #include <grpc/grpc.h>
 
 #include <grpc_cb/completion_queue.h>  // for CompletionQueue
@@ -28,7 +30,9 @@ Server::~Server() {
 void Server::RegisterService(Service& service) {
   for (size_t i = 0; i < service.GetMethodCount(); ++i) {
     const std::string& name = service.GetMethodName(i);
-    grpc_server_register_method(server_.get(), name.c_str(), nullptr);  // TODO: host
+    void* registered_method = grpc_server_register_method(
+      server_.get(), name.c_str(), nullptr);  // TODO: host
+    registered_methods_.push_back(registered_method);  // maybe null
   }
 }
 
@@ -68,6 +72,7 @@ void Server::Run() {
   assert(server_);
   started_ = true;
   grpc_server_start(server_.get());
+  RequestMethodsCalls();
 
   assert(cq_);
   CompletionQueue& cq = *cq_;
@@ -87,6 +92,21 @@ void Server::Run() {
         break;
     }  // switch
   }
+}
+
+void Server::RequestMethodsCalls() {
+  const auto& rms = registered_methods_;
+  std::for_each(rms.begin(), rms.end(),
+    [this](void* rm){ RequestMethodCall(rm); });
+}
+
+// registered_method is the return of grpc_server_register_method()
+void Server::RequestMethodCall(void* registered_method) {
+  if (!registered_method) return;
+  grpc_server_request_registered_call(
+      server_.get(), registered_method, &call_, &context_->deadline_,
+      &initial_metadata_array_, payload, call_cq_->cq(), notification_cq->cq(),
+      this);
 }
 
 Server::GrpcServerUptr Server::CreateServer() {
