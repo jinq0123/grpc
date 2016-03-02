@@ -9,7 +9,6 @@
 #include <grpc/grpc.h>  // for grpc_metadata_array
 #include <grpc/support/time.h>  // for gpr_timespec
 
-#include <grpc_cb/completion_queue.h>  // for CompletionQueue
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
 
 struct grpc_call;
@@ -22,13 +21,11 @@ class ServerMethodCall GRPC_FINAL {
   ServerMethodCall()
     : call_ptr_(nullptr),
       deadline_(gpr_inf_future(GPR_CLOCK_REALTIME)),
-      payload_ptr_(nullptr),
-      cq_(new CompletionQueue) {  // unique_ptr
+      payload_ptr_(nullptr) {
     memset(&initial_metadata_array_, 0, sizeof(initial_metadata_array_));
   }
 
   ~ServerMethodCall() {
-    assert(cq_);
     grpc_metadata_array_destroy(&initial_metadata_array_);
   }
 
@@ -40,18 +37,11 @@ class ServerMethodCall GRPC_FINAL {
   }
   grpc_byte_buffer*& payload_ptr() { return payload_ptr_; }
 
-  CompletionQueue& GetCompletionQueue() {
-    assert(cq_);
-    return *cq_;
-  }
-
  private:
   grpc_call* call_ptr_;
   gpr_timespec deadline_;
   grpc_metadata_array initial_metadata_array_;
   grpc_byte_buffer* payload_ptr_;
-
-  CompletionQueueUptr cq_;
 };
 
 }  // namespace grpb_cb

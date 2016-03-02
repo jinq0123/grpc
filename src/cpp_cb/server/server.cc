@@ -108,11 +108,13 @@ void Server::RequestMethodCall(void* registered_method) {
   MethodCallUptr mcp = CreateMethodCall(registered_method);
   assert(mcp);
   MethodCall& mc = *mcp;
+  grpc_completion_queue& cq = cq_->cq();
   grpc_server_request_registered_call(
       server_.get(), registered_method,
       &mc.call_ptr(), &mc.deadline(),
-      &mc.initial_metadata_array(), &mc.payload_ptr(),
-      &mc.GetCompletionQueue().cq(), &cq_->cq(),
+      &mc.initial_metadata_array(),
+      &mc.payload_ptr(),
+      &cq, &cq,
       mcp.get());
 }
 
