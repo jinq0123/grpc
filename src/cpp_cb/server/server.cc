@@ -12,6 +12,8 @@
 #include <grpc_cb/service.h>
 #include <grpc/grpc_security.h>
 
+#include "server_method_call.h"
+
 namespace grpc_cb {
 
 Server::Server()
@@ -103,10 +105,20 @@ void Server::RequestMethodsCalls() {
 // registered_method is the return of grpc_server_register_method()
 void Server::RequestMethodCall(void* registered_method) {
   if (!registered_method) return;
+  MethodCallUptr mcp = CreateMethodCall(registered_method);
+  assert(mcp);
+  MethodCall& mc = *mcp;
   grpc_server_request_registered_call(
-      server_.get(), registered_method, &call_, &context_->deadline_,
-      &initial_metadata_array_, payload, call_cq_->cq(), notification_cq->cq(),
-      this);
+      server_.get(), registered_method, &mc.call_ptr(), &mc.deadline(),
+      &mc.initial_metadata_array(), &mc.payload_ptr(),
+      &mc.GetCompletionQueue().cq(), &cq_->cq(),
+      mcp.get());
+}
+
+Server::MethodCallUptr
+Server::CreateMethodCall(void* registered_method) const {
+  assert(registered_method);
+  return MethodCallUptr(new MethodCall);  // unique_ptr
 }
 
 Server::GrpcServerUptr Server::CreateServer() {

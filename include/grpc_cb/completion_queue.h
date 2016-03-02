@@ -38,6 +38,7 @@
 
 #include <cassert>
 
+#include <grpc_cb/completion_queue_ptr.h>
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 

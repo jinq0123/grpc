@@ -257,6 +257,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\channel_sptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client_context.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_ptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\error_callback.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h" />
@@ -269,6 +270,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
@@ -279,6 +281,7 @@
     <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_credentials.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\server\server_method_call.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc" />
   </ItemGroup>
   <ItemGroup>

@@ -4,24 +4,23 @@
 #ifndef GRPC_CB_SERVER_H
 #define GRPC_CB_SERVER_H
 
-#include <hash_map>
-#include <memory>  // for unique_ptr
+#include <unordered_map>
 #include <vector>
 
 #include <grpc/support/time.h>  // for gpr_inf_future()
 
+#include <grpc_cb/completion_queue_ptr.h>  // for CompletionQueuePtr
 #include <grpc_cb/impl/grpc_library.h>  // for GrpcLibrary
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
 #include <grpc_cb/support/time.h>  // for TimePoint
-
 
 struct grpc_server;
 
 namespace grpc_cb {
 
-class CompletionQueue;
 class InsecureServerCredentials;
 class ServerCredentials;
+class ServerMethodCall;
 class Service;
 
 /// Models a gRPC server.
@@ -75,12 +74,17 @@ class Server GRPC_FINAL : public GrpcLibrary {
   void RequestMethodCall(void* registered_method);
 
  private:
+  typedef ServerMethodCall MethodCall;
+  typedef std::unique_ptr<MethodCall> MethodCallUptr;
+  MethodCallUptr CreateMethodCall(void* registered_method) const;
+
+ private:
   typedef std::unique_ptr<grpc_server, void (*)(grpc_server*)> GrpcServerUptr;
   static GrpcServerUptr CreateServer();
 
  private:
   // Completion queue.
-  const std::unique_ptr<CompletionQueue> cq_;
+  const CompletionQueueUptr cq_;
 
   // Sever status
   bool started_;
@@ -90,9 +94,8 @@ class Server GRPC_FINAL : public GrpcLibrary {
   const std::unique_ptr<grpc_server, void (*)(grpc_server*)> server_;
   std::vector<void*> registered_methods_;
 
-  class MethodCall;
-  typedef std::unique_ptr<MethodCall> MethodCallUptr;
-  typedef std::hash_map<void*, MethodCallUptr> MethodCallMap;
+  // Map MethodCall* to MethodCallUptr.
+  typedef std::unordered_map<void*, MethodCallUptr> MethodCallMap;
   MethodCallMap method_call_map_;
 };
 

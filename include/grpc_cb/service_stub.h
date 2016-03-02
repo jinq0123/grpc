@@ -8,13 +8,12 @@
 #include <unordered_map>
 
 #include <grpc_cb/channel_sptr.h>
+#include <grpc_cb/completion_queue_ptr.h>  // for CompletionQueueUptr
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/impl/call_uptr.h>  // for CallUptr
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
 namespace grpc_cb {
-
-class CompletionQueue;
 
 // The base of generated service stubs.
 class ServiceStub {
@@ -67,7 +66,7 @@ class ServiceStub {
  protected:
   ChannelSptr channel_;
   ErrorCallback error_callback_;
-  std::unique_ptr<CompletionQueue> cq_;
+  CompletionQueueUptr cq_;
 
  protected:
   static ErrorCallback default_error_callback_;
