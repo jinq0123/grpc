@@ -6,6 +6,7 @@
 #include <algorithm>  // for for_each()
 
 #include <grpc/grpc.h>
+#include <grpc/support/log.h>  // for GPR_ASSERT()
 
 #include <grpc_cb/completion_queue.h>  // for CompletionQueue
 #include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
@@ -82,6 +83,11 @@ void Server::Run() {
     grpc_event ev = cq.Next();
     switch (ev.type) {
       case GRPC_OP_COMPLETE: {
+        GPR_ASSERT(ev.success);
+        auto* mc = static_cast<MethodCall*>(ev.tag);
+        assert(mc);
+        mc->Proceed();
+        delete mc;  // created in RequestMethodCall()
         break;
       }  // case
       case GRPC_QUEUE_SHUTDOWN:
@@ -105,23 +111,15 @@ void Server::RequestMethodsCalls() {
 // registered_method is the return of grpc_server_register_method()
 void Server::RequestMethodCall(void* registered_method) {
   if (!registered_method) return;
-  MethodCallUptr mcp = CreateMethodCall(registered_method);
-  assert(mcp);
-  MethodCall& mc = *mcp;
+  MethodCall* mc = new MethodCall;  // deleted in Run()
+                                     // TODO: use registered_method
   grpc_completion_queue& cq = cq_->cq();
   grpc_server_request_registered_call(
       server_.get(), registered_method,
-      &mc.call_ptr(), &mc.deadline(),
-      &mc.initial_metadata_array(),
-      &mc.payload_ptr(),
-      &cq, &cq,
-      mcp.get());
-}
-
-Server::MethodCallUptr
-Server::CreateMethodCall(void* registered_method) const {
-  assert(registered_method);
-  return MethodCallUptr(new MethodCall);  // unique_ptr
+      &mc->call_ptr(), &mc->deadline(),
+      &mc->initial_metadata_array(),
+      &mc->payload_ptr(),
+      &cq, &cq, mc);
 }
 
 Server::GrpcServerUptr Server::CreateServer() {

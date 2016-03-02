@@ -75,8 +75,6 @@ class Server GRPC_FINAL : public GrpcLibrary {
 
  private:
   typedef ServerMethodCall MethodCall;
-  typedef std::unique_ptr<MethodCall> MethodCallUptr;
-  MethodCallUptr CreateMethodCall(void* registered_method) const;
 
  private:
   typedef std::unique_ptr<grpc_server, void (*)(grpc_server*)> GrpcServerUptr;
@@ -93,10 +91,6 @@ class Server GRPC_FINAL : public GrpcLibrary {
   // Pointer to the c grpc server. Owned.
   const std::unique_ptr<grpc_server, void (*)(grpc_server*)> server_;
   std::vector<void*> registered_methods_;
-
-  // Map MethodCall* to MethodCallUptr.
-  typedef std::unordered_map<void*, MethodCallUptr> MethodCallMap;
-  MethodCallMap method_call_map_;
 };
 
 }  // namespace grpc_cb

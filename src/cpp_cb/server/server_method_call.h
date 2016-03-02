@@ -37,6 +37,9 @@ class ServerMethodCall GRPC_FINAL {
   }
   grpc_byte_buffer*& payload_ptr() { return payload_ptr_; }
 
+ public:
+   void Proceed() {};
+
  private:
   grpc_call* call_ptr_;
   gpr_timespec deadline_;
