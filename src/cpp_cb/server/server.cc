@@ -6,12 +6,12 @@
 #include <algorithm>  // for for_each()
 
 #include <grpc/grpc.h>
+#include <grpc/grpc_security.h>  // for grpc_server_add_secure_http2_port()
 #include <grpc/support/log.h>  // for GPR_ASSERT()
 
-#include <grpc_cb/completion_queue.h>  // for CompletionQueue
+#include <grpc_cb/completion_queue.h>             // for CompletionQueue
 #include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
 #include <grpc_cb/service.h>
-#include <grpc/grpc_security.h>
 
 #include "server_method_call.h"
 
@@ -26,35 +26,31 @@ Server::Server()
   grpc_server_register_completion_queue(server_.get(), &cq_->cq(), nullptr);
 }
 
-Server::~Server() {
-  Shutdown();
-}
+Server::~Server() { Shutdown(); }
 
 void Server::RegisterService(Service& service) {
   for (size_t i = 0; i < service.GetMethodCount(); ++i) {
     const std::string& name = service.GetMethodName(i);
     void* registered_method = grpc_server_register_method(
-      server_.get(), name.c_str(), nullptr);  // TODO: host
+        server_.get(), name.c_str(), nullptr);         // TODO: host
     registered_methods_.push_back(registered_method);  // maybe null
   }
 }
 
-int Server::AddListeningPort(
-    const grpc::string& addr,
-    const ServerCredentials& creds) {
+int Server::AddListeningPort(const grpc::string& addr,
+                             const ServerCredentials& creds) {
   assert(!started_);
   assert(server_);
   grpc_server_credentials* c_creds = creds.creds();
   if (c_creds) {
-    return grpc_server_add_secure_http2_port(server_.get(), addr.c_str(), c_creds);
-  }
-  else {
+    return grpc_server_add_secure_http2_port(server_.get(), addr.c_str(),
+                                             c_creds);
+  } else {
     return grpc_server_add_insecure_http2_port(server_.get(), addr.c_str());
   }
 }
 
-int Server::AddListeningPort(
-    const grpc::string& addr) {
+int Server::AddListeningPort(const grpc::string& addr) {
   return AddListeningPort(addr, InsecureServerCredentials());
 }
 
@@ -105,21 +101,18 @@ void Server::Run() {
 void Server::RequestMethodsCalls() {
   const auto& rms = registered_methods_;
   std::for_each(rms.begin(), rms.end(),
-    [this](void* rm){ RequestMethodCall(rm); });
+                [this](void* rm) { RequestMethodCall(rm); });
 }
 
 // registered_method is the return of grpc_server_register_method()
 void Server::RequestMethodCall(void* registered_method) {
   if (!registered_method) return;
   MethodCall* mc = new MethodCall;  // deleted in Run()
-                                     // TODO: use registered_method
+                                    // TODO: use registered_method
   grpc_completion_queue& cq = cq_->cq();
   grpc_server_request_registered_call(
-      server_.get(), registered_method,
-      &mc->call_ptr(), &mc->deadline(),
-      &mc->initial_metadata_array(),
-      &mc->payload_ptr(),
-      &cq, &cq, mc);
+      server_.get(), registered_method, &mc->call_ptr(), &mc->deadline(),
+      &mc->initial_metadata_array(), &mc->payload_ptr(), &cq, &cq, mc);
 }
 
 Server::GrpcServerUptr Server::CreateServer() {
