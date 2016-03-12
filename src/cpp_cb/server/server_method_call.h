@@ -39,7 +39,9 @@ class ServerMethodCall GRPC_FINAL : public CompletionQueueTag {
   grpc_byte_buffer*& payload_ptr() { return payload_ptr_; }
 
  public:
-  virtual void DoComplete(bool success) GRPC_OVERRIDE{};
+  virtual void DoComplete(bool success) GRPC_OVERRIDE{
+      // XXX
+  };
 
  private:
   grpc_call* call_ptr_;
