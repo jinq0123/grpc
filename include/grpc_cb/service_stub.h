@@ -91,6 +91,7 @@ CompletionQueueTag* ServiceStub::NewCompletionQueueTag(
   assert(call && cb && ecb);
   return new CompletionCb<ResponseType>(
     std::forward<CallUptr>(call), cb, ecb);
+  // DeleteCompletionQueueTag() will be called in ServiceStub::Run().
 }
 
 template <class ResponseType>

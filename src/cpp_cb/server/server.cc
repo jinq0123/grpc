@@ -80,10 +80,10 @@ void Server::Run() {
     switch (ev.type) {
       case GRPC_OP_COMPLETE: {
         GPR_ASSERT(ev.success);
-        auto* mc = static_cast<MethodCall*>(ev.tag);
-        assert(mc);
-        mc->Proceed();
-        delete mc;  // created in RequestMethodCall()
+        auto* tag = static_cast<CompletionQueueTag*>(ev.tag);
+        assert(tag);
+        tag->DoComplete(0 != ev.success);
+        delete tag;  // created in RequestMethodCall()
         break;
       }  // case
       case GRPC_QUEUE_SHUTDOWN:
