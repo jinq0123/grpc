@@ -258,6 +258,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\client_context.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_ptr.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_tag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\error_callback.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h" />

@@ -29,10 +29,10 @@ void ServiceStub::Run() {
     grpc_event ev = cq.Next();
     switch (ev.type) {
       case GRPC_OP_COMPLETE: {
-        CompletionCbSptr cb = cb_map_[ev.tag];
-        assert(cb);
-        cb->DoComplete(0 != ev.success);
-        EraseCompletionCb(ev.tag);
+        auto* tag = static_cast<CompletionQueueTag*>(ev.tag);
+        assert(tag);
+        tag->DoComplete(0 != ev.success);
+        DeleteCompletionQueueTag(tag);  // Match NewCompletionQueueTag().
         break;
       }  // case
       case GRPC_QUEUE_SHUTDOWN:
