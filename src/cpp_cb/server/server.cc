@@ -13,7 +13,7 @@
 #include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
 #include <grpc_cb/service.h>
 
-#include "server_method_call.h"
+#include "server_method_call_tag.h"
 
 namespace grpc_cb {
 

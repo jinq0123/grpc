@@ -271,7 +271,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h" />
-    <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />

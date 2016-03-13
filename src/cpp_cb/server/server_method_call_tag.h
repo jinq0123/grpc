@@ -1,8 +1,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#ifndef GRPC_CB_SERVER_SERVER_METHOD_CALL_H
-#define GRPC_CB_SERVER_SERVER_METHOD_CALL_H
+#ifndef GRPC_CB_SERVER_SERVER_METHOD_CALL_TAG_H
+#define GRPC_CB_SERVER_SERVER_METHOD_CALL_TAG_H
 
 #include <cassert>
 
@@ -52,4 +52,4 @@ class ServerMethodCallTag GRPC_FINAL : public CompletionQueueTag {
 
 }  // namespace grpb_cb
 
-#endif  // GRPC_CB_SERVER_SERVER_METHOD_CALL_H
+#endif  // GRPC_CB_SERVER_SERVER_METHOD_CALL_TAG_H
