@@ -7,7 +7,7 @@
 
 #include <grpc/grpc.h>
 #include <grpc/grpc_security.h>  // for grpc_server_add_secure_http2_port()
-#include <grpc/support/log.h>  // for GPR_ASSERT()
+#include <grpc/support/log.h>    // for GPR_ASSERT()
 
 #include <grpc_cb/completion_queue.h>             // for CompletionQueue
 #include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
@@ -107,8 +107,8 @@ void Server::RequestMethodsCalls() {
 // registered_method is the return of grpc_server_register_method()
 void Server::RequestMethodCall(void* registered_method) {
   if (!registered_method) return;
-  MethodCall* mc = new MethodCall;  // deleted in Run()
-                                    // TODO: use registered_method
+  // TODO: use registered_method
+  ServerMethodCallTag* mc = new ServerMethodCallTag;  // deleted in Run()
   grpc_completion_queue& cq = cq_->cq();
   grpc_server_request_registered_call(
       server_.get(), registered_method, &mc->call_ptr(), &mc->deadline(),

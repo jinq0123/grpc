@@ -17,16 +17,16 @@ struct grpc_call;
 namespace grpc_cb {
 
 // Used in class Server.
-class ServerMethodCall GRPC_FINAL : public CompletionQueueTag {
+class ServerMethodCallTag GRPC_FINAL : public CompletionQueueTag {
  public:
-  ServerMethodCall()
+  ServerMethodCallTag()
       : call_ptr_(nullptr),
         deadline_(gpr_inf_future(GPR_CLOCK_REALTIME)),
         payload_ptr_(nullptr) {
     memset(&initial_metadata_array_, 0, sizeof(initial_metadata_array_));
   }
 
-  virtual ~ServerMethodCall() GRPC_OVERRIDE {
+  virtual ~ServerMethodCallTag() GRPC_OVERRIDE {
     grpc_metadata_array_destroy(&initial_metadata_array_);
   }
 

@@ -20,7 +20,7 @@ namespace grpc_cb {
 
 class InsecureServerCredentials;
 class ServerCredentials;
-class ServerMethodCall;
+class ServerMethodCallTag;
 class Service;
 
 /// Models a gRPC server.
@@ -72,9 +72,6 @@ class Server GRPC_FINAL : public GrpcLibrary {
   void ShutdownInternal(gpr_timespec deadline);
   void RequestMethodsCalls();
   void RequestMethodCall(void* registered_method);
-
- private:
-  typedef ServerMethodCall MethodCall;
 
  private:
   typedef std::unique_ptr<grpc_server, void (*)(grpc_server*)> GrpcServerUptr;
