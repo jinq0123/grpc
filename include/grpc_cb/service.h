@@ -23,7 +23,9 @@ class Service {
   size_t GetMethodCount() const;
 
  public:
-  virtual const std::string& GetMethodName(size_t i) const = 0;
+  virtual const std::string& GetMethodName(size_t method_index) const = 0;
+  virtual const google::protobuf::Message& GetRequestPrototype(
+      size_t method_index) const = 0;
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

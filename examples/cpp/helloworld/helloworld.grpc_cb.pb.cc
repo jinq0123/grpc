@@ -95,10 +95,21 @@ Service::Service() {
 Service::~Service() {
 }
 
-const std::string& Service::GetMethodName(size_t i) const {
-  assert(i < GetMethodCount());
-  return method_names[i];
+const std::string& Service::GetMethodName(size_t method_index) const {
+  assert(method_index < GetMethodCount());
+  return method_names[method_index];
 }
+
+const ::google::protobuf::Message& Service::GetRequestPrototype(
+    size_t method_index) const {
+  assert(method_index < GetMethodCount());
+  switch (method_index) {
+  case 0: return HelloRequest::default_instance();
+  }
+  assert(false);
+  return *reinterpret_cast<::google::protobuf::Message*>(nullptr);
+}
+
 ::grpc_cb::Status Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
   (void) request;
   (void) response;

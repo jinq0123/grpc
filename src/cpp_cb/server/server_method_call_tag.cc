@@ -30,6 +30,8 @@ ServerMethodCallTag::ServerMethodCallTag(grpc_server* server, Service* service,
 
 void ServerMethodCallTag::DoComplete(bool success)
 {
+  // TODO: check success
+
   // XXX Deal payload...
 
   // Request the next method call.

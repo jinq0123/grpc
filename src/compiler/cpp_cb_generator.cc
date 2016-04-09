@@ -942,15 +942,31 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   printer->Print(*vars,
                  "Service::~Service() {\n"
                  "}\n\n");
-  printer->Print("const std::string& Service::GetMethodName(size_t i) const {\n"
-                  "  assert(i < GetMethodCount());\n"
-                  "  return method_names[i];\n"
+  printer->Print("const std::string& Service::GetMethodName(size_t method_index) const {\n"
+                  "  assert(method_index < GetMethodCount());\n"
+                  "  return method_names[method_index];\n"
+                  "}\n\n");
+
+  printer->Print("const ::google::protobuf::Message& Service::GetRequestPrototype(\n"
+                  "    size_t method_index) const {\n"
+                  "  assert(method_index < GetMethodCount());\n"
+                  "  switch (method_index) {\n");
+  for (int i = 0; i < service->method_count(); ++i) {
+    (*vars)["Idx"] = as_string(i);
+    (*vars)["Request"] =
+        grpc_cpp_generator::ClassName(service->method(i)->input_type(), true);
+    printer->Print(*vars,
+                    "  case $Idx$: return $Request$::default_instance();\n");
+  }  // for
+
+  printer->Print("}\n"
+                  "  assert(false);\n"
+                  "  return *reinterpret_cast<::google::protobuf::Message*>(nullptr);\n"
                   "}\n");
 
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Idx"] = as_string(i);
     PrintSourceServerMethod(printer, service->method(i), vars);
-    // PrintSourceServerAsyncMethod(printer, service->method(i), vars);
   }
   printer->Print(*vars,
                  "}  // namespace $Service$\n\n");
