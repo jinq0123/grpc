@@ -121,6 +121,7 @@ grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
     printer.Print(vars,
       "#include <grpc_cb/channel_sptr.h>\n"
       "#include <grpc_cb/error_callback.h>  // for ErrorCallback\n"
+      "#include <grpc_cb/service.h>\n"
       "#include <grpc_cb/service_stub.h>\n"
       "#include <grpc_cb/support/status.h>\n"
       "\n"
@@ -426,19 +427,26 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
 
   // Server side - Synchronous
   printer->Print(
-      "class Service {\n"
+      "class Service : public ::grpc_cb::Service {\n"
       " public:\n");
   printer->Indent();
   printer->Print("Service();\n");
   printer->Print("virtual ~Service();\n");
+  printer->Print("\n");
+  printer->Print("virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;\n");
+  printer->Print("\n");
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderServerMethodSync(printer, service->method(i), vars);
   }
-  printer->Print("// ::grpc_cb::RpcService* service() GRPC_OVERRIDE GRPC_FINAL;\n");
   printer->Outdent();
+  printer->Print(" \nprivate:\n");
+  printer->Indent();
   printer->Print(
-      " private:\n"
-      "  // std::unique_ptr< ::grpc_cb::RpcService> service_;\n");
+      "virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()\n"
+      "    const GRPC_OVERRIDE {\n"
+      "  return GetServiceDescriptor();\n"
+      "}\n");
+  printer->Outdent();
   printer->Print("};\n");
   printer->Print(*vars,
       "\n}  // namespace $Service$\n");
@@ -666,7 +674,7 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
         "      NewCompletionQueueTag(std::move(call_uptr), cb, err_cb);\n"
         "  grpc_cb::Status status = call->StartBatch(request, tag);\n"
         "  if (!status.ok()) {\n"
-        "    EraseCompletionCb(tag);\n"
+        "    DeleteCompletionQueueTag(tag);\n"
         "    err_cb(status);\n"
         "  }\n"
         "}\n"
@@ -869,7 +877,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
                  "namespace $Service$ {\n"
                  "\n");
   printer->Print(*vars,
-                 "static const char* method_names[] = {\n");
+                 "static const std::string method_names[] = {\n");
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Method"] = service->method(i)->name();
     printer->Print(*vars, "  \"/$Package$$Service$/$Method$\",\n");
@@ -934,6 +942,11 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   printer->Print(*vars,
                  "Service::~Service() {\n"
                  "}\n\n");
+  printer->Print("const std::string& Service::GetMethodName(size_t i) const {\n"
+                  "  assert(i < GetMethodCount());\n"
+                  "  return method_names[i];\n"
+                  "}\n");
+
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Idx"] = as_string(i);
     PrintSourceServerMethod(printer, service->method(i), vars);

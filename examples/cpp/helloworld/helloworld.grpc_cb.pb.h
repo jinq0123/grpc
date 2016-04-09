@@ -58,13 +58,12 @@ class Service : public ::grpc_cb::Service {
  public:
   Service();
   virtual ~Service();
-  virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
-  // ::grpc_cb::RpcService* service() GRPC_OVERRIDE GRPC_FINAL;
 
- public:
   virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
 
- private:
+  virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
+ 
+private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
       const GRPC_OVERRIDE {
     return GetServiceDescriptor();
