@@ -6,13 +6,28 @@
 
 #include <string>
 
+namespace google {
+namespace protobuf {
+class Message;
+class MethodDescriptor;
+class ServiceDescriptor;
+}  // namespace protobuf
+}  // namespace google
+
 namespace grpc_cb {
 
 // Service base class.
 class Service {
  public:
+  const std::string& GetFullName() const;
+  size_t GetMethodCount() const;
+
+ public:
   virtual const std::string& GetMethodName(size_t i) const = 0;
-  virtual size_t GetMethodCount() const = 0;
+
+ private:
+  virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
+      const = 0;
 };
 
 }  // namespace grpc_cb

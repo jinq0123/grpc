@@ -63,10 +63,12 @@ class Service : public ::grpc_cb::Service {
 
  public:
   virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
-  virtual size_t GetMethodCount() const GRPC_OVERRIDE { return 1; }
 
  private:
-  // std::unique_ptr< ::grpc_cb::RpcService> service_;
+  virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
+      const GRPC_OVERRIDE {
+    return GetServiceDescriptor();
+  }
 };
 
 }  // namespace Greeter

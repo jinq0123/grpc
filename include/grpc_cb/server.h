@@ -69,9 +69,16 @@ class Server GRPC_FINAL : public GrpcLibrary {
   int AddListeningPort(const grpc::string& addr);  // with InsecureServerCredentials
 
  private:
+  using RegisteredMethodVec = std::vector<void*>;
+  struct RegisteredService {
+    Service* service;  // Borrowed.
+    RegisteredMethodVec registered_methods;
+  };
+
+ private:
   void ShutdownInternal(gpr_timespec deadline);
-  void RequestMethodsCalls();
-  void RequestMethodCall(void* registered_method);
+  void RequestMethodsCalls() const;
+  void RequestServiceMethodsCalls(const RegisteredService& rs) const;
 
  private:
   typedef std::unique_ptr<grpc_server, void (*)(grpc_server*)> GrpcServerUptr;
@@ -87,7 +94,7 @@ class Server GRPC_FINAL : public GrpcLibrary {
 
   // Pointer to the c grpc server. Owned.
   const std::unique_ptr<grpc_server, void (*)(grpc_server*)> server_;
-  std::vector<void*> registered_methods_;
+  std::unordered_map<std::string, RegisteredService> service_map_;
 };
 
 }  // namespace grpc_cb

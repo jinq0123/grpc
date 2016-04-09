@@ -29,11 +29,16 @@ Server::Server()
 Server::~Server() { Shutdown(); }
 
 void Server::RegisterService(Service& service) {
+  RegisteredService& rs = service_map_[service.GetFullName()];
+  rs.service = &service;
+  RegisteredMethodVec& registered_methods = rs.registered_methods;
+  registered_methods.clear();
+
   for (size_t i = 0; i < service.GetMethodCount(); ++i) {
     const std::string& name = service.GetMethodName(i);
     void* registered_method = grpc_server_register_method(
         server_.get(), name.c_str(), nullptr);         // TODO: host
-    registered_methods_.push_back(registered_method);  // maybe null
+    registered_methods.push_back(registered_method);  // maybe null
   }
 }
 
@@ -98,21 +103,21 @@ void Server::Run() {
   }
 }
 
-void Server::RequestMethodsCalls() {
-  const auto& rms = registered_methods_;
-  std::for_each(rms.begin(), rms.end(),
-                [this](void* rm) { RequestMethodCall(rm); });
+void Server::RequestMethodsCalls() const {
+  for (auto itr = service_map_.begin(); itr != service_map_.end(); ++itr) {
+    const RegisteredService& rs = (*itr).second;
+    RequestServiceMethodsCalls(rs);
+  }
 }
 
-// registered_method is the return of grpc_server_register_method()
-void Server::RequestMethodCall(void* registered_method) {
-  if (!registered_method) return;
-  // TODO: use registered_method
-  ServerMethodCallTag* mc = new ServerMethodCallTag;  // deleted in Run()
-  grpc_completion_queue& cq = cq_->cq();
-  grpc_server_request_registered_call(
-      server_.get(), registered_method, &mc->call_ptr(), &mc->deadline(),
-      &mc->initial_metadata_array(), &mc->payload_ptr(), &cq, &cq, mc);
+void Server::RequestServiceMethodsCalls(const RegisteredService& rs) const {
+  assert(rs.service);
+  const RegisteredMethodVec& rms = rs.registered_methods;
+  for (size_t i = 0; i < rms.size(); ++i) {
+    if (!rms[i]) continue;
+    // Delete in Run(). Calls grpc_server_request_registered_call() in ctr().
+    new ServerMethodCallTag(server_.get(), rs.service, i, rms[i], &cq_->cq());
+  }
 }
 
 Server::GrpcServerUptr Server::CreateServer() {
