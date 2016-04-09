@@ -434,6 +434,8 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   printer->Print("virtual ~Service();\n");
   printer->Print("\n");
   printer->Print("virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;\n");
+  printer->Print("virtual const ::google::protobuf::Message& GetRequestPrototype(\n"
+                  "    size_t method_index) const GRPC_OVERRIDE;\n");
   printer->Print("\n");
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderServerMethodSync(printer, service->method(i), vars);
@@ -958,8 +960,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
     printer->Print(*vars,
                     "  case $Idx$: return $Request$::default_instance();\n");
   }  // for
-
-  printer->Print("}\n"
+  printer->Print("  }\n"
                   "  assert(false);\n"
                   "  return *reinterpret_cast<::google::protobuf::Message*>(nullptr);\n"
                   "}\n");

@@ -104,12 +104,11 @@ const ::google::protobuf::Message& Service::GetRequestPrototype(
     size_t method_index) const {
   assert(method_index < GetMethodCount());
   switch (method_index) {
-  case 0: return HelloRequest::default_instance();
+  case 0: return ::helloworld::HelloRequest::default_instance();
   }
   assert(false);
   return *reinterpret_cast<::google::protobuf::Message*>(nullptr);
 }
-
 ::grpc_cb::Status Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
   (void) request;
   (void) response;
