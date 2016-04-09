@@ -32,7 +32,15 @@ void ServerMethodCallTag::DoComplete(bool success)
 {
   // TODO: check success
 
-  // XXX Deal payload...
+  // Deal payload.
+  using Message = ::google::protobuf::Message;
+  std::unique_ptr<Message> request;
+  request.reset(GetRequestPrototype(method_index_).New());
+  Status status = SerializationTraits<Message>::Deserialize(
+      payload_ptr_, request.get(), 0/* TODO: max_message_size*/);
+  if (status.ok()) {
+    // XXX call_method(descriptor, *request, rep);
+  }
 
   // Request the next method call.
   // Calls grpc_server_request_registered_call() in ctr().

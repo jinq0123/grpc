@@ -34,11 +34,12 @@ class ServerMethodCallTag GRPC_FINAL : public CompletionQueueTag {
   virtual void DoComplete(bool success) GRPC_OVERRIDE;
 
  private:
-  grpc_server* server_;
-  Service* service_;
-  size_t method_index_;
-  void* registered_method_;
-  grpc_completion_queue* cq_;
+  // TODO: No need to copy for each request.
+  grpc_server* const server_;
+  Service* const service_;
+  const size_t method_index_;
+  void* const registered_method_;
+  grpc_completion_queue* const cq_;
 
   grpc_call* call_ptr_;
   gpr_timespec deadline_;
