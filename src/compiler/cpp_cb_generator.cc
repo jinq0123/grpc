@@ -436,12 +436,15 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   printer->Print("virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;\n");
   printer->Print("virtual const ::google::protobuf::Message& GetRequestPrototype(\n"
                   "    size_t method_index) const GRPC_OVERRIDE;\n");
+  printer->Print("virtual void CallMethod(size_t method_index,\n"
+                  "                        const ::google::protobuf::Message& request)\n"
+                  "    GRPC_OVERRIDE{};\n");
   printer->Print("\n");
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderServerMethodSync(printer, service->method(i), vars);
   }
   printer->Outdent();
-  printer->Print(" \nprivate:\n");
+  printer->Print("\n private:\n");
   printer->Indent();
   printer->Print(
       "virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()\n"

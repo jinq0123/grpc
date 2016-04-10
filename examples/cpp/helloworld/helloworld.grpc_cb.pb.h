@@ -66,8 +66,7 @@ class Service : public ::grpc_cb::Service {
                           const ::google::protobuf::Message& request)
       GRPC_OVERRIDE{};
 
-  virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request,
-                                     ::helloworld::HelloReply* response);
+  virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
