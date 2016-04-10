@@ -268,7 +268,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\service.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />

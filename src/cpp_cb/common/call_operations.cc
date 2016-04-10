@@ -24,7 +24,7 @@ CallOperations::~CallOperations() {
 }
 
 Status CallOperations::SendMessage(
-    const protobuf::Message& message) {
+    const ::google::protobuf::Message& message) {
   Status status = SerializeProto(message, &send_buf_);
   if (!status.ok()) return status;
   if (send_buf_ == nullptr) return status;

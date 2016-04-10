@@ -26,7 +26,7 @@ Call::~Call() {
   grpc_byte_buffer_destroy(recv_buf_);
 }
 
-Status Call::StartBatch(const protobuf::Message& request, void* tag) {
+Status Call::StartBatch(const ::google::protobuf::Message& request, void* tag) {
   ops_.reset(new CallOperations);
   CallOperations& ops = *ops_;
 
@@ -48,7 +48,7 @@ Status Call::StartBatch(const protobuf::Message& request, void* tag) {
   return Status::InternalError("grpc_call_start_batch() failed");
 }
 
-Status Call::GetResponse(protobuf::Message* response) const {
+Status Call::GetResponse(::google::protobuf::Message* response) const {
   assert(response);
   // TODO: check status first...
   return DeserializeProto(recv_buf_, response, max_message_size_);

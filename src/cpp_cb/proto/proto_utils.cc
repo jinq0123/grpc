@@ -35,6 +35,10 @@
 
 #include <climits>
 
+#include <google/protobuf/io/coded_stream.h>  // for SetTotalBytesLimit()
+#include <google/protobuf/io/zero_copy_stream.h>  // for ZeroCopyOutputStream
+#include <google/protobuf/message.h>  // for Message
+
 #include <grpc/grpc.h>
 #include <grpc/byte_buffer.h>
 #include <grpc/byte_buffer_reader.h>
@@ -49,7 +53,7 @@
 const int kMaxBufferLength = 8192;
 
 class GrpcBufferWriter GRPC_FINAL
-    : public ::grpc_cb::protobuf::io::ZeroCopyOutputStream {
+    : public ::google::protobuf::io::ZeroCopyOutputStream {
  public:
   explicit GrpcBufferWriter(grpc_byte_buffer** bp,
                             int block_size = kMaxBufferLength)
@@ -92,7 +96,7 @@ class GrpcBufferWriter GRPC_FINAL
     byte_count_ -= count;
   }
 
-  grpc_cb::protobuf::int64 ByteCount() const GRPC_OVERRIDE { return byte_count_; }
+  ::google::protobuf::int64 ByteCount() const GRPC_OVERRIDE { return byte_count_; }
 
  private:
   const int block_size_;
@@ -104,7 +108,7 @@ class GrpcBufferWriter GRPC_FINAL
 };
 
 class GrpcBufferReader GRPC_FINAL
-    : public ::grpc_cb::protobuf::io::ZeroCopyInputStream {
+    : public ::google::protobuf::io::ZeroCopyInputStream {
  public:
   explicit GrpcBufferReader(grpc_byte_buffer* buffer)
       : byte_count_(0), backup_count_(0) {
@@ -151,7 +155,7 @@ class GrpcBufferReader GRPC_FINAL
     return false;
   }
 
-  grpc_cb::protobuf::int64 ByteCount() const GRPC_OVERRIDE {
+  ::google::protobuf::int64 ByteCount() const GRPC_OVERRIDE {
     return byte_count_ - backup_count_;
   }
 
@@ -164,7 +168,7 @@ class GrpcBufferReader GRPC_FINAL
 
 namespace grpc_cb {
 
-Status SerializeProto(const grpc_cb::protobuf::Message& msg,
+Status SerializeProto(const ::google::protobuf::Message& msg,
                       grpc_byte_buffer** bp) {
   GPR_TIMER_SCOPE("SerializeProto", 0);
   int byte_size = msg.ByteSize();
@@ -184,14 +188,14 @@ Status SerializeProto(const grpc_cb::protobuf::Message& msg,
 }
 
 Status DeserializeProto(grpc_byte_buffer* buffer,
-                        grpc_cb::protobuf::Message* msg,
+                        ::google::protobuf::Message* msg,
                         int max_message_size) {
   GPR_TIMER_SCOPE("DeserializeProto", 0);
   if (!buffer) {
     return Status::InternalError("No payload");
   }
   GrpcBufferReader reader(buffer);
-  ::grpc_cb::protobuf::io::CodedInputStream decoder(&reader);
+  ::google::protobuf::io::CodedInputStream decoder(&reader);
   if (max_message_size > 0) {
     decoder.SetTotalBytesLimit(max_message_size, max_message_size);
   }

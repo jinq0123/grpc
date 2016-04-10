@@ -24,6 +24,7 @@ ServerMethodCallTag::ServerMethodCallTag(grpc_server* server, Service* service,
   assert(server);
   assert(registered_method);
   assert(cq);
+  assert(method_index < service->GetMethodCount());
 
   memset(&initial_metadata_array_, 0, sizeof(initial_metadata_array_));
 
@@ -44,7 +45,10 @@ void ServerMethodCallTag::DoComplete(bool success)
   Status status = SerializationTraits<Message>::Deserialize(
       payload_ptr_, request.get(), 0/* TODO: max_message_size*/);
   if (status.ok()) {
-    // XXX call_method(descriptor, *request, rep);
+    service_->CallMethod(method_index_, *request);  // XXX replier
+  }
+  else {
+    // XXX reply error
   }
 
   // Request the next method call.

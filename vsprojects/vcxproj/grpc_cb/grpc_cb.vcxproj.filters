@@ -51,9 +51,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\support\config_protobuf.h">
-      <Filter>include\grp_cb\support</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
@@ -107,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h">
       <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h">
+      <Filter>include\grp_cb\support</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

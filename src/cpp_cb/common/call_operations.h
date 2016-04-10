@@ -9,7 +9,7 @@
 #include <grpc/grpc.h>  // for grpc_op
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
-#include <grpc_cb/support/config_protobuf.h>  // for Message
+#include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 namespace grpc_cb {
 
@@ -28,7 +28,7 @@ class CallOperations GRPC_FINAL {
   }
 
  public:
-  Status SendMessage(const protobuf::Message& message) GRPC_MUST_USE_RESULT;
+  Status SendMessage(const ::google::protobuf::Message& message) GRPC_MUST_USE_RESULT;
   void SendInitialMetadata();
   void RecvInitialMetadata();
   void RecvMessage(grpc_byte_buffer** recv_buf);

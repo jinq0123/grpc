@@ -38,7 +38,7 @@
 
 #include <grpc/grpc.h>
 #include <grpc_cb/impl/serialization_traits.h>
-#include <grpc_cb/support/config_protobuf.h>
+#include <grpc_cb/support/protobuf_fwd.h>
 #include <grpc_cb/support/status.h>
 
 namespace grpc_cb {
@@ -46,24 +46,24 @@ namespace grpc_cb {
 // Serialize the msg into a buffer created inside the function. The caller
 // should destroy the returned buffer when done with it. If serialization fails,
 // false is returned and buffer is left unchanged.
-Status SerializeProto(const grpc_cb::protobuf::Message& msg,
+Status SerializeProto(const google::protobuf::Message& msg,
                       grpc_byte_buffer** buffer);
 
 // The caller keeps ownership of buffer and msg.
-Status DeserializeProto(grpc_byte_buffer* buffer, grpc_cb::protobuf::Message* msg,
+Status DeserializeProto(grpc_byte_buffer* buffer, google::protobuf::Message* msg,
                         int max_message_size);
 
 template <class T>
 class SerializationTraits<T, typename std::enable_if<std::is_base_of<
-                                 grpc_cb::protobuf::Message, T>::value>::type> {
+                                 google::protobuf::Message, T>::value>::type> {
  public:
-  static Status Serialize(const grpc_cb::protobuf::Message& msg,
+  static Status Serialize(const google::protobuf::Message& msg,
                           grpc_byte_buffer** buffer, bool* own_buffer) {
     *own_buffer = true;
     return SerializeProto(msg, buffer);
   }
   static Status Deserialize(grpc_byte_buffer* buffer,
-                            grpc_cb::protobuf::Message* msg,
+                            google::protobuf::Message* msg,
                             int max_message_size) {
     auto status = DeserializeProto(buffer, msg, max_message_size);
     grpc_byte_buffer_destroy(buffer);

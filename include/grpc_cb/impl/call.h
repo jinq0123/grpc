@@ -6,7 +6,7 @@
 
 #include <grpc_cb/impl/call_uptr.h>
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
-#include <grpc_cb/support/config_protobuf.h>  // for Message
+#include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 struct grpc_byte_buffer;
 struct grpc_call;
@@ -26,8 +26,8 @@ class Call GRPC_FINAL {
   ~Call();
 
  public:
-  Status StartBatch(const protobuf::Message& request, void* tag);
-  Status GetResponse(protobuf::Message* response) const;
+  Status StartBatch(const ::google::protobuf::Message& request, void* tag);
+  Status GetResponse(::google::protobuf::Message* response) const;
 
   inline int GetMaxMessageSize() const { return max_message_size_; }
   inline void SetMaxMessageSize(int size) { max_message_size_ = size; }

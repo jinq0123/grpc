@@ -34,7 +34,7 @@
 #ifndef GRPC_INTERNAL_CPP_CB_PROTO_PROTO_UTILS_H
 #define GRPC_INTERNAL_CPP_CB_PROTO_PROTO_UTILS_H
 
-#include <grpc_cb/support/config_protobuf.h>  // for Message
+#include <grpc_cb/support/protobuf_fwd.h>  // for Message
 #include <grpc_cb/support/status.h>
 
 struct grpc_byte_buffer;
@@ -44,13 +44,12 @@ namespace grpc_cb {
 // Serialize the msg into a buffer created inside the function. The caller
 // should destroy the returned buffer when done with it. If serialization fails,
 // false is returned and buffer is left unchanged.
-Status SerializeProto(const protobuf::Message& msg,
+Status SerializeProto(const ::google::protobuf::Message& msg,
                       grpc_byte_buffer** buffer);
 
 // The caller keeps ownership of buffer and msg.
 Status DeserializeProto(grpc_byte_buffer* buffer,
-                        protobuf::Message* msg,
-                        int max_message_size);
+                        ::google::protobuf::Message* msg, int max_message_size);
 
 }  // namespace grpc_cb
 
