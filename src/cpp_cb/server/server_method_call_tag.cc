@@ -3,6 +3,10 @@
 
 #include "server_method_call_tag.h"
 
+#include <google/protobuf/message.h>
+#include <grpc_cb/service.h>
+#include <grpc_cb/impl/proto_utils.h>
+
 namespace grpc_cb {
 
 ServerMethodCallTag::ServerMethodCallTag(grpc_server* server, Service* service,
@@ -35,7 +39,8 @@ void ServerMethodCallTag::DoComplete(bool success)
   // Deal payload.
   using Message = ::google::protobuf::Message;
   std::unique_ptr<Message> request;
-  request.reset(GetRequestPrototype(method_index_).New());
+  assert(service_);
+  request.reset(service_->GetRequestPrototype(method_index_).New());
   Status status = SerializationTraits<Message>::Deserialize(
       payload_ptr_, request.get(), 0/* TODO: max_message_size*/);
   if (status.ok()) {

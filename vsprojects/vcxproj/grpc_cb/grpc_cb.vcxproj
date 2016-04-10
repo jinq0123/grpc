@@ -262,6 +262,8 @@
     <ClInclude Include="..\..\..\include\grpc_cb\error_callback.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\service.h" />

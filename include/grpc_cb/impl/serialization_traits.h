@@ -31,10 +31,10 @@
  *
  */
 
-#ifndef GRPCXX_IMPL_SERIALIZATION_TRAITS_H
-#define GRPCXX_IMPL_SERIALIZATION_TRAITS_H
+#ifndef GRPC_CB_IMPL_SERIALIZATION_TRAITS_H
+#define GRPC_CB_IMPL_SERIALIZATION_TRAITS_H
 
-namespace grpc {
+namespace grpc_cb {
 
 /// Defines how to serialize and deserialize some type.
 ///
@@ -63,6 +63,6 @@ template <class Message,
           class UnusedButHereForPartialTemplateSpecialization = void>
 class SerializationTraits;
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_IMPL_SERIALIZATION_TRAITS_H
+#endif  // GRPC_CB_IMPL_SERIALIZATION_TRAITS_H

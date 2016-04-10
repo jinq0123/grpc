@@ -31,39 +31,39 @@
  *
  */
 
-#ifndef GRPC_INTERNAL_CPP_PROTO_PROTO_UTILS_H
-#define GRPC_INTERNAL_CPP_PROTO_PROTO_UTILS_H
+#ifndef GRPC_CB_IMPL_PROTO_UTILS_H
+#define GRPC_CB_IMPL_PROTO_UTILS_H
 
 #include <type_traits>
 
 #include <grpc/grpc.h>
-#include <grpc++/impl/serialization_traits.h>
-#include <grpc++/support/config_protobuf.h>
-#include <grpc++/support/status.h>
+#include <grpc_cb/impl/serialization_traits.h>
+#include <grpc_cb/support/config_protobuf.h>
+#include <grpc_cb/support/status.h>
 
-namespace grpc {
+namespace grpc_cb {
 
 // Serialize the msg into a buffer created inside the function. The caller
 // should destroy the returned buffer when done with it. If serialization fails,
 // false is returned and buffer is left unchanged.
-Status SerializeProto(const grpc::protobuf::Message& msg,
+Status SerializeProto(const grpc_cb::protobuf::Message& msg,
                       grpc_byte_buffer** buffer);
 
 // The caller keeps ownership of buffer and msg.
-Status DeserializeProto(grpc_byte_buffer* buffer, grpc::protobuf::Message* msg,
+Status DeserializeProto(grpc_byte_buffer* buffer, grpc_cb::protobuf::Message* msg,
                         int max_message_size);
 
 template <class T>
 class SerializationTraits<T, typename std::enable_if<std::is_base_of<
-                                 grpc::protobuf::Message, T>::value>::type> {
+                                 grpc_cb::protobuf::Message, T>::value>::type> {
  public:
-  static Status Serialize(const grpc::protobuf::Message& msg,
+  static Status Serialize(const grpc_cb::protobuf::Message& msg,
                           grpc_byte_buffer** buffer, bool* own_buffer) {
     *own_buffer = true;
     return SerializeProto(msg, buffer);
   }
   static Status Deserialize(grpc_byte_buffer* buffer,
-                            grpc::protobuf::Message* msg,
+                            grpc_cb::protobuf::Message* msg,
                             int max_message_size) {
     auto status = DeserializeProto(buffer, msg, max_message_size);
     grpc_byte_buffer_destroy(buffer);
@@ -71,6 +71,6 @@ class SerializationTraits<T, typename std::enable_if<std::is_base_of<
   }
 };
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPC_INTERNAL_CPP_PROTO_PROTO_UTILS_H
+#endif  // GRPC_CB_IMPL_PROTO_UTILS_H

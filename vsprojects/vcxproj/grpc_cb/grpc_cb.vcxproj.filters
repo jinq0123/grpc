@@ -102,6 +102,12 @@
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h">
       <Filter>src\cpp_cb\server</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
