@@ -62,9 +62,9 @@ class Service : public ::grpc_cb::Service {
   virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
   virtual const ::google::protobuf::Message& GetRequestPrototype(
       size_t method_index) const GRPC_OVERRIDE;
-  virtual void CallMethod(size_t method_index,
-                          const ::google::protobuf::Message& request)
-      GRPC_OVERRIDE{};
+  virtual ::grpc_cb::Status CallMethod(
+      size_t method_index,
+      const ::google::protobuf::Message& request) GRPC_OVERRIDE;
 
   virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
 

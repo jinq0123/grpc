@@ -110,6 +110,17 @@ const ::google::protobuf::Message& Service::GetRequestPrototype(
   return *reinterpret_cast<::google::protobuf::Message*>(nullptr);
 }
 
+::grpc_cb::Status Service::CallMethod(
+    size_t method_index, const ::google::protobuf::Message& request) {
+  assert(method_index < GetMethodCount());
+  switch (method_index) {
+  case 0:
+    return SayHello(
+      *::google::protobuf::down_cast<const ::helloworld::HelloRequest*>(&request),
+      nullptr);
+  }
+};
+
 ::grpc_cb::Status Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
   (void) request;
   (void) response;
