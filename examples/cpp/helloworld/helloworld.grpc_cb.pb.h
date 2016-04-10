@@ -37,16 +37,22 @@ class Stub : public ::grpc_cb::ServiceStub {
     ::helloworld::HelloReply response;
     return SayHello(request, &response);  // Ignore response.
   }
-  ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
+  ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request,
+                             ::helloworld::HelloReply* response);
 
-  typedef std::function<void (const ::helloworld::HelloReply& response)> SayHelloCallback;
+  typedef std::function<void(const ::helloworld::HelloReply& response)>
+      SayHelloCallback;
   inline void AsyncSayHello(const ::helloworld::HelloRequest& request) {
     return AsyncSayHello(request, &IgnoreResponse<::helloworld::HelloReply>);
   }
-  inline void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb) {
-    return AsyncSayHello(request, cb, error_callback_);  // Use default error callback.
+  inline void AsyncSayHello(const ::helloworld::HelloRequest& request,
+                            const SayHelloCallback& cb) {
+    return AsyncSayHello(request, cb,
+                         error_callback_);  // Use default error callback.
   }
-  void AsyncSayHello(const ::helloworld::HelloRequest& request, const SayHelloCallback& cb, const ::grpc_cb::ErrorCallback& err_cb);
+  void AsyncSayHello(const ::helloworld::HelloRequest& request,
+                     const SayHelloCallback& cb,
+                     const ::grpc_cb::ErrorCallback& err_cb);
 
  private:
   // const ::grpc_cb::RpcMethod rpcmethod_SayHello_;
@@ -60,17 +66,16 @@ class Service : public ::grpc_cb::Service {
   virtual ~Service();
 
   virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
-  virtual const ::google::protobuf::Message& GetRequestPrototype(
-      size_t method_index) const GRPC_OVERRIDE;
   virtual ::grpc_cb::Status CallMethod(
-      size_t method_index,
-      const ::google::protobuf::Message& request) GRPC_OVERRIDE;
+      size_t method_index, grpc_byte_buffer& request_buffer) GRPC_OVERRIDE;
 
-  virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response);
+  ::grpc_cb::Status SayHello(grpc_byte_buffer& request_buffer);
+  virtual ::grpc_cb::Status SayHello(const ::helloworld::HelloRequest& request,
+                                     ::helloworld::HelloReply* response);
 
  private:
-  virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
-      const GRPC_OVERRIDE {
+  virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor() const
+      GRPC_OVERRIDE {
     return GetServiceDescriptor();
   }
 };

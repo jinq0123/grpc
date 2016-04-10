@@ -4,9 +4,11 @@
 #ifndef GRPC_CB_SERVICE_H
 #define GRPC_CB_SERVICE_H
 
-#include <string>
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
-#include <grpc_cb/support/status.h>  // for Status
+#include <grpc_cb/support/status.h>        // for Status
+#include <string>
+
+struct grpc_byte_buffer;
 
 namespace grpc_cb {
 
@@ -18,12 +20,10 @@ class Service {
 
  public:
   virtual const std::string& GetMethodName(size_t method_index) const = 0;
-  virtual const ::google::protobuf::Message& GetRequestPrototype(
-      size_t method_index) const = 0;
 
   // TODO: need request_context. Need client address in Ctr?
-  virtual ::grpc_cb::Status CallMethod(
-      size_t method_index, const ::google::protobuf::Message& request) = 0;
+  virtual ::grpc_cb::Status CallMethod(size_t method_index,
+                                       grpc_byte_buffer& request) = 0;
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

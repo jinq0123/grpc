@@ -10,6 +10,7 @@
 #include <grpc_cb/channel.h>
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
+#include <grpc_cb/impl/proto_utils.h>  // for Deserialize()
 
 namespace helloworld {
 
@@ -100,30 +101,33 @@ const std::string& Service::GetMethodName(size_t method_index) const {
   return method_names[method_index];
 }
 
-const ::google::protobuf::Message& Service::GetRequestPrototype(
-    size_t method_index) const {
-  assert(method_index < GetMethodCount());
-  switch (method_index) {
-  case 0: return ::helloworld::HelloRequest::default_instance();
-  }
-  assert(false);
-  return *reinterpret_cast<::google::protobuf::Message*>(nullptr);
-}
-
-::grpc_cb::Status Service::CallMethod(
-    size_t method_index, const ::google::protobuf::Message& request) {
+::grpc_cb::Status Service::CallMethod(size_t method_index,
+                                      grpc_byte_buffer& request_buffer) {
   assert(method_index < GetMethodCount());
   switch (method_index) {
   case 0:
-    return SayHello(
-      *::google::protobuf::down_cast<const ::helloworld::HelloRequest*>(&request),
-      nullptr);
+    return SayHello(request_buffer);
   }
+  return ::grpc_cb::Status::InternalError("CallMethod() error");
 };
 
-::grpc_cb::Status Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
-  (void) request;
-  (void) response;
+::grpc_cb::Status Service::SayHello(grpc_byte_buffer& request_buffer) {
+  using Request = ::helloworld::HelloRequest;
+  Request request;
+  ::grpc_cb::Status status =
+      ::grpc_cb::SerializationTraits<Request>::Deserialize(
+          &request_buffer, &request, 0 /* TODO: max_message_size*/);
+  if (status.ok()) {
+    return SayHello(request, nullptr);  // XXX replier
+  }
+  return status;  // XXX reply error
+}
+
+::grpc_cb::Status Service::SayHello(
+    const ::helloworld::HelloRequest& request,
+    ::helloworld::HelloReply* response) {
+  (void)request;
+  (void)response;
   return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 

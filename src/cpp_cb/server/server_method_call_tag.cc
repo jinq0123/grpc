@@ -5,7 +5,6 @@
 
 #include <google/protobuf/message.h>
 #include <grpc_cb/service.h>
-#include <grpc_cb/impl/proto_utils.h>
 
 namespace grpc_cb {
 
@@ -41,15 +40,9 @@ void ServerMethodCallTag::DoComplete(bool success)
   using Message = ::google::protobuf::Message;
   std::unique_ptr<Message> request;
   assert(service_);
-  request.reset(service_->GetRequestPrototype(method_index_).New());
-  Status status = SerializationTraits<Message>::Deserialize(
-      payload_ptr_, request.get(), 0/* TODO: max_message_size*/);
-  if (status.ok()) {
-    service_->CallMethod(method_index_, *request);  // XXX replier
-  }
-  else {
-    // XXX reply error
-  }
+  assert(payload_ptr_);
+  Status status = service_->CallMethod(method_index_, *payload_ptr_);
+  // XXX check status
 
   // Request the next method call.
   // Calls grpc_server_request_registered_call() in ctr().
