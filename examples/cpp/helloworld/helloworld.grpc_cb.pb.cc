@@ -109,6 +109,7 @@ const ::google::protobuf::Message& Service::GetRequestPrototype(
   assert(false);
   return *reinterpret_cast<::google::protobuf::Message*>(nullptr);
 }
+
 ::grpc_cb::Status Service::SayHello(const ::helloworld::HelloRequest& request, ::helloworld::HelloReply* response) {
   (void) request;
   (void) response;

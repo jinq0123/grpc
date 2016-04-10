@@ -963,7 +963,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   printer->Print("  }\n"
                   "  assert(false);\n"
                   "  return *reinterpret_cast<::google::protobuf::Message*>(nullptr);\n"
-                  "}\n");
+                  "}\n\n");
 
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Idx"] = as_string(i);
