@@ -107,11 +107,13 @@ const std::string& Service::GetMethodName(size_t method_index) const {
   switch (method_index) {
   case 0:
     return SayHello(request_buffer);
-  }
+  }  // switch
+  assert(false);
   return ::grpc_cb::Status::InternalError("CallMethod() error");
-};
+}
 
-::grpc_cb::Status Service::SayHello(grpc_byte_buffer& request_buffer) {
+::grpc_cb::Status Service::SayHello(
+    grpc_byte_buffer& request_buffer) {
   using Request = ::helloworld::HelloRequest;
   Request request;
   ::grpc_cb::Status status =
@@ -122,12 +124,11 @@ const std::string& Service::GetMethodName(size_t method_index) const {
   }
   return status;  // XXX reply error
 }
-
 ::grpc_cb::Status Service::SayHello(
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
-  (void)request;
-  (void)response;
+  (void) request;
+  (void) response;
   return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 
