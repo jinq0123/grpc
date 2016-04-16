@@ -111,8 +111,11 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\cpp_cb\server\server_async_msg_replier.h">
-      <Filter>src\cpp_cb\server</Filter>
+    <ClInclude Include="..\..\..\include\grpc_cb\server_async_replier.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server_async_msg_replier.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

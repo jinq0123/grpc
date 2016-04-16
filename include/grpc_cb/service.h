@@ -24,9 +24,9 @@ class Service {
   virtual const std::string& GetMethodName(size_t method_index) const = 0;
 
   // TODO: need request_context. Need client address in Ctr?
-  virtual ::grpc_cb::Status CallMethod(
+  virtual void CallMethod(
       size_t method_index, grpc_byte_buffer& request,
-      const ServerAsyncMsgReplier& replier) = 0;
+      const ServerAsyncMsgReplier& msg_replier) = 0;
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

@@ -11,6 +11,7 @@
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/proto_utils.h>  // for Deserialize()
+#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 
 namespace helloworld {
 
@@ -101,36 +102,41 @@ const std::string& Service::GetMethodName(size_t method_index) const {
   return method_names[method_index];
 }
 
-::grpc_cb::Status Service::CallMethod(
+void Service::CallMethod(
     size_t method_index, grpc_byte_buffer& request_buffer,
-    const ::grpc_cb::ServerAsyncMsgReplier& replier) {
+    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) {
   assert(method_index < GetMethodCount());
   switch (method_index) {
-  case 0:
-    return SayHello(request_buffer);  // , ServerAsyncReplier<>);
+    case 0:
+      SayHello(
+          request_buffer,
+          ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>(msg_replier));
+      return;
   }  // switch
   assert(false);
-  return ::grpc_cb::Status::InternalError("CallMethod() error");
+  ::grpc_cb::ServerAsyncMsgReplier(msg_replier).ReplyError(
+      ::grpc_cb::Status::InternalError("CallMethod() error"));
 }
 
-::grpc_cb::Status Service::SayHello(
-    grpc_byte_buffer& request_buffer) {
+void Service::SayHello(
+    grpc_byte_buffer& request_buffer,
+    const SayHelloReplier& replier) {
   using Request = ::helloworld::HelloRequest;
   Request request;
   ::grpc_cb::Status status =
       ::grpc_cb::SerializationTraits<Request>::Deserialize(
           &request_buffer, &request, 0 /* TODO: max_message_size*/);
   if (status.ok()) {
-    return SayHello(request, nullptr);  // XXX replier
+    SayHello(request, replier);
+    return;
   }
-  return status;  // XXX reply error
+  SayHelloReplier(replier).ReplyError(status);
 }
-::grpc_cb::Status Service::SayHello(
+void Service::SayHello(
     const ::helloworld::HelloRequest& request,
-    ::helloworld::HelloReply* response) {
+    SayHelloReplier replier_copy) {
   (void) request;
-  (void) response;
-  return ::grpc_cb::Status::UNIMPLEMENTED;
+  replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 }  // namespace Greeter

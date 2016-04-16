@@ -4,8 +4,8 @@
 #include "server_method_call_tag.h"
 
 #include <google/protobuf/message.h>
+#include <grpc_cb/server_async_msg_replier.h>  // for ServerAsyncMsgReplier
 #include <grpc_cb/service.h>
-#include "server_async_msg_replier.h"  // for ServerAsyncMsgReplier
 
 namespace grpc_cb {
 

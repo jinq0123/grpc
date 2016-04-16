@@ -5,7 +5,8 @@
 #define GRPC_CB_helloworld_2eproto__INCLUDED
 
 #include <grpc_cb/channel_sptr.h>
-#include <grpc_cb/error_callback.h>  // for ErrorCallback
+#include <grpc_cb/error_callback.h>        // for ErrorCallback
+#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 #include <grpc_cb/service.h>
 #include <grpc_cb/service_stub.h>
 #include <grpc_cb/support/status.h>
@@ -59,16 +60,18 @@ class Service : public ::grpc_cb::Service {
   virtual ~Service();
 
   virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
-  virtual ::grpc_cb::Status CallMethod(
+  virtual void CallMethod(
       size_t method_index, grpc_byte_buffer& request_buffer,
-      const ::grpc_cb::ServerAsyncMsgReplier& replier) GRPC_OVERRIDE;
+      const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) GRPC_OVERRIDE;
 
  private:
-  ::grpc_cb::Status SayHello(
-      grpc_byte_buffer& request_buffer);
-  virtual ::grpc_cb::Status SayHello(
+  using SayHelloReplier = ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>;
+  void SayHello(
+      grpc_byte_buffer& request_buffer,
+      const SayHelloReplier& replier);
+  virtual void SayHello(
       const ::helloworld::HelloRequest& request,
-      ::helloworld::HelloReply* response);
+      SayHelloReplier replier_copy);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

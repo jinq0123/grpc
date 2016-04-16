@@ -46,12 +46,13 @@ using helloworld::HelloReply;
 
 // Logic and data behind the server's behavior.
 class GreeterServiceImpl final : public helloworld::Greeter::Service {
-  Status SayHello(const HelloRequest& request,
-                  HelloReply* reply) override {
+  void SayHello(const HelloRequest& request,
+                ::grpc_cb::ServerAsyncReplier<HelloReply> replier_copy) override {
     std::string prefix("Hello ");
     std::cout << "SayHello: " << request.name() << std::endl;
-    reply->set_message(prefix + request.name());
-    return Status::OK;
+    HelloReply reply;
+    reply.set_message(prefix + request.name());
+    replier_copy.Reply(reply);  // TODO: demo delayed reply.
   }
 };
 

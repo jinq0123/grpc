@@ -266,6 +266,8 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\server_async_msg_replier.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\server_async_replier.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\service.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h" />
@@ -273,7 +275,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h" />
-    <ClInclude Include="..\..\..\src\cpp_cb\server\server_async_msg_replier.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h" />
   </ItemGroup>
   <ItemGroup>
