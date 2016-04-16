@@ -101,12 +101,13 @@ const std::string& Service::GetMethodName(size_t method_index) const {
   return method_names[method_index];
 }
 
-::grpc_cb::Status Service::CallMethod(size_t method_index,
-                                      grpc_byte_buffer& request_buffer) {
+::grpc_cb::Status Service::CallMethod(
+    size_t method_index, grpc_byte_buffer& request_buffer,
+    const ::grpc_cb::ServerAsyncMsgReplier& replier) {
   assert(method_index < GetMethodCount());
   switch (method_index) {
   case 0:
-    return SayHello(request_buffer);
+    return SayHello(request_buffer);  // , ServerAsyncReplier<>);
   }  // switch
   assert(false);
   return ::grpc_cb::Status::InternalError("CallMethod() error");

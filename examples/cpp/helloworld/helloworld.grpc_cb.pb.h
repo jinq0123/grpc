@@ -12,17 +12,6 @@
 
 #include "helloworld.pb.h"
 
-namespace google {
-namespace protobuf {
-class ServiceDescriptor;
-// class MethodDescriptor;
-}  // namespace protobuf
-}  // namespace google
-
-namespace grpc_cb {
-class RpcService;
-}  // namespace grpc_cb
-
 namespace helloworld {
 
 namespace Greeter {
@@ -71,9 +60,11 @@ class Service : public ::grpc_cb::Service {
 
   virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
   virtual ::grpc_cb::Status CallMethod(
-      size_t method_index, grpc_byte_buffer& request_buffer) GRPC_OVERRIDE;
+      size_t method_index, grpc_byte_buffer& request_buffer,
+      const ::grpc_cb::ServerAsyncMsgReplier& replier) GRPC_OVERRIDE;
 
-  virtual ::grpc_cb::Status SayHello(
+ private:
+  ::grpc_cb::Status SayHello(
       grpc_byte_buffer& request_buffer);
   virtual ::grpc_cb::Status SayHello(
       const ::helloworld::HelloRequest& request,

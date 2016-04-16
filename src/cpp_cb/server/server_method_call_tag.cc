@@ -5,6 +5,7 @@
 
 #include <google/protobuf/message.h>
 #include <grpc_cb/service.h>
+#include "server_async_msg_replier.h"  // for ServerAsyncMsgReplier
 
 namespace grpc_cb {
 
@@ -41,8 +42,9 @@ void ServerMethodCallTag::DoComplete(bool success)
   std::unique_ptr<Message> request;
   assert(service_);
   assert(payload_ptr_);
-  Status status = service_->CallMethod(method_index_, *payload_ptr_);
-  // XXX check status
+  assert(call_ptr_);
+  service_->CallMethod(method_index_, *payload_ptr_,
+                       ServerAsyncMsgReplier(call_ptr_));
 
   // Request the next method call.
   // Calls grpc_server_request_registered_call() in ctr().

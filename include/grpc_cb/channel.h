@@ -18,8 +18,6 @@ struct grpc_completion_queue;
 
 namespace grpc_cb {
 
-class Call;
-
 /// Channel represents a connection to an endpoint.
 class Channel : public GrpcLibrary,
                 public std::enable_shared_from_this<Channel> {

@@ -6,7 +6,7 @@
 #include <grpc/support/alloc.h>  // for gpr_free()
 #include <grpc_cb/support/status.h>
 
-#include "src/cpp_cb/proto/proto_utils.h"
+#include "src/cpp_cb/proto/proto_utils.h"  // for SerializeProto()
 
 namespace grpc_cb {
 

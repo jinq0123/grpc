@@ -34,6 +34,9 @@
     <ClCompile Include="..\..\..\src\cpp_cb\server\service.cc">
       <Filter>src\cpp_cb\server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\server\server_async_msg_replier.cc">
+      <Filter>src\cpp_cb\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -107,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h">
       <Filter>include\grp_cb\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\cpp_cb\server\server_async_msg_replier.h">
+      <Filter>src\cpp_cb\server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

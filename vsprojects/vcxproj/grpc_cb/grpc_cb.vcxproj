@@ -273,6 +273,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\server\server_async_msg_replier.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h" />
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +284,7 @@
     <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\server\server_async_msg_replier.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_credentials.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_method_call_tag.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\service.cc" />
