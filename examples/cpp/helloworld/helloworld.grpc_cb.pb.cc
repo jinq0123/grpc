@@ -108,8 +108,7 @@ void Service::CallMethod(
   assert(method_index < GetMethodCount());
   switch (method_index) {
     case 0:
-      SayHello(
-          request_buffer,
+      SayHello(request_buffer,
           ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>(msg_replier));
       return;
   }  // switch

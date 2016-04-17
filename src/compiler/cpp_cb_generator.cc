@@ -120,25 +120,13 @@ grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
 
     printer.Print(vars,
       "#include <grpc_cb/channel_sptr.h>\n"
-      "#include <grpc_cb/error_callback.h>  // for ErrorCallback\n"
+      "#include <grpc_cb/error_callback.h>        // for ErrorCallback\n"
+      "#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>\n"
       "#include <grpc_cb/service.h>\n"
       "#include <grpc_cb/service_stub.h>\n"
       "#include <grpc_cb/support/status.h>\n"
       "\n"
       "#include \"$filename_base$.pb.h\"\n"
-      "\n");
-    printer.Print(
-      "namespace google {\n"
-      "namespace protobuf {\n"
-      "class ServiceDescriptor;\n"
-      "// class MethodDescriptor;\n"
-      "}  // namespace protobuf\n"
-      "}  // namespace google\n"
-      "\n");
-    printer.Print(
-      "namespace grpc_cb {\n"
-      "class RpcService;\n"
-      "}  // namespace grpc_cb\n"
       "\n");
 
     if (!file->package().empty()) {
@@ -329,11 +317,13 @@ void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
       grpc_cpp_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(*vars,
-        "virtual ::grpc_cb::Status $Method$(\n"
-        "    grpc_byte_buffer& request_buffer);\n"
-        "virtual ::grpc_cb::Status $Method$(\n"
+        "using $Method$Replier = ::grpc_cb::ServerAsyncReplier<$Response$>;\n"
+        "void $Method$(\n"
+        "    grpc_byte_buffer& request_buffer,\n"
+        "    const $Method$Replier& replier);\n"
+        "virtual void $Method$(\n"
         "    const $Request$& request,\n"
-        "    $Response$* response);\n");
+        "    $Method$Replier replier_copy);\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
         "virtual ::grpc_cb::Status $Method$(\n"
@@ -445,9 +435,12 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   printer->Print("virtual ~Service();\n");
   printer->Print("\n");
   printer->Print("virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;\n");
-  printer->Print("virtual ::grpc_cb::Status CallMethod(\n"
-                  "    size_t method_index, grpc_byte_buffer& request_buffer) GRPC_OVERRIDE;\n");
-  printer->Print("\n");
+  printer->Print("virtual void CallMethod(\n"
+                  "    size_t method_index, grpc_byte_buffer& request_buffer,\n"
+                  "    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) GRPC_OVERRIDE;\n");
+  printer->Outdent();
+  printer->Print("\n private:\n");
+  printer->Indent();
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderServerMethodSync(printer, service->method(i), vars);
   }
@@ -557,6 +550,7 @@ grpc::string GetSourceIncludes(const grpc::protobuf::FileDescriptor *file,
     printer.Print("#include <grpc_cb/completion_queue.h>\n");
     printer.Print("#include <grpc_cb/impl/call.h>\n");
     printer.Print("#include <grpc_cb/impl/proto_utils.h>  // for Deserialize()\n");
+    printer.Print("#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>\n");
     printer.Print("\n");
 
     if (!file->package().empty()) {
@@ -775,24 +769,25 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
       grpc_cpp_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(*vars,
-        "::grpc_cb::Status Service::$Method$(\n"
-        "    grpc_byte_buffer& request_buffer) {\n"
+        "void Service::$Method$(\n"
+        "    grpc_byte_buffer& request_buffer,\n"
+        "    const $Method$Replier& replier) {\n"
         "  using Request = $Request$;\n"
         "  Request request;\n"
         "  ::grpc_cb::Status status =\n"
         "      ::grpc_cb::SerializationTraits<Request>::Deserialize(\n"
         "          &request_buffer, &request, 0 /* TODO: max_message_size*/);\n"
         "  if (status.ok()) {\n"
-        "    return $Method$(request, nullptr);  // XXX replier\n"
+        "    $Method$(request, replier);\n"
+        "    return;\n"
         "  }\n"
-        "  return status;  // XXX reply error\n"
+        "  $Method$Replier(replier).ReplyError(status);\n"
         "}\n"
-        "::grpc_cb::Status Service::$Method$(\n"
+        "void Service::$Method$(\n"
         "    const $Request$& request,\n"
-        "    $Response$* response) {\n"
+        "    $Method$Replier replier_copy) {\n"
         "  (void) request;\n"
-        "  (void) response;\n"
-        "  return ::grpc_cb::Status::UNIMPLEMENTED;\n"
+        "  replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);\n"
         "}\n\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
@@ -971,21 +966,27 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
                   "}\n\n");
 
   // CallMethod() print begin.
-  printer->Print("::grpc_cb::Status Service::CallMethod(size_t method_index,\n"
-                  "                                      grpc_byte_buffer& request_buffer) {\n"
-                  "  assert(method_index < GetMethodCount());\n"
-                  "  switch (method_index) {\n");
+  printer->Print("void Service::CallMethod(\n"
+                 "    size_t method_index, grpc_byte_buffer& request_buffer,\n"
+                 "    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) {\n"
+                 "  assert(method_index < GetMethodCount());\n"
+                 "  switch (method_index) {\n");
   for (int i = 0; i < service->method_count(); ++i) {
     (*vars)["Idx"] = as_string(i);
     (*vars)["Method"] = service->method(i)->name();
+    (*vars)["Response"] =
+        grpc_cpp_generator::ClassName(service->method(i)->output_type(), true);
     printer->Print(*vars,
-                    "  case $Idx$:\n"
-                    "    return $Method$(request_buffer);\n");
+                    "    case $Idx$:\n"
+                    "      $Method$(request_buffer,\n"
+                    "          ::grpc_cb::ServerAsyncReplier<$Response$>(msg_replier));\n"
+                    "      return;\n");
   }  // for
   printer->Print("  }  // switch\n"
-                  "  assert(false);\n"
-                  "  return ::grpc_cb::Status::InternalError(\"CallMethod() error\");\n"
-                  "}\n\n");
+                 "  assert(false);\n"
+                 "  ::grpc_cb::ServerAsyncMsgReplier(msg_replier).ReplyError(\n"
+                 "      ::grpc_cb::Status::InternalError(\"CallMethod() error\"));\n"
+                 "}\n\n");
   // CallMethod() print end.
 
   for (int i = 0; i < service->method_count(); ++i) {
