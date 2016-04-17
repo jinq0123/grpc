@@ -317,13 +317,12 @@ void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
       grpc_cpp_generator::ClassName(method->output_type(), true);
   if (NoStreaming(method)) {
     printer->Print(*vars,
-        "using $Method$Replier = ::grpc_cb::ServerAsyncReplier<$Response$>;\n"
         "void $Method$(\n"
         "    grpc_byte_buffer& request_buffer,\n"
-        "    const $Method$Replier& replier);\n"
+        "    const ::grpc_cb::ServerAsyncReplier<$Response$>& replier);\n"
         "virtual void $Method$(\n"
         "    const $Request$& request,\n"
-        "    $Method$Replier replier_copy);\n");
+        "    ::grpc_cb::ServerAsyncReplier<$Response$> replier_copy);\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
         "virtual ::grpc_cb::Status $Method$(\n"
@@ -771,7 +770,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
     printer->Print(*vars,
         "void Service::$Method$(\n"
         "    grpc_byte_buffer& request_buffer,\n"
-        "    const $Method$Replier& replier) {\n"
+        "    const ::grpc_cb::ServerAsyncReplier<$Response$>& replier) {\n"
         "  using Request = $Request$;\n"
         "  Request request;\n"
         "  ::grpc_cb::Status status =\n"
@@ -781,11 +780,12 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
         "    $Method$(request, replier);\n"
         "    return;\n"
         "  }\n"
-        "  $Method$Replier(replier).ReplyError(status);\n"
+        "  ::grpc_cb::ServerAsyncReplier<$Response$>(\n"
+        "      replier).ReplyError(status);\n"
         "}\n"
         "void Service::$Method$(\n"
         "    const $Request$& request,\n"
-        "    $Method$Replier replier_copy) {\n"
+        "    ::grpc_cb::ServerAsyncReplier<$Response$> replier_copy) {\n"
         "  (void) request;\n"
         "  replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);\n"
         "}\n\n");

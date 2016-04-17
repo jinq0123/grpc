@@ -119,7 +119,7 @@ void Service::CallMethod(
 
 void Service::SayHello(
     grpc_byte_buffer& request_buffer,
-    const SayHelloReplier& replier) {
+    const ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>& replier) {
   using Request = ::helloworld::HelloRequest;
   Request request;
   ::grpc_cb::Status status =
@@ -129,11 +129,12 @@ void Service::SayHello(
     SayHello(request, replier);
     return;
   }
-  SayHelloReplier(replier).ReplyError(status);
+  ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>(
+      replier).ReplyError(status);
 }
 void Service::SayHello(
     const ::helloworld::HelloRequest& request,
-    SayHelloReplier replier_copy) {
+    ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply> replier_copy) {
   (void) request;
   replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }

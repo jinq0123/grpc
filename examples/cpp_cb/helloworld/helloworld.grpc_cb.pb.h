@@ -65,13 +65,12 @@ class Service : public ::grpc_cb::Service {
       const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) GRPC_OVERRIDE;
 
  private:
-  using SayHelloReplier = ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>;
   void SayHello(
       grpc_byte_buffer& request_buffer,
-      const SayHelloReplier& replier);
+      const ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>& replier);
   virtual void SayHello(
       const ::helloworld::HelloRequest& request,
-      SayHelloReplier replier_copy);
+      ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply> replier_copy);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
