@@ -46,8 +46,9 @@ using helloworld::HelloReply;
 
 // Logic and data behind the server's behavior.
 class GreeterServiceImpl final : public helloworld::Greeter::Service {
-  void SayHello(const HelloRequest& request,
-                ::grpc_cb::ServerAsyncReplier<HelloReply> replier_copy) override {
+  void SayHello(
+      const HelloRequest& request,
+      ::grpc_cb::ServerAsyncReplier<HelloReply> replier_copy) override {
     std::string prefix("Hello ");
     std::cout << "SayHello: " << request.name() << std::endl;
     HelloReply reply;
