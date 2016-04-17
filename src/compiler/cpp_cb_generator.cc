@@ -178,7 +178,7 @@ void PrintHeaderClientMethodPublic(
           "void Async$Method$(\n"
           "    const $Request$& request,\n"
           "    const $Method$Callback& cb,\n"
-          "    const ::grpc_cb::ErrorCallback& err_cb);\n");
+          "    const ::grpc_cb::ErrorCallback& err_cb);\n\n");
   } else if (ClientOnlyStreaming(method)) {
       printer->Print(
           *vars,
@@ -202,7 +202,7 @@ void PrintHeaderClientMethodPublic(
           "return std::unique_ptr< ::grpc_cb::ClientAsyncWriter< $Request$>>("
           "Async$Method$Raw(context, response, cq, tag));\n");
       printer->Outdent();
-      printer->Print("}\n");
+      printer->Print("}\n\n");
   } else if (ServerOnlyStreaming(method)) {
       printer->Print(
           *vars,
@@ -228,7 +228,7 @@ void PrintHeaderClientMethodPublic(
           "return std::unique_ptr< ::grpc_cb::ClientAsyncReader< $Response$>>("
           "Async$Method$Raw(context, request, cq, tag));\n");
       printer->Outdent();
-      printer->Print("}\n");
+      printer->Print("}\n\n");
   } else if (BidiStreaming(method)) {
       printer->Print(
           *vars,
@@ -252,7 +252,7 @@ void PrintHeaderClientMethodPublic(
                      "::grpc_cb::ClientAsyncReaderWriter< $Request$, $Response$>>("
                      "Async$Method$Raw(context, cq, tag));\n");
       printer->Outdent();
-      printer->Print("}\n");
+      printer->Print("}\n\n");
   }
 }
 
@@ -322,24 +322,24 @@ void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
         "    const ::grpc_cb::ServerAsyncReplier<$Response$>& replier);\n"
         "virtual void $Method$(\n"
         "    const $Request$& request,\n"
-        "    ::grpc_cb::ServerAsyncReplier<$Response$> replier_copy);\n");
+        "    ::grpc_cb::ServerAsyncReplier<$Response$> replier_copy);\n\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
         "virtual ::grpc_cb::Status $Method$(\n"
         "    ::grpc_cb::ServerContext* context,\n"
         "    ::grpc_cb::ServerReader< $Request$>* reader,\n"
-        "    $Response$* response);\n");
+        "    $Response$* response);\n\n");
   } else if (ServerOnlyStreaming(method)) {
     printer->Print(*vars,
         "virtual ::grpc_cb::Status $Method$(\n"
         "    ::grpc_cb::ServerContext* context,\n"
         "    const $Request$* request,\n"
-        "    ::grpc_cb::ServerWriter< $Response$>* writer);\n");
+        "    ::grpc_cb::ServerWriter< $Response$>* writer);\n\n");
   } else if (BidiStreaming(method)) {
     printer->Print(*vars,
         "virtual ::grpc_cb::Status $Method$(\n"
         "    ::grpc_cb::ServerContext* context,\n"
-        "    ::grpc_cb::ServerReaderWriter< $Response$, $Request$>* stream);\n");
+        "    ::grpc_cb::ServerReaderWriter< $Response$, $Request$>* stream);\n\n");
   }
 }
 
@@ -409,7 +409,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
     PrintHeaderClientMethodPublic(printer, service->method(i), vars);
   }
   printer->Outdent();
-  printer->Print("\n private:\n");
+  printer->Print(" private:\n");
   printer->Indent();
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderClientMethodPrivate(printer, service->method(i), vars);
@@ -436,15 +436,15 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   printer->Print("virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;\n");
   printer->Print("virtual void CallMethod(\n"
                   "    size_t method_index, grpc_byte_buffer& request_buffer,\n"
-                  "    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) GRPC_OVERRIDE;\n");
+                  "    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) GRPC_OVERRIDE;\n\n");
   printer->Outdent();
-  printer->Print("\n private:\n");
+  printer->Print(" private:\n");
   printer->Indent();
   for (int i = 0; i < service->method_count(); ++i) {
     PrintHeaderServerMethodSync(printer, service->method(i), vars);
   }
   printer->Outdent();
-  printer->Print("\n private:\n");
+  printer->Print(" private:\n");
   printer->Indent();
   printer->Print(
       "virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()\n"
