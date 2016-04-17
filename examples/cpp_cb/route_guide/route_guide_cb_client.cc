@@ -44,7 +44,7 @@
 #include <grpc++/create_channel.h>
 #include <grpc++/security/credentials.h>
 #include "helper.h"
-#include "route_guide.grpc.pb.h"
+#include "route_guide.grpc_cb.pb.h"
 
 using grpc::Channel;
 using grpc::ClientContext;

@@ -3,7 +3,7 @@
 // source: route_guide.proto
 
 #include "route_guide.pb.h"
-#include "route_guide.grpc.pb.h"
+#include "route_guide.grpc_cb.pb.h"
 
 #include <grpc++/channel.h>
 #include <grpc++/impl/client_unary_call.h>

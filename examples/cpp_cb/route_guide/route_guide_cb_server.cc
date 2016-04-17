@@ -44,7 +44,7 @@
 #include <grpc++/server_context.h>
 #include <grpc++/security/server_credentials.h>
 #include "helper.h"
-#include "route_guide.grpc.pb.h"
+#include "route_guide.grpc_cb.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;

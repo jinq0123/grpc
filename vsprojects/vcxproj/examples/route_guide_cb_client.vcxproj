@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2FF7D44F-17F6-4775-805D-2FEBE4871FC0}</ProjectGuid>
+    <ProjectGuid>{27BA0715-36D5-4E6F-9669-4515822CF71C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>route_guide_client</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -173,15 +173,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\examples\cpp\route_guide\helper.cc" />
-    <ClCompile Include="..\..\..\examples\cpp\route_guide\route_guide.grpc.pb.cc" />
-    <ClCompile Include="..\..\..\examples\cpp\route_guide\route_guide.pb.cc" />
-    <ClCompile Include="..\..\..\examples\cpp\route_guide\route_guide_client.cc" />
+    <ClCompile Include="..\..\..\examples\cpp_cb\route_guide\helper.cc" />
+    <ClCompile Include="..\..\..\examples\cpp_cb\route_guide\route_guide.grpc_cb.pb.cc" />
+    <ClCompile Include="..\..\..\examples\cpp_cb\route_guide\route_guide.pb.cc" />
+    <ClCompile Include="..\..\..\examples\cpp_cb\route_guide\route_guide_cb_client.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\examples\cpp\route_guide\helper.h" />
-    <ClInclude Include="..\..\..\examples\cpp\route_guide\route_guide.grpc.pb.h" />
-    <ClInclude Include="..\..\..\examples\cpp\route_guide\route_guide.pb.h" />
+    <ClInclude Include="..\..\..\examples\cpp_cb\route_guide\helper.h" />
+    <ClInclude Include="..\..\..\examples\cpp_cb\route_guide\route_guide.grpc_cb.pb.h" />
+    <ClInclude Include="..\..\..\examples\cpp_cb\route_guide\route_guide.pb.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\grpc++\grpc++.vcxproj">
