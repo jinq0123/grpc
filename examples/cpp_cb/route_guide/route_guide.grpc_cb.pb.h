@@ -49,38 +49,18 @@ class Stub : public ::grpc_cb::ServiceStub {
       const GetFeatureCallback& cb,
       const ::grpc_cb::ErrorCallback& err_cb);
 
-  std::unique_ptr< ::grpc_cb::ClientReader< ::routeguide::Feature>> ListFeatures(::grpc_cb::ClientContext* context, const ::routeguide::Rectangle& request) {
-    return std::unique_ptr< ::grpc_cb::ClientReader< ::routeguide::Feature>>(ListFeaturesRaw(context, request));
-  }
-  std::unique_ptr< ::grpc_cb::ClientAsyncReader< ::routeguide::Feature>> AsyncListFeatures(::grpc_cb::ClientContext* context, const ::routeguide::Rectangle& request, ::grpc_cb::CompletionQueue* cq, void* tag) {
-    return std::unique_ptr< ::grpc_cb::ClientAsyncReader< ::routeguide::Feature>>(AsyncListFeaturesRaw(context, request, cq, tag));
-  }
+  ::grpc_cb::ClientReader<::routeguide::Feature>>
+  ListFeatures(const ::routeguide::Rectangle& request);
 
-  std::unique_ptr< ::grpc_cb::ClientWriter< ::routeguide::Point>> RecordRoute(::grpc_cb::ClientContext* context, ::routeguide::RouteSummary* response) {
-    return std::unique_ptr< ::grpc_cb::ClientWriter< ::routeguide::Point>>(RecordRouteRaw(context, response));
-  }
-  std::unique_ptr< ::grpc_cb::ClientAsyncWriter< ::routeguide::Point>> AsyncRecordRoute(::grpc_cb::ClientContext* context, ::routeguide::RouteSummary* response, ::grpc_cb::CompletionQueue* cq, void* tag) {
-    return std::unique_ptr< ::grpc_cb::ClientAsyncWriter< ::routeguide::Point>>(AsyncRecordRouteRaw(context, response, cq, tag));
-  }
+  ::grpc_cb::ClientWriter<::routeguide::Point>>
+  RecordRoute(::routeguide::RouteSummary* response);
 
-  std::unique_ptr< ::grpc_cb::ClientReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>> RouteChat(::grpc_cb::ClientContext* context) {
-    return std::unique_ptr< ::grpc_cb::ClientReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>>(RouteChatRaw(context));
-  }
-  std::unique_ptr<  ::grpc_cb::ClientAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>> AsyncRouteChat(::grpc_cb::ClientContext* context, ::grpc_cb::CompletionQueue* cq, void* tag) {
-    return std::unique_ptr< ::grpc_cb::ClientAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>>(AsyncRouteChatRaw(context, cq, tag));
-  }
+  ::grpc_cb::ClientReaderWriter<
+    ::routeguide::RouteNote,
+    ::routeguide::RouteNote>>
+  RouteChat();
 
  private:
-  ::grpc_cb::ClientReader< ::routeguide::Feature>* ListFeaturesRaw(::grpc_cb::ClientContext* context, const ::routeguide::Rectangle& request) GRPC_OVERRIDE;
-  ::grpc_cb::ClientAsyncReader< ::routeguide::Feature>* AsyncListFeaturesRaw(::grpc_cb::ClientContext* context, const ::routeguide::Rectangle& request, ::grpc_cb::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
-  ::grpc_cb::ClientWriter< ::routeguide::Point>* RecordRouteRaw(::grpc_cb::ClientContext* context, ::routeguide::RouteSummary* response) GRPC_OVERRIDE;
-  ::grpc_cb::ClientAsyncWriter< ::routeguide::Point>* AsyncRecordRouteRaw(::grpc_cb::ClientContext* context, ::routeguide::RouteSummary* response, ::grpc_cb::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
-  ::grpc_cb::ClientReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* RouteChatRaw(::grpc_cb::ClientContext* context) GRPC_OVERRIDE;
-  ::grpc_cb::ClientAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* AsyncRouteChatRaw(::grpc_cb::ClientContext* context, ::grpc_cb::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
-  // const ::grpc_cb::RpcMethod rpcmethod_GetFeature_;
-  // const ::grpc_cb::RpcMethod rpcmethod_ListFeatures_;
-  // const ::grpc_cb::RpcMethod rpcmethod_RecordRoute_;
-  // const ::grpc_cb::RpcMethod rpcmethod_RouteChat_;
 };
 
 std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelSptr& channel);
@@ -104,18 +84,15 @@ class Service : public ::grpc_cb::Service {
       ::grpc_cb::ServerAsyncReplier<::routeguide::Feature> replier_copy);
 
   virtual ::grpc_cb::Status ListFeatures(
-      ::grpc_cb::ServerContext* context,
-      const ::routeguide::Rectangle* request,
-      ::grpc_cb::ServerWriter< ::routeguide::Feature>* writer);
+      const ::routeguide::Rectangle& request,
+      ::grpc_cb::ServerWriter<::routeguide::Feature> writer);
 
   virtual ::grpc_cb::Status RecordRoute(
-      ::grpc_cb::ServerContext* context,
-      ::grpc_cb::ServerReader< ::routeguide::Point>* reader,
-      ::routeguide::RouteSummary* response);
+      ::grpc_cb::ServerReader<::routeguide::Point> reader,
+      ::grpc_cb::ServerAsyncReplier<::routeguide::RouteSummary> replier_copy);
 
   virtual ::grpc_cb::Status RouteChat(
-      ::grpc_cb::ServerContext* context,
-      ::grpc_cb::ServerReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* stream);
+      ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote, ::routeguide::RouteNote> stream);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
