@@ -130,6 +130,8 @@ grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
       "\n");
 
     if (!file->package().empty()) {
+      vars["package"] = file->package();
+      printer.Print(vars, "// package $package$\n");
       std::vector<grpc::string> parts =
           grpc_generator::tokenize(file->package(), ".");
 
@@ -393,7 +395,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   (*vars)["Service"] = service->name();
 
   printer->Print(*vars,
-      "namespace $Service$ {\n\n");
+      "namespace $Service$ {  // service $Service$\n\n");
 
   printer->Print(
       "const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor();\n\n");

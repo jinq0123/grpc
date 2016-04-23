@@ -13,9 +13,10 @@
 
 #include "route_guide.pb.h"
 
+// package routeguide
 namespace routeguide {
 
-namespace RouteGuide {
+namespace RouteGuide {  // service RouteGuide
 
 const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor();
 

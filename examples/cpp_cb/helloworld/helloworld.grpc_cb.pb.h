@@ -13,9 +13,10 @@
 
 #include "helloworld.pb.h"
 
+// package helloworld
 namespace helloworld {
 
-namespace Greeter {
+namespace Greeter {  // service Greeter
 
 const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor();
 
