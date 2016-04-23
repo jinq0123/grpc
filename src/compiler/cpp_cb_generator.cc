@@ -673,7 +673,7 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
     printer->Print(*vars,
         "void Stub::Async$Method$(\n"
         "    const $Request$& request,\n"
-        "    const SayHelloCallback& cb,\n"
+        "    const $Method$Callback& cb,\n"
         "    const ::grpc_cb::ErrorCallback& err_cb) {\n"
         "  assert(cb && err_cb && cq_);\n"
         "  ::grpc_cb::CallUptr call_uptr(\n"
