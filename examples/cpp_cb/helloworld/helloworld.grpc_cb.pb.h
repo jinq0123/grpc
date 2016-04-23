@@ -24,12 +24,12 @@ class Stub : public ::grpc_cb::ServiceStub {
  public:
   Stub(const ::grpc_cb::ChannelSptr& channel);
 
-  inline ::grpc_cb::Status SayHello(
+  inline ::grpc_cb::Status BlockingSayHello(
        const ::helloworld::HelloRequest& request) {
     ::helloworld::HelloReply response;
-    return SayHello(request, &response);  // Ignore response.
+    return BlockingSayHello(request, &response);  // Ignore response.
   }
-  ::grpc_cb::Status SayHello(
+  ::grpc_cb::Status BlockingSayHello(
       const ::helloworld::HelloRequest& request,
       ::helloworld::HelloReply* response);
 

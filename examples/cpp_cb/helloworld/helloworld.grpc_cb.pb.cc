@@ -59,7 +59,7 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
     // , rpcmethod_SayHello_(method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc_cb::Status Stub::SayHello(
+::grpc_cb::Status Stub::BlockingSayHello(
     const ::helloworld::HelloRequest& request,
     ::helloworld::HelloReply* response) {
   assert(response);

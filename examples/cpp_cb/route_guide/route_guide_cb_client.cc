@@ -194,7 +194,7 @@ class RouteGuideClient {
  private:
 
   bool GetOneFeature(const Point& point, Feature* feature) {
-    Status status = stub_->GetFeature(point, feature);
+    Status status = stub_->BlockingGetFeature(point, feature);
     if (!status.ok()) {
       std::cout << "GetFeature rpc failed." << std::endl;
       return false;

@@ -30,7 +30,7 @@ class GreeterClient {
     HelloReply reply;
 
     // The actual RPC.
-    Status status = stub_->SayHello(request, &reply);
+    Status status = stub_->BlockingSayHello(request, &reply);
 
     // Act upon its status.
     if (status.ok()) {

@@ -62,7 +62,7 @@ std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelSptr& channel) {
 Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
     : ::grpc_cb::ServiceStub(channel) {}
 
-::grpc_cb::Status Stub::GetFeature(
+::grpc_cb::Status Stub::BlockingGetFeature(
     const ::routeguide::Point& request,
     ::routeguide::Feature* response) {
   assert(response);

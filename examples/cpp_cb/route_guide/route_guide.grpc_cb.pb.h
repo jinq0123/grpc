@@ -30,12 +30,12 @@ class Stub : public ::grpc_cb::ServiceStub {
  public:
   Stub(const ::grpc_cb::ChannelSptr& channel);
 
-  inline ::grpc_cb::Status GetFeature(
+  inline ::grpc_cb::Status BlockingGetFeature(
        const ::routeguide::Point& request) {
     ::routeguide::Feature response;
-    return GetFeature(request, &response);  // Ignore response.
+    return BlockingGetFeature(request, &response);  // Ignore response.
   }
-  ::grpc_cb::Status GetFeature(
+  ::grpc_cb::Status BlockingGetFeature(
       const ::routeguide::Point& request,
       ::routeguide::Feature* response);
 

@@ -157,12 +157,12 @@ void PrintHeaderClientMethodPublic(
 
   if (NoStreaming(method)) {
       printer->Print(*vars,
-          "inline ::grpc_cb::Status $Method$(\n"
+          "inline ::grpc_cb::Status Blocking$Method$(\n"
           "     const $Request$& request) {\n"
           "  $Response$ response;\n"
-          "  return $Method$(request, &response);  // Ignore response.\n"
+          "  return Blocking$Method$(request, &response);  // Ignore response.\n"
           "}\n"
-          "::grpc_cb::Status $Method$(\n"
+          "::grpc_cb::Status Blocking$Method$(\n"
           "    const $Request$& request,\n"
           "    $Response$* response);\n"
           "\n"
