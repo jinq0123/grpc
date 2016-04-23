@@ -21,7 +21,7 @@ class GreeterClient {
 
   // Assambles the client's payload, sends it and presents the response back
   // from the server.
-  std::string SayHello(const std::string& user) {
+  std::string BlockingSayHello(const std::string& user) {
     // Data we are sending to the server.
     HelloRequest request;
     request.set_name(user);
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   ChannelSptr channel(new Channel("localhost:50051"));
   GreeterClient greeter(channel);
   std::string user("world");
-  std::string reply = greeter.SayHello(user);
+  std::string reply = greeter.BlockingSayHello(user);
   std::cout << "Greeter received: " << reply << std::endl;
 
   // Async client.
@@ -58,6 +58,6 @@ int main(int argc, char** argv) {
   stub.AsyncSayHello(request, [](const helloworld::HelloReply& resp) {
       std::cout << "Async greeter received: " << resp.message() << std::endl;
     });
-  stub.Run();  // Blocking.
+  stub.BlockingRun();
   return 0;
 }

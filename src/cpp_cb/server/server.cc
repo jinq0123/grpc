@@ -70,7 +70,7 @@ void Server::ShutdownInternal(gpr_timespec deadline) {
   cq_->Shutdown();
 }
 
-void Server::Run() {
+void Server::BlockingRun() {
   assert(!started_);
   assert(!shutdown_);
   assert(server_);

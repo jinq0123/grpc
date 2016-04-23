@@ -48,7 +48,7 @@ class ServiceStub {
   static void IgnoreResponse(const ResponseType&) {}
 
  public:
-  void Run();  // Blocking.
+  void BlockingRun();
   // Request the shutdown of all runs.
   void Shutdown();
 

@@ -22,7 +22,7 @@ ServiceStub::~ServiceStub() {
 }
 
 // Blocking run stub.
-void ServiceStub::Run() {
+void ServiceStub::BlockingRun() {
   assert(cq_);
   CompletionQueue& cq = *cq_;
   while (true) {

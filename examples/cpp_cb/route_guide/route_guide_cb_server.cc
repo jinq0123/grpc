@@ -185,7 +185,7 @@ void RunServer(const std::string& db_path) {
   svr.AddListeningPort(server_address);
   svr.RegisterService(service);
   std::cout << "Server listening on " << server_address << std::endl;
-  svr.Run();
+  svr.BlockingRun();
 }
 
 int main(int argc, char** argv) {
