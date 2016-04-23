@@ -57,9 +57,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\client_context.h">
-      <Filter>include\grp_cb</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
@@ -117,6 +114,24 @@
     <ClInclude Include="..\..\..\include\grpc_cb\server_async_msg_replier.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h">
+      <Filter>include\grp_cb\client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_writer.h">
+      <Filter>include\grp_cb\client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_writer.h">
+      <Filter>include\grp_cb\client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_reader.h">
+      <Filter>include\grp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_reader_writer.h">
+      <Filter>include\grp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_writer.h">
+      <Filter>include\grp_cb\server</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -154,6 +169,12 @@
     </Filter>
     <Filter Include="include\grp_cb\security">
       <UniqueIdentifier>{36156f41-23a2-4c61-b9bf-d6c1f02b1058}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\grp_cb\client">
+      <UniqueIdentifier>{49d5ec60-ee8a-40a4-b8b5-586b1c79dedc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\grp_cb\server">
+      <UniqueIdentifier>{5b9f9d62-4174-4c2d-b797-519b3cf0b74a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

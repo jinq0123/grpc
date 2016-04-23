@@ -173,11 +173,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\grpc++\grpc++.vcxproj">
-      <Project>{c187a093-a0fe-489d-a40a-6e33de0f9feb}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\examples\cpp_cb\route_guide\helper.cc" />
     <ClCompile Include="..\..\..\examples\cpp_cb\route_guide\route_guide.grpc_cb.pb.cc" />
     <ClCompile Include="..\..\..\examples\cpp_cb\route_guide\route_guide.pb.cc" />
@@ -187,6 +182,11 @@
     <ClInclude Include="..\..\..\examples\cpp_cb\route_guide\helper.h" />
     <ClInclude Include="..\..\..\examples\cpp_cb\route_guide\route_guide.grpc_cb.pb.h" />
     <ClInclude Include="..\..\..\examples\cpp_cb\route_guide\route_guide.pb.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\grpc_cb\grpc_cb.vcxproj">
+      <Project>{c187a093-a0fe-489d-a40a-6e33de0f9fec}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

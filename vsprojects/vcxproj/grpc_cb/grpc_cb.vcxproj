@@ -255,7 +255,9 @@
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h" />
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\service_stub.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\channel_sptr.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\client_context.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_writer.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_ptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_tag.h" />
@@ -266,6 +268,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_reader.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_reader_writer.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server_async_msg_replier.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server_async_replier.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\service.h" />

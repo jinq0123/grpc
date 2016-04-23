@@ -12,7 +12,6 @@
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
-
 struct grpc_channel;
 struct grpc_completion_queue;
 

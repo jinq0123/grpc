@@ -5,7 +5,13 @@
 #define GRPC_CB_route_5fguide_2eproto__INCLUDED
 
 #include <grpc_cb/channel_sptr.h>
-#include <grpc_cb/error_callback.h>        // for ErrorCallback
+#include <grpc_cb/client/client_reader.h>
+#include <grpc_cb/client/client_reader_writer.h>
+#include <grpc_cb/client/client_writer.h>
+#include <grpc_cb/error_callback.h>  // for ErrorCallback
+#include <grpc_cb/server/server_reader.h>
+#include <grpc_cb/server/server_reader_writer.h>
+#include <grpc_cb/server/server_writer.h>
 #include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 #include <grpc_cb/service.h>
 #include <grpc_cb/service_stub.h>
@@ -49,16 +55,24 @@ class Stub : public ::grpc_cb::ServiceStub {
       const GetFeatureCallback& cb,
       const ::grpc_cb::ErrorCallback& err_cb);
 
-  ::grpc_cb::ClientReader<::routeguide::Feature>>
-  ListFeatures(const ::routeguide::Rectangle& request);
+  ::grpc_cb::ClientReader<::routeguide::Feature>
+  ListFeatures(const ::routeguide::Rectangle& request) {
+    return ::grpc_cb::ClientReader<::routeguide::Feature>();
+  }
 
-  ::grpc_cb::ClientWriter<::routeguide::Point>>
-  RecordRoute(::routeguide::RouteSummary* response);
+  ::grpc_cb::ClientWriter<::routeguide::Point>
+  RecordRoute(::routeguide::RouteSummary* response) {
+    return ::grpc_cb::ClientWriter<::routeguide::Point>();
+  }
 
   ::grpc_cb::ClientReaderWriter<
     ::routeguide::RouteNote,
-    ::routeguide::RouteNote>>
-  RouteChat();
+    ::routeguide::RouteNote>
+  RouteChat() {
+    return ::grpc_cb::ClientReaderWriter<
+      ::routeguide::RouteNote,
+      ::routeguide::RouteNote>();
+  }
 
  private:
 };
