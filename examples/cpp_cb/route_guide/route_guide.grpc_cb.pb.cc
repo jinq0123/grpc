@@ -2,148 +2,218 @@
 // If you make any local change, they will be lost.
 // source: route_guide.proto
 
-#include "route_guide.pb.h"
 #include "route_guide.grpc_cb.pb.h"
 
-#include <grpc++/channel.h>
-#include <grpc++/impl/client_unary_call.h>
-#include <grpc++/impl/rpc_service_method.h>
-#include <grpc++/impl/service_type.h>
-#include <grpc++/support/async_unary_call.h>
-#include <grpc++/support/async_stream.h>
-#include <grpc++/support/sync_stream.h>
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/stubs/once.h>
+
+#include <grpc_cb/channel.h>
+#include <grpc_cb/completion_queue.h>
+#include <grpc_cb/impl/call.h>
+#include <grpc_cb/impl/proto_utils.h>  // for Deserialize()
+#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
+
 namespace routeguide {
 
-static const char* RouteGuide_method_names[] = {
+namespace {
+
+const ::google::protobuf::ServiceDescriptor* service_descriptor_RouteGuide = nullptr;
+
+void AssignDesc_route_5fguide_2eproto() {
+  // Get the file's descriptor from the pool.
+  const ::google::protobuf::FileDescriptor* file =
+    ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
+      "route_guide.proto");
+  GOOGLE_CHECK(file != NULL);
+  service_descriptor_RouteGuide = file->service(0);
+}  // AssignDesc_route_5fguide_2eproto()
+
+GOOGLE_PROTOBUF_DECLARE_ONCE(grpc_cb_AssignDescriptors_once_);
+inline void AssignDescriptorsOnce() {
+  ::google::protobuf::GoogleOnceInit(
+    &grpc_cb_AssignDescriptors_once_,
+    &AssignDesc_route_5fguide_2eproto);
+}
+
+}  // namespace
+
+namespace RouteGuide {
+
+static const std::string method_names[] = {
   "/routeguide.RouteGuide/GetFeature",
   "/routeguide.RouteGuide/ListFeatures",
   "/routeguide.RouteGuide/RecordRoute",
   "/routeguide.RouteGuide/RouteChat",
 };
 
-std::unique_ptr< RouteGuide::Stub> RouteGuide::NewStub(const std::shared_ptr< ::grpc::Channel>& channel, const ::grpc::StubOptions& options) {
-  std::unique_ptr< RouteGuide::Stub> stub(new RouteGuide::Stub(channel));
+const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor() {
+  AssignDescriptorsOnce();
+  assert(service_descriptor_RouteGuide);
+  return *service_descriptor_RouteGuide;
+}
+
+std::unique_ptr< Stub> NewStub(const ::grpc_cb::ChannelSptr& channel) {
+  std::unique_ptr< Stub> stub(new Stub(channel));
   return stub;
 }
 
-RouteGuide::Stub::Stub(const std::shared_ptr< ::grpc::Channel>& channel)
-  : channel_(channel), rpcmethod_GetFeature_(RouteGuide_method_names[0], ::grpc::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ListFeatures_(RouteGuide_method_names[1], ::grpc::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_RecordRoute_(RouteGuide_method_names[2], ::grpc::RpcMethod::CLIENT_STREAMING, channel)
-  , rpcmethod_RouteChat_(RouteGuide_method_names[3], ::grpc::RpcMethod::BIDI_STREAMING, channel)
+Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
+  : ::grpc_cb::ServiceStub(channel)
+    // , rpcmethod_GetFeature_(method_names[0], ::grpc_cb::RpcMethod::NORMAL_RPC, channel)
+
+    // , rpcmethod_ListFeatures_(method_names[1], ::grpc_cb::RpcMethod::SERVER_STREAMING, channel)
+
+    // , rpcmethod_RecordRoute_(method_names[2], ::grpc_cb::RpcMethod::CLIENT_STREAMING, channel)
+
+    // , rpcmethod_RouteChat_(method_names[3], ::grpc_cb::RpcMethod::BIDI_STREAMING, channel)
   {}
 
-::grpc::Status RouteGuide::Stub::GetFeature(::grpc::ClientContext* context, const ::routeguide::Point& request, ::routeguide::Feature* response) {
-  return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_GetFeature_, context, request, response);
+::grpc_cb::Status Stub::GetFeature(
+    const ::routeguide::Point& request,
+    ::routeguide::Feature* response) {
+  assert(response);
+  ::grpc_cb::CompletionQueue cq;
+  ::grpc_cb::CallUptr call(channel_->CreateCall(method_names[0], cq.cq()));
+  void* tag = call.get();
+  grpc_cb::Status status = call->StartBatch(request, tag);
+  if (!status.ok()) return status;
+  cq.Pluck(tag);
+  return call->GetResponse(response);
 }
 
-::grpc::ClientAsyncResponseReader< ::routeguide::Feature>* RouteGuide::Stub::AsyncGetFeatureRaw(::grpc::ClientContext* context, const ::routeguide::Point& request, ::grpc::CompletionQueue* cq) {
-  return new ::grpc::ClientAsyncResponseReader< ::routeguide::Feature>(channel_.get(), cq, rpcmethod_GetFeature_, context, request);
+void Stub::AsyncGetFeature(
+    const ::routeguide::Point& request,
+    const SayHelloCallback& cb,
+    const ::grpc_cb::ErrorCallback& err_cb) {
+  assert(cb && err_cb && cq_);
+  ::grpc_cb::CallUptr call_uptr(
+      channel_->CreateCall(method_names[0], cq_->cq()));
+  ::grpc_cb::Call* call = call_uptr.get();
+  ::grpc_cb::CompletionQueueTag* tag =
+      NewCompletionQueueTag(std::move(call_uptr), cb, err_cb);
+  grpc_cb::Status status = call->StartBatch(request, tag);
+  if (!status.ok()) {
+    DeleteCompletionQueueTag(tag);
+    err_cb(status);
+  }
 }
 
-::grpc::ClientReader< ::routeguide::Feature>* RouteGuide::Stub::ListFeaturesRaw(::grpc::ClientContext* context, const ::routeguide::Rectangle& request) {
-  return new ::grpc::ClientReader< ::routeguide::Feature>(channel_.get(), rpcmethod_ListFeatures_, context, request);
+::grpc_cb::ClientReader< ::routeguide::Feature>* Stub::ListFeaturesRaw(::grpc_cb::ClientContext* context, const ::routeguide::Rectangle& request) {
+  return new ::grpc_cb::ClientReader< ::routeguide::Feature>(channel_.get(), rpcmethod_ListFeatures_, context, request);
 }
 
-::grpc::ClientAsyncReader< ::routeguide::Feature>* RouteGuide::Stub::AsyncListFeaturesRaw(::grpc::ClientContext* context, const ::routeguide::Rectangle& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return new ::grpc::ClientAsyncReader< ::routeguide::Feature>(channel_.get(), cq, rpcmethod_ListFeatures_, context, request, tag);
+::grpc_cb::ClientAsyncReader< ::routeguide::Feature>* Stub::AsyncListFeaturesRaw(::grpc_cb::ClientContext* context, const ::routeguide::Rectangle& request, ::grpc_cb::CompletionQueue* cq, void* tag) {
+  return new ::grpc_cb::ClientAsyncReader< ::routeguide::Feature>(channel_.get(), cq, rpcmethod_ListFeatures_, context, request, tag);
 }
 
-::grpc::ClientWriter< ::routeguide::Point>* RouteGuide::Stub::RecordRouteRaw(::grpc::ClientContext* context, ::routeguide::RouteSummary* response) {
-  return new ::grpc::ClientWriter< ::routeguide::Point>(channel_.get(), rpcmethod_RecordRoute_, context, response);
+::grpc_cb::ClientWriter< ::routeguide::Point>* Stub::RecordRouteRaw(::grpc_cb::ClientContext* context, ::routeguide::RouteSummary* response) {
+  return new ::grpc_cb::ClientWriter< ::routeguide::Point>(channel_.get(), rpcmethod_RecordRoute_, context, response);
 }
 
-::grpc::ClientAsyncWriter< ::routeguide::Point>* RouteGuide::Stub::AsyncRecordRouteRaw(::grpc::ClientContext* context, ::routeguide::RouteSummary* response, ::grpc::CompletionQueue* cq, void* tag) {
-  return new ::grpc::ClientAsyncWriter< ::routeguide::Point>(channel_.get(), cq, rpcmethod_RecordRoute_, context, response, tag);
+::grpc_cb::ClientAsyncWriter< ::routeguide::Point>* Stub::AsyncRecordRouteRaw(::grpc_cb::ClientContext* context, ::routeguide::RouteSummary* response, ::grpc_cb::CompletionQueue* cq, void* tag) {
+  return new ::grpc_cb::ClientAsyncWriter< ::routeguide::Point>(channel_.get(), cq, rpcmethod_RecordRoute_, context, response, tag);
 }
 
-::grpc::ClientReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* RouteGuide::Stub::RouteChatRaw(::grpc::ClientContext* context) {
-  return new ::grpc::ClientReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>(channel_.get(), rpcmethod_RouteChat_, context);
+::grpc_cb::ClientReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* Stub::RouteChatRaw(::grpc_cb::ClientContext* context) {
+  return new ::grpc_cb::ClientReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>(channel_.get(), rpcmethod_RouteChat_, context);
 }
 
-::grpc::ClientAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* RouteGuide::Stub::AsyncRouteChatRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
-  return new ::grpc::ClientAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>(channel_.get(), cq, rpcmethod_RouteChat_, context, tag);
+::grpc_cb::ClientAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* Stub::AsyncRouteChatRaw(::grpc_cb::ClientContext* context, ::grpc_cb::CompletionQueue* cq, void* tag) {
+  return new ::grpc_cb::ClientAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>(channel_.get(), cq, rpcmethod_RouteChat_, context, tag);
 }
 
-RouteGuide::AsyncService::AsyncService() : ::grpc::AsynchronousService(RouteGuide_method_names, 4) {}
+// AsyncService::AsyncService() : ::grpc_cb::AsynchronousService(method_names, 4) {}
 
-RouteGuide::Service::Service() {
+Service::Service() {
 }
 
-RouteGuide::Service::~Service() {
+Service::~Service() {
 }
 
-::grpc::Status RouteGuide::Service::GetFeature(::grpc::ServerContext* context, const ::routeguide::Point* request, ::routeguide::Feature* response) {
-  (void) context;
+const std::string& Service::GetMethodName(size_t method_index) const {
+  assert(method_index < GetMethodCount());
+  return method_names[method_index];
+}
+
+void Service::CallMethod(
+    size_t method_index, grpc_byte_buffer& request_buffer,
+    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) {
+  assert(method_index < GetMethodCount());
+  switch (method_index) {
+    case 0:
+      GetFeature(request_buffer,
+          ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(msg_replier));
+      return;
+    case 1:
+      ListFeatures(request_buffer,
+          ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(msg_replier));
+      return;
+    case 2:
+      RecordRoute(request_buffer,
+          ::grpc_cb::ServerAsyncReplier<::routeguide::RouteSummary>(msg_replier));
+      return;
+    case 3:
+      RouteChat(request_buffer,
+          ::grpc_cb::ServerAsyncReplier<::routeguide::RouteNote>(msg_replier));
+      return;
+  }  // switch
+  assert(false);
+  ::grpc_cb::ServerAsyncMsgReplier(msg_replier).ReplyError(
+      ::grpc_cb::Status::InternalError("CallMethod() error"));
+}
+
+void Service::GetFeature(
+    grpc_byte_buffer& request_buffer,
+    const ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>& replier) {
+  using Request = ::routeguide::Point;
+  Request request;
+  ::grpc_cb::Status status =
+      ::grpc_cb::SerializationTraits<Request>::Deserialize(
+          &request_buffer, &request, 0 /* TODO: max_message_size*/);
+  if (status.ok()) {
+    GetFeature(request, replier);
+    return;
+  }
+  ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(
+      replier).ReplyError(status);
+}
+void Service::GetFeature(
+    const ::routeguide::Point& request,
+    ::grpc_cb::ServerAsyncReplier<::routeguide::Feature> replier_copy) {
   (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+  replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
-void RouteGuide::AsyncService::RequestGetFeature(::grpc::ServerContext* context, ::routeguide::Point* request, ::grpc::ServerAsyncResponseWriter< ::routeguide::Feature>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-  AsynchronousService::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-}
-
-::grpc::Status RouteGuide::Service::ListFeatures(::grpc::ServerContext* context, const ::routeguide::Rectangle* request, ::grpc::ServerWriter< ::routeguide::Feature>* writer) {
+::grpc_cb::Status Service::ListFeatures(
+    ::grpc_cb::ServerContext* context,
+    const ::routeguide::Rectangle* request,
+    ::grpc_cb::ServerWriter< ::routeguide::Feature>* writer) {
   (void) context;
   (void) request;
   (void) writer;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+  return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 
-void RouteGuide::AsyncService::RequestListFeatures(::grpc::ServerContext* context, ::routeguide::Rectangle* request, ::grpc::ServerAsyncWriter< ::routeguide::Feature>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-  AsynchronousService::RequestServerStreaming(1, context, request, writer, new_call_cq, notification_cq, tag);
-}
-
-::grpc::Status RouteGuide::Service::RecordRoute(::grpc::ServerContext* context, ::grpc::ServerReader< ::routeguide::Point>* reader, ::routeguide::RouteSummary* response) {
+::grpc_cb::Status Service::RecordRoute(
+    ::grpc_cb::ServerContext* context,
+    ::grpc_cb::ServerReader< ::routeguide::Point>* reader,
+    ::routeguide::RouteSummary* response) {
   (void) context;
   (void) reader;
   (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+  return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 
-void RouteGuide::AsyncService::RequestRecordRoute(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::routeguide::RouteSummary, ::routeguide::Point>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-  AsynchronousService::RequestClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
-}
-
-::grpc::Status RouteGuide::Service::RouteChat(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* stream) {
+::grpc_cb::Status Service::RouteChat(
+    ::grpc_cb::ServerContext* context,
+    ::grpc_cb::ServerReaderWriter<
+        ::routeguide::RouteNote, ::routeguide::RouteNote>* stream) {
   (void) context;
   (void) stream;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+  return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 
-void RouteGuide::AsyncService::RequestRouteChat(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::routeguide::RouteNote, ::routeguide::RouteNote>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-  AsynchronousService::RequestBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
-}
-
-::grpc::RpcService* RouteGuide::Service::service() {
-  if (service_) {
-    return service_.get();
-  }
-  service_ = std::unique_ptr< ::grpc::RpcService>(new ::grpc::RpcService());
-  service_->AddMethod(new ::grpc::RpcServiceMethod(
-      RouteGuide_method_names[0],
-      ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< RouteGuide::Service, ::routeguide::Point, ::routeguide::Feature>(
-          std::mem_fn(&RouteGuide::Service::GetFeature), this)));
-  service_->AddMethod(new ::grpc::RpcServiceMethod(
-      RouteGuide_method_names[1],
-      ::grpc::RpcMethod::SERVER_STREAMING,
-      new ::grpc::ServerStreamingHandler< RouteGuide::Service, ::routeguide::Rectangle, ::routeguide::Feature>(
-          std::mem_fn(&RouteGuide::Service::ListFeatures), this)));
-  service_->AddMethod(new ::grpc::RpcServiceMethod(
-      RouteGuide_method_names[2],
-      ::grpc::RpcMethod::CLIENT_STREAMING,
-      new ::grpc::ClientStreamingHandler< RouteGuide::Service, ::routeguide::Point, ::routeguide::RouteSummary>(
-          std::mem_fn(&RouteGuide::Service::RecordRoute), this)));
-  service_->AddMethod(new ::grpc::RpcServiceMethod(
-      RouteGuide_method_names[3],
-      ::grpc::RpcMethod::BIDI_STREAMING,
-      new ::grpc::BidiStreamingHandler< RouteGuide::Service, ::routeguide::RouteNote, ::routeguide::RouteNote>(
-          std::mem_fn(&RouteGuide::Service::RouteChat), this)));
-  return service_.get();
-}
-
+}  // namespace RouteGuide
 
 }  // namespace routeguide
 
