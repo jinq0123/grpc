@@ -92,7 +92,9 @@ class Service : public ::grpc_cb::Service {
       ::grpc_cb::ServerAsyncReplier<::routeguide::RouteSummary> replier_copy);
 
   virtual ::grpc_cb::Status RouteChat(
-      ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote, ::routeguide::RouteNote> stream);
+      ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,
+                                    ::routeguide::RouteNote>
+          stream);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
