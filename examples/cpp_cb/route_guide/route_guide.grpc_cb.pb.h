@@ -28,7 +28,7 @@ const ::google::protobuf::ServiceDescriptor& GetServiceDescriptor();
 
 class Stub : public ::grpc_cb::ServiceStub {
  public:
-  Stub(const ::grpc_cb::ChannelSptr& channel);
+  explicit Stub(const ::grpc_cb::ChannelSptr& channel);
 
   inline ::grpc_cb::Status BlockingGetFeature(
        const ::routeguide::Point& request) {
@@ -56,7 +56,12 @@ class Stub : public ::grpc_cb::ServiceStub {
       const ::grpc_cb::ErrorCallback& err_cb);
 
   ::grpc_cb::ClientReader<::routeguide::Feature>
-  ListFeatures(const ::routeguide::Rectangle& request) {
+  BlockingListFeatures(const ::routeguide::Rectangle& request) {
+    return ::grpc_cb::ClientReader<::routeguide::Feature>();
+  }
+
+  ::grpc_cb::ClientReader<::routeguide::Feature>
+  AsyncListFeatures(const ::routeguide::Rectangle& request) {
     return ::grpc_cb::ClientReader<::routeguide::Feature>();
   }
 

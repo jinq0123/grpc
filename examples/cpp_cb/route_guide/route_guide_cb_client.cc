@@ -105,14 +105,14 @@ class RouteGuideClient {
               << std::endl;
 
     ClientReader<Feature> reader(
-        stub_->ListFeatures(rect));
+        stub_->BlockingListFeatures(rect));
     while (reader.BlockingRead(&feature)) {
       std::cout << "Found feature called "
                 << feature.name() << " at "
                 << feature.location().latitude()/kCoordFactor_ << ", "
                 << feature.location().longitude()/kCoordFactor_ << std::endl;
     }
-    Status status = reader.Finish();
+    Status status = reader.BlockingRecvStatus();
     if (status.ok()) {
       std::cout << "ListFeatures rpc succeeded." << std::endl;
     } else {
@@ -235,5 +235,12 @@ int main(int argc, char** argv) {
   std::cout << "-------------- RouteChat --------------" << std::endl;
   guide.RouteChat();
 
+  routeguide::RouteGuide::Stub stub(channel);
+  routeguide::Rectangle rect;
+  ClientReader<Feature> reader(stub.AsyncListFeatures(rect));
+  reader.SetReadCallback([](const Feature& feature){
+    std::cout << "Got feature." << std::endl;
+  });
+  stub.BlockingRun();
   return 0;
 }
