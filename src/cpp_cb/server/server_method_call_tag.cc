@@ -33,6 +33,13 @@ ServerMethodCallTag::ServerMethodCallTag(grpc_server* server, Service* service,
                                       &payload_ptr_, cq, cq, this);
 }
 
+ServerMethodCallTag::~ServerMethodCallTag() {
+  grpc_metadata_array_destroy(&initial_metadata_array_);
+  // XXX
+  //if (call_ptr_)
+  //  grpc_call_destroy(call_ptr_);
+}
+
 void ServerMethodCallTag::DoComplete(bool success)
 {
   // TODO: check success

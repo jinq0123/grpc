@@ -26,9 +26,7 @@ class ServerMethodCallTag GRPC_FINAL : public CompletionQueueTag {
                       size_t method_index, void* registered_method,
                       grpc_completion_queue* cq);
 
-  virtual ~ServerMethodCallTag() GRPC_OVERRIDE {
-    grpc_metadata_array_destroy(&initial_metadata_array_);
-  }
+  virtual ~ServerMethodCallTag() GRPC_OVERRIDE;
 
  public:
   virtual void DoComplete(bool success) GRPC_OVERRIDE;
