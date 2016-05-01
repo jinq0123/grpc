@@ -63,7 +63,7 @@ class Service : public ::grpc_cb::Service {
   virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;
   virtual void CallMethod(
       size_t method_index, grpc_byte_buffer& request_buffer,
-      const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) GRPC_OVERRIDE;
+      const ::grpc_cb::CallSptr& call_sptr) GRPC_OVERRIDE;
 
  private:
   void SayHello(

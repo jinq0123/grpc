@@ -4,7 +4,10 @@
 #ifndef GRPC_CB_SERVER_SERVER_ASYNC_MSG_REPILER_H
 #define GRPC_CB_SERVER_SERVER_ASYNC_MSG_REPILER_H
 
-#include <grpc_cb/support/config.h>  // for GRPC_FINAL
+#include <cassert>
+
+#include <grpc_cb/impl/call_sptr.h>        // for CallSptr
+#include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 struct grpc_call;
@@ -17,8 +20,10 @@ class Status;
 // Reply ::google::protobuf::Message.
 class ServerAsyncMsgReplier GRPC_FINAL {
  public:
-  // TODO: Delete ServerAsyncMsgReplier and use grpc_call* directly.
-  explicit ServerAsyncMsgReplier(grpc_call* call) : call_(call){};  // XXX
+  explicit ServerAsyncMsgReplier(const CallSptr& call_sptr)
+      : call_sptr_(call_sptr){
+    assert(call_sptr);
+  };  // XXX
 
  public:
   void Reply(const ::google::protobuf::Message& msg);
@@ -28,7 +33,7 @@ class ServerAsyncMsgReplier GRPC_FINAL {
   void StartBatch(ReplyTag* tag);
 
  private:
-  grpc_call* call_;
+  CallSptr call_sptr_;
 };
 
 }  // namespace grpb_cb

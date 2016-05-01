@@ -4,6 +4,7 @@
 #ifndef GRPC_CB_SERVER_ASYNC_REPLIER_H
 #define GRPC_CB_SERVER_ASYNC_REPLIER_H
 
+#include <grpc_cb/impl/call_sptr.h>            // for CallSptr
 #include <grpc_cb/server_async_msg_replier.h>  // for ServerAsyncMsgReplier
 
 namespace grpc_cb {
@@ -13,8 +14,10 @@ template <class ResponseType>
 class ServerAsyncReplier {
 public:
  // Copy msg_replier.
- explicit ServerAsyncReplier(const ServerAsyncMsgReplier& msg_replier)
-     : msg_replier_(msg_replier){};
+ explicit ServerAsyncReplier(const CallSptr& call_sptr)
+     : msg_replier_(call_sptr){
+   assert(call_sptr);
+ };
  ~ServerAsyncReplier(){};
 
 public:
@@ -22,7 +25,7 @@ public:
   void ReplyError(const Status& status) { msg_replier_.ReplyError(status); }
 
 private:
-  ServerAsyncMsgReplier msg_replier_;  // copy
+  ServerAsyncMsgReplier msg_replier_;  // copyable
 };  // class ServerAsyncReplier
 
 }  // namespace grpc_cb

@@ -4,9 +4,11 @@
 #ifndef GRPC_CB_SERVICE_H
 #define GRPC_CB_SERVICE_H
 
+#include <string>
+
+#include <grpc_cb/impl/call_sptr.h>        // for CallSptr
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 #include <grpc_cb/support/status.h>        // for Status
-#include <string>
 
 struct grpc_byte_buffer;
 
@@ -26,7 +28,7 @@ class Service {
   // TODO: need request_context. Need client address in Ctr?
   virtual void CallMethod(
       size_t method_index, grpc_byte_buffer& request,
-      const ServerAsyncMsgReplier& msg_replier) = 0;
+      const CallSptr& call_sptr) = 0;
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

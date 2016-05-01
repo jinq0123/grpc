@@ -6,6 +6,7 @@
 #include <google/protobuf/message.h>
 #include <grpc_cb/server_async_msg_replier.h>  // for ServerAsyncMsgReplier
 #include <grpc_cb/service.h>
+#include <grpc_cb/impl/call.h>  // for Call
 
 namespace grpc_cb {
 
@@ -35,9 +36,6 @@ ServerMethodCallTag::ServerMethodCallTag(grpc_server* server, Service* service,
 
 ServerMethodCallTag::~ServerMethodCallTag() {
   grpc_metadata_array_destroy(&initial_metadata_array_);
-  // XXX
-  //if (call_ptr_)
-  //  grpc_call_destroy(call_ptr_);
 }
 
 void ServerMethodCallTag::DoComplete(bool success)
@@ -50,8 +48,9 @@ void ServerMethodCallTag::DoComplete(bool success)
   assert(service_);
   assert(payload_ptr_);
   assert(call_ptr_);
-  service_->CallMethod(method_index_, *payload_ptr_,
-                       ServerAsyncMsgReplier(call_ptr_));
+  CallSptr call_sptr(new Call(call_ptr_));  // destroys grpc_call
+  service_->CallMethod(method_index_, *payload_ptr_, call_sptr);
+                       // DEL ServerAsyncMsgReplier(call_ptr_));
 
   // Request the next method call.
   // Calls grpc_server_request_registered_call() in ctr().

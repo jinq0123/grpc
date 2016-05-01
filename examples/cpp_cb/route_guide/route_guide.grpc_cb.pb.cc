@@ -103,12 +103,12 @@ const std::string& Service::GetMethodName(size_t method_index) const {
 
 void Service::CallMethod(
     size_t method_index, grpc_byte_buffer& request_buffer,
-    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) {
+    const ::grpc_cb::CallSptr& call_sptr) {
   assert(method_index < GetMethodCount());
   switch (method_index) {
     case 0:
       GetFeature(request_buffer,
-          ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(msg_replier));
+          ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(call_sptr));
       return;
     case 1:
       // XXX
@@ -126,8 +126,6 @@ void Service::CallMethod(
       return;
   }  // switch
   assert(false);
-  ::grpc_cb::ServerAsyncMsgReplier(msg_replier)
-      .ReplyError(::grpc_cb::Status::InternalError("CallMethod() error"));
 }
 
 void Service::GetFeature(

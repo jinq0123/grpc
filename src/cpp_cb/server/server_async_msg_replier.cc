@@ -8,6 +8,7 @@
 #include <grpc/support/log.h>              // for GPR_ASSERT()
 #include <grpc_cb/completion_queue_tag.h>  // for CompletionQueueTag
 #include <grpc_cb/service.h>
+#include <grpc_cb/impl/call.h>  // for Call::call()
 
 #include "src/cpp_cb/proto/proto_utils.h"  // for SerializeProto()
 
@@ -15,10 +16,10 @@ namespace grpc_cb {
 
 class ReplyTag GRPC_FINAL : public CompletionQueueTag {
  public:
-  explicit ReplyTag(const ::google::protobuf::Message& msg);
-  explicit ReplyTag(const Status& status);
+  inline ReplyTag(const CallSptr& call_sptr, const ::google::protobuf::Message& msg);
+  inline ReplyTag(const CallSptr& call_sptr, const Status& status);
 
-  virtual ~ReplyTag() GRPC_OVERRIDE;
+  inline virtual ~ReplyTag() GRPC_OVERRIDE;
 
  public:
   inline size_t GetOpsNum() const { return cops_.size(); }
@@ -30,7 +31,7 @@ class ReplyTag GRPC_FINAL : public CompletionQueueTag {
   virtual void DoComplete(bool success) GRPC_OVERRIDE {};
 
  private:
-  ReplyTag();
+  inline explicit ReplyTag(const CallSptr& call_sptr);
 
   void SendInitialMetadata();
   Status SendMessage(const ::google::protobuf::Message& msg);
@@ -42,24 +43,29 @@ class ReplyTag GRPC_FINAL : public CompletionQueueTag {
  private:
   grpc_byte_buffer* send_buf_;
   std::string send_status_details_;
+  CallSptr call_sptr_;
 };
 
-ReplyTag::ReplyTag(const ::google::protobuf::Message& msg) : ReplyTag() {
+ReplyTag::ReplyTag(const CallSptr& call_sptr,
+                   const ::google::protobuf::Message& msg)
+    : ReplyTag(call_sptr) {
   SendInitialMetadata();
   Status status = SendMessage(msg);
   ServerSendStatus(status);
 }
 
-ReplyTag::ReplyTag(const Status& status) : ReplyTag() {
+ReplyTag::ReplyTag(const CallSptr& call_sptr, const Status& status) : ReplyTag(call_sptr) {
   SendInitialMetadata();
   ServerSendStatus(status);
 }
 
 ReplyTag::~ReplyTag() {
+  assert(call_sptr_);  // auto destroy by shared_ptr
   grpc_byte_buffer_destroy(send_buf_);
 }
 
-ReplyTag::ReplyTag() : send_buf_(nullptr) {
+ReplyTag::ReplyTag(const CallSptr& call_sptr) : send_buf_(nullptr), call_sptr_(call_sptr) {
+  assert(call_sptr);
 }
 
 void ReplyTag::SendInitialMetadata() {
@@ -91,19 +97,19 @@ void ReplyTag::ServerSendStatus(const Status& status) {
 }
 
 void ServerAsyncMsgReplier::Reply(const ::google::protobuf::Message& msg) {
-  ReplyTag* tag = new ReplyTag(msg);  // Delete in Run().
+  ReplyTag* tag = new ReplyTag(call_sptr_, msg);  // Delete in Run().
   StartBatch(tag);
 }
 
 void ServerAsyncMsgReplier::ReplyError(const Status& status) {
-  ReplyTag* tag = new ReplyTag(status);  // Delete in Run().
+  ReplyTag* tag = new ReplyTag(call_sptr_, status);  // Delete in Run().
   StartBatch(tag);
 }
 
 void ServerAsyncMsgReplier::StartBatch(ReplyTag* tag) {
   assert(tag);
   grpc_call_error result = grpc_call_start_batch(
-    call_, tag->GetOps(), tag->GetOpsNum(), tag, nullptr);
+    call_sptr_->call(), tag->GetOps(), tag->GetOpsNum(), tag, nullptr);
   GPR_ASSERT(GRPC_CALL_OK == result);
 }
 

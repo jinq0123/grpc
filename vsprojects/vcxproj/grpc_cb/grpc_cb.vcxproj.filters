@@ -111,9 +111,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\server_async_replier.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server_async_msg_replier.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h">
       <Filter>include\grp_cb\client</Filter>
     </ClInclude>
@@ -131,6 +128,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server\server_writer.h">
       <Filter>include\grp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server_async_msg_replier.h">
+      <Filter>include\grp_cb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
