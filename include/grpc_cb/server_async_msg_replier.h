@@ -10,8 +10,6 @@
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
-struct grpc_call;
-
 namespace grpc_cb {
 
 class ReplyTag;
