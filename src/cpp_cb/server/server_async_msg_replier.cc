@@ -108,6 +108,8 @@ void ServerAsyncMsgReplier::ReplyError(const Status& status) {
 
 void ServerAsyncMsgReplier::StartBatch(ReplyTag* tag) {
   assert(tag);
+  assert(call_sptr_);
+  // XXX Status result = call_sptr_->StartBatch(tag);
   grpc_call_error result = grpc_call_start_batch(
     call_sptr_->call(), tag->GetOps(), tag->GetOpsNum(), tag, nullptr);
   GPR_ASSERT(GRPC_CALL_OK == result);

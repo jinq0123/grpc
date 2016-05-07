@@ -15,6 +15,7 @@ namespace grpc_cb {
 
 class Status;
 
+// Like grpc++ CallOpSet<>.
 // Non-thread-safe.
 class CallOperations GRPC_FINAL {
  public:
