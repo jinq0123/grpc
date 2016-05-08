@@ -265,7 +265,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
@@ -279,6 +278,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\common\call_op.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h" />
@@ -287,6 +287,7 @@
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\client\service_stub.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\common\call_op.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call_operations.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc" />

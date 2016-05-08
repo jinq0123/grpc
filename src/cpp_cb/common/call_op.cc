@@ -31,24 +31,17 @@
  *
  */
 
-#include <grpc++/impl/call.h>
+#include "src/cpp_cb/common/call_op.h"
 
-#include <grpc/support/alloc.h>
-#include <grpc++/channel.h>
-#include <grpc++/client_context.h>
-#include <grpc++/support/byte_buffer.h>
-#include "src/core/profiling/timers.h"
+namespace grpc_cb {
 
-namespace grpc {
-
-void FillMetadataMap(
-    grpc_metadata_array* arr,
-    std::multimap<grpc::string_ref, grpc::string_ref>* metadata) {
+void FillMetadataMap(grpc_metadata_array* arr,
+                     std::multimap<string_ref, string_ref>* metadata) {
   for (size_t i = 0; i < arr->count; i++) {
     // TODO(yangg) handle duplicates?
-    metadata->insert(std::pair<grpc::string_ref, grpc::string_ref>(
-        arr->metadata[i].key, grpc::string_ref(arr->metadata[i].value,
-                                               arr->metadata[i].value_length)));
+    metadata->insert(std::pair<string_ref, string_ref>(
+        arr->metadata[i].key,
+        string_ref(arr->metadata[i].value, arr->metadata[i].value_length)));
   }
   grpc_metadata_array_destroy(arr);
   grpc_metadata_array_init(arr);
@@ -56,37 +49,17 @@ void FillMetadataMap(
 
 // TODO(yangg) if the map is changed before we send, the pointers will be a
 // mess. Make sure it does not happen.
-grpc_metadata* FillMetadataArray(
-    const std::multimap<grpc::string, grpc::string>& metadata) {
-  if (metadata.empty()) {
-    return nullptr;
-  }
-  grpc_metadata* metadata_array =
-      (grpc_metadata*)gpr_malloc(metadata.size() * sizeof(grpc_metadata));
+void FillMetadataArray(
+    const std::multimap<std::string, std::string>& metadata,
+    MetaDataVector& metadata_vec) {
+  metadata_vec.resize(metadata.size());
   size_t i = 0;
   for (auto iter = metadata.cbegin(); iter != metadata.cend(); ++iter, ++i) {
-    metadata_array[i].key = iter->first.c_str();
-    metadata_array[i].value = iter->second.c_str();
-    metadata_array[i].value_length = iter->second.size();
+    grpc_metadata& item = metadata_vec[i];
+    item.key = iter->first.c_str();
+    item.value = iter->second.c_str();
+    item.value_length = iter->second.size();
   }
-  return metadata_array;
 }
 
-Call::Call(grpc_call* call, CallHook* call_hook, CompletionQueue* cq)
-    : call_hook_(call_hook), cq_(cq), call_(call), max_message_size_(-1) {}
-
-Call::Call(grpc_call* call, CallHook* call_hook, CompletionQueue* cq,
-           int max_message_size)
-    : call_hook_(call_hook),
-      cq_(cq),
-      call_(call),
-      max_message_size_(max_message_size) {}
-
-void Call::PerformOps(CallOpSetInterface* ops) {
-  if (max_message_size_ > 0) {
-    ops->set_max_message_size(max_message_size_);
-  }
-  call_hook_->PerformOpsOnCall(ops, this);
-}
-
-}  // namespace grpc
+}  // namespace grpc_cb

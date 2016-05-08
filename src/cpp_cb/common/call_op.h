@@ -1,6 +1,7 @@
 /*
  *
  * Copyright 2015, Google Inc.
+ * Jin Qing 2016,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,117 +32,40 @@
  *
  */
 
-#ifndef GRPCXX_IMPL_CALL_H
-#define GRPCXX_IMPL_CALL_H
+#ifndef GRPC_CB_COMMON_CALL_OP_H
+#define GRPC_CB_COMMON_CALL_OP_H
 
-#include <functional>
-#include <memory>
-#include <map>
-#include <cstring>
+#include <map>  // for multimap
+#include <vector>
 
-#include <grpc/support/alloc.h>
-#include <grpc++/client_context.h>
-#include <grpc++/completion_queue.h>
-#include <grpc++/impl/serialization_traits.h>
-#include <grpc++/support/config.h>
-#include <grpc++/support/status.h>
+#include <grpc/grpc.h>  // for GRPC_OP_SEND_MESSAGE
+#include <grpc_cb/impl/serialization_traits.h>  // for SerializationTraits
+#include <grpc_cb/support/config.h>  // for GRPC_FINAL
+#include <grpc_cb/support/protobuf_fwd.h>  // for Message
+#include <grpc_cb/support/status.h>  // for Status
 
-struct grpc_call;
-struct grpc_op;
+#include "src/cpp_cb/proto/proto_utils.h"  // for SerializeProto
 
-namespace grpc {
+namespace grpc_cb {
 
-class ByteBuffer;
-class Call;
+class string_ref;
+class Status;
 
 void FillMetadataMap(
     grpc_metadata_array* arr,
-    std::multimap<grpc::string_ref, grpc::string_ref>* metadata);
-grpc_metadata* FillMetadataArray(
-    const std::multimap<grpc::string, grpc::string>& metadata);
-
-/// Per-message write options.
-class WriteOptions {
- public:
-  WriteOptions() : flags_(0) {}
-  WriteOptions(const WriteOptions& other) : flags_(other.flags_) {}
-
-  /// Clear all flags.
-  inline void Clear() { flags_ = 0; }
-
-  /// Returns raw flags bitset.
-  inline uint32_t flags() const { return flags_; }
-
-  /// Sets flag for the disabling of compression for the next message write.
-  ///
-  /// \sa GRPC_WRITE_NO_COMPRESS
-  inline WriteOptions& set_no_compression() {
-    SetBit(GRPC_WRITE_NO_COMPRESS);
-    return *this;
-  }
-
-  /// Clears flag for the disabling of compression for the next message write.
-  ///
-  /// \sa GRPC_WRITE_NO_COMPRESS
-  inline WriteOptions& clear_no_compression() {
-    ClearBit(GRPC_WRITE_NO_COMPRESS);
-    return *this;
-  }
-
-  /// Get value for the flag indicating whether compression for the next
-  /// message write is forcefully disabled.
-  ///
-  /// \sa GRPC_WRITE_NO_COMPRESS
-  inline bool get_no_compression() const {
-    return GetBit(GRPC_WRITE_NO_COMPRESS);
-  }
-
-  /// Sets flag indicating that the write may be buffered and need not go out on
-  /// the wire immediately.
-  ///
-  /// \sa GRPC_WRITE_BUFFER_HINT
-  inline WriteOptions& set_buffer_hint() {
-    SetBit(GRPC_WRITE_BUFFER_HINT);
-    return *this;
-  }
-
-  /// Clears flag indicating that the write may be buffered and need not go out
-  /// on the wire immediately.
-  ///
-  /// \sa GRPC_WRITE_BUFFER_HINT
-  inline WriteOptions& clear_buffer_hint() {
-    ClearBit(GRPC_WRITE_BUFFER_HINT);
-    return *this;
-  }
-
-  /// Get value for the flag indicating that the write may be buffered and need
-  /// not go out on the wire immediately.
-  ///
-  /// \sa GRPC_WRITE_BUFFER_HINT
-  inline bool get_buffer_hint() const { return GetBit(GRPC_WRITE_BUFFER_HINT); }
-
-  WriteOptions& operator=(const WriteOptions& rhs) {
-    flags_ = rhs.flags_;
-    return *this;
-  }
-
- private:
-  void SetBit(const uint32_t mask) { flags_ |= mask; }
-
-  void ClearBit(const uint32_t mask) { flags_ &= ~mask; }
-
-  bool GetBit(const uint32_t mask) const { return (flags_ & mask) != 0; }
-
-  uint32_t flags_;
-};
+    std::multimap<string_ref, string_ref>* metadata);
+using MetaDataVector = std::vector<grpc_metadata>;
+void FillMetadataVector(
+    const std::multimap<std::string, std::string>& metadata,
+    MetaDataVector& metadata_vec);
 
 /// Default argument for CallOpSet. I is unused by the class, but can be
 /// used for generating multiple names for the same thing.
 template <int I>
 class CallNoOp {
  protected:
-  void AddOp(grpc_op* ops, size_t* nops) {}
   void FinishOp(bool* status, int max_message_size) {}
+  void AddOp(grpc_op* ops, size_t* nops) {}
 };
 
 class CallOpSendInitialMetadata {
@@ -149,10 +73,9 @@ class CallOpSendInitialMetadata {
   CallOpSendInitialMetadata() : send_(false) {}
 
   void SendInitialMetadata(
-      const std::multimap<grpc::string, grpc::string>& metadata) {
+      const std::multimap<std::string, std::string>& metadata) {
     send_ = true;
-    initial_metadata_count_ = metadata.size();
-    initial_metadata_ = FillMetadataArray(metadata);
+    FillMetadataVector(metadata, initial_metadata_);
   }
 
  protected:
@@ -162,43 +85,32 @@ class CallOpSendInitialMetadata {
     op->op = GRPC_OP_SEND_INITIAL_METADATA;
     op->flags = 0;
     op->reserved = NULL;
-    op->data.send_initial_metadata.count = initial_metadata_count_;
-    op->data.send_initial_metadata.metadata = initial_metadata_;
+    op->data.send_initial_metadata.count = initial_metadata_.size();
+    op->data.send_initial_metadata.metadata =
+        initial_metadata_.empty() ? nullptr : &initial_metadata_[0];
   }
   void FinishOp(bool* status, int max_message_size) {
-    if (!send_) return;
-    gpr_free(initial_metadata_);
     send_ = false;
   }
 
   bool send_;
-  size_t initial_metadata_count_;
-  grpc_metadata* initial_metadata_;
+  MetaDataVector initial_metadata_;
 };
 
 class CallOpSendMessage {
  public:
   CallOpSendMessage() : send_buf_(nullptr), own_buf_(false) {}
 
-  /// Send \a message using \a options for the write. The \a options are cleared
-  /// after use.
-  template <class M>
-  Status SendMessage(const M& message,
-                     const WriteOptions& options) GRPC_MUST_USE_RESULT;
-
-  template <class M>
-  Status SendMessage(const M& message) GRPC_MUST_USE_RESULT;
+  Status SendMessage(const ::google::protobuf::Message& message) GRPC_MUST_USE_RESULT;
 
  protected:
   void AddOp(grpc_op* ops, size_t* nops) {
     if (send_buf_ == nullptr) return;
     grpc_op* op = &ops[(*nops)++];
     op->op = GRPC_OP_SEND_MESSAGE;
-    op->flags = write_options_.flags();
+    op->flags = 0;  // TOOD: write_options_.flags();
     op->reserved = NULL;
     op->data.send_message = send_buf_;
-    // Flags are per-message: clear them after use.
-    write_options_.Clear();
   }
   void FinishOp(bool* status, int max_message_size) {
     if (own_buf_) grpc_byte_buffer_destroy(send_buf_);
@@ -207,20 +119,13 @@ class CallOpSendMessage {
 
  private:
   grpc_byte_buffer* send_buf_;
-  WriteOptions write_options_;
+  // TODO: WriteOptions write_options_;
   bool own_buf_;
 };
 
-template <class M>
-Status CallOpSendMessage::SendMessage(const M& message,
-                                      const WriteOptions& options) {
-  write_options_ = options;
-  return SerializationTraits<M>::Serialize(message, &send_buf_, &own_buf_);
-}
-
-template <class M>
-Status CallOpSendMessage::SendMessage(const M& message) {
-  return SendMessage(message, WriteOptions());
+Status CallOpSendMessage::SendMessage(const ::google::protobuf::Message& message) {
+  // TOOD: write_options_ = options;
+  return SerializeProto(message, &send_buf_);
 }
 
 template <class R>
@@ -354,7 +259,7 @@ class CallOpServerSendStatus {
   CallOpServerSendStatus() : send_status_available_(false) {}
 
   void ServerSendStatus(
-      const std::multimap<grpc::string, grpc::string>& trailing_metadata,
+      const std::multimap<std::string, std::string>& trailing_metadata,
       const Status& status) {
     trailing_metadata_count_ = trailing_metadata.size();
     trailing_metadata_ = FillMetadataArray(trailing_metadata);
@@ -387,7 +292,7 @@ class CallOpServerSendStatus {
  private:
   bool send_status_available_;
   grpc_status_code send_status_code_;
-  grpc::string send_status_details_;
+  std::string send_status_details_;
   size_t trailing_metadata_count_;
   grpc_metadata* trailing_metadata_;
 };
@@ -418,7 +323,7 @@ class CallOpRecvInitialMetadata {
   }
 
  private:
-  std::multimap<grpc::string_ref, grpc::string_ref>* recv_initial_metadata_;
+  std::multimap<string_ref, string_ref>* recv_initial_metadata_;
   grpc_metadata_array recv_initial_metadata_arr_;
 };
 
@@ -455,13 +360,13 @@ class CallOpClientRecvStatus {
     FillMetadataMap(&recv_trailing_metadata_arr_, recv_trailing_metadata_);
     *recv_status_ = Status(
         static_cast<StatusCode>(status_code_),
-        status_details_ ? grpc::string(status_details_) : grpc::string());
+        status_details_ ? std::string(status_details_) : std::string());
     gpr_free(status_details_);
     recv_status_ = nullptr;
   }
 
  private:
-  std::multimap<grpc::string_ref, grpc::string_ref>* recv_trailing_metadata_;
+  std::multimap<string_ref, string_ref>* recv_trailing_metadata_;
   Status* recv_status_;
   grpc_metadata_array recv_trailing_metadata_arr_;
   grpc_status_code status_code_;
@@ -548,35 +453,6 @@ class SneakyCallOpSet : public CallOpSet<Op1, Op2, Op3, Op4, Op5, Op6> {
   }
 };
 
-// Channel and Server implement this to allow them to hook performing ops
-class CallHook {
- public:
-  virtual ~CallHook() {}
-  virtual void PerformOpsOnCall(CallOpSetInterface* ops, Call* call) = 0;
-};
+}  // namespace grpc_cb
 
-// Straightforward wrapping of the C call object
-class Call GRPC_FINAL {
- public:
-  /* call is owned by the caller */
-  Call(grpc_call* call, CallHook* call_hook_, CompletionQueue* cq);
-  Call(grpc_call* call, CallHook* call_hook_, CompletionQueue* cq,
-       int max_message_size);
-
-  void PerformOps(CallOpSetInterface* ops);
-
-  grpc_call* call() { return call_; }
-  CompletionQueue* cq() { return cq_; }
-
-  int max_message_size() { return max_message_size_; }
-
- private:
-  CallHook* call_hook_;
-  CompletionQueue* cq_;
-  grpc_call* call_;
-  int max_message_size_;
-};
-
-}  // namespace grpc
-
-#endif  // GRPCXX_IMPL_CALL_H
+#endif  // GRPC_CB_COMMON_CALL_OP_H

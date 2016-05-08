@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+// Jin Qing, 2016, update.
 
 #ifndef GRPC_CB_IMPL_SERIALIZATION_TRAITS_H
 #define GRPC_CB_IMPL_SERIALIZATION_TRAITS_H
@@ -62,6 +63,25 @@ namespace grpc_cb {
 template <class Message,
           class UnusedButHereForPartialTemplateSpecialization = void>
 class SerializationTraits;
+
+template <class T>
+class SerializationTraits<T, typename std::enable_if<std::is_base_of<
+                                 google::protobuf::Message, T>::value>::type> {
+ public:
+  // DEL
+  //static Status Serialize(const google::protobuf::Message& msg,
+  //                        grpc_byte_buffer** buffer, bool* own_buffer) {
+  //  *own_buffer = true;
+  //  return SerializeProto(msg, buffer);
+  //}
+  static Status Deserialize(grpc_byte_buffer* buffer,
+                            google::protobuf::Message* msg,
+                            int max_message_size) {
+    auto status = DeserializeProto(buffer, msg, max_message_size);
+    grpc_byte_buffer_destroy(buffer);
+    return status;
+  }
+};
 
 }  // namespace grpc_cb
 

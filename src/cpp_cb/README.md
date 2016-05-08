@@ -7,6 +7,9 @@ This directory contains source code for C++ callback implementation of gRPC.
 
 Not ready
 
+#Todo
+* WriteOptions
+
 #Other
  
 To generate grpc_cb files:
