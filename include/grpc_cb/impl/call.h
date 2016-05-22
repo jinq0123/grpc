@@ -5,7 +5,6 @@
 #define GRPC_CB_IMPL_CALL_H
 
 #include <grpc_cb/impl/call_sptr.h>
-#include <grpc_cb/impl/call_uptr.h>
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
@@ -22,8 +21,7 @@ class CallOperations;
 //  grpc_call is owned by Call instead of ClientContext/ServerContext.
 class Call GRPC_FINAL {
  public:
-  // Created by Channel::CreateCall().
-  explicit Call(grpc_call* c_call);
+  explicit Call(grpc_call* c_call);  // own
   ~Call();
 
  public:

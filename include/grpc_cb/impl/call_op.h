@@ -417,16 +417,16 @@ class CallOpSet : public CallOpSetInterface,
     this->Op6::AddOp(ops, nops);
   }
 
-  bool FinalizeResult(void** tag, bool* status) GRPC_OVERRIDE {
-    this->Op1::FinishOp(status, max_message_size_);
-    this->Op2::FinishOp(status, max_message_size_);
-    this->Op3::FinishOp(status, max_message_size_);
-    this->Op4::FinishOp(status, max_message_size_);
-    this->Op5::FinishOp(status, max_message_size_);
-    this->Op6::FinishOp(status, max_message_size_);
-    *tag = return_tag_;
-    return true;
-  }
+  //bool FinalizeResult(void** tag, bool* status) GRPC_OVERRIDE {
+  //  this->Op1::FinishOp(status, max_message_size_);
+  //  this->Op2::FinishOp(status, max_message_size_);
+  //  this->Op3::FinishOp(status, max_message_size_);
+  //  this->Op4::FinishOp(status, max_message_size_);
+  //  this->Op5::FinishOp(status, max_message_size_);
+  //  this->Op6::FinishOp(status, max_message_size_);
+  //  *tag = return_tag_;
+  //  return true;
+  //}
 
   void set_output_tag(void* return_tag) { return_tag_ = return_tag; }
 

@@ -6,15 +6,15 @@
 #include <cassert>
 
 #include <grpc/grpc.h>
+#include <grpc_cb/impl/call_operations.h>  // for CallOperations
+#include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
 #include <grpc_cb/support/status.h>
-#include <grpc_cb/impl/proto_utils.h>  // for DeserializeProto()
-
-#include "src/cpp_cb/common/call_operations.h"  // for CallOperations
 
 namespace grpc_cb {
 
 int Call::default_max_message_size_ = -1;
 
+// Owns call.
 Call::Call(grpc_call* call) :
     call_(call, grpc_call_destroy),
     recv_buf_(nullptr),
@@ -26,6 +26,7 @@ Call::~Call() {
   grpc_byte_buffer_destroy(recv_buf_);
 }
 
+// Todo: Change to StartBatch(CallOperations, tag).
 Status Call::StartBatch(const ::google::protobuf::Message& request, void* tag) {
   ops_.reset(new CallOperations);
   CallOperations& ops = *ops_;

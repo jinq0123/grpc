@@ -11,7 +11,7 @@
 #include <grpc_cb/completion_queue_ptr.h>  // for CompletionQueueUptr
 #include <grpc_cb/completion_queue_tag.h>  // for CompletionQueueTag
 #include <grpc_cb/error_callback.h>        // for ErrorCallback
-#include <grpc_cb/impl/call_uptr.h>        // for CallUptr
+#include <grpc_cb/impl/call_sptr.h>        // for CallSptr
 #include <grpc_cb/support/config.h>        // for GRPC_OVERRIDE
 
 namespace grpc_cb {
@@ -55,7 +55,7 @@ class ServiceStub {
  public:
   template <class ResponseType>
   CompletionQueueTag* NewCompletionQueueTag(
-      CallUptr&& call, const std::function<void(const ResponseType&)>& cb,
+      const CallSptr& call, const std::function<void(const ResponseType&)>& cb,
       const ErrorCallback& ecb);
   void DeleteCompletionQueueTag(CompletionQueueTag* tag) { delete tag; }
 
@@ -72,25 +72,25 @@ class ServiceStub {
   class CompletionCb : public CompletionQueueTag {
    public:
     typedef std::function<void(const ResponseType&)> ResponseCallback;
-    CompletionCb(CallUptr&& call, const ResponseCallback& cb,
+    CompletionCb(const CallSptr& call, const ResponseCallback& cb,
                  const ErrorCallback& ecb)
-        : call_(std::forward<CallUptr>(call)), cb_(cb), ecb_(ecb){};
+        : call_(call), cb_(cb), ecb_(ecb){};
     virtual void DoComplete(bool success) GRPC_OVERRIDE;
 
    private:
-    CallUptr call_;
+    CallSptr call_;
     ResponseCallback cb_;
     ErrorCallback ecb_;
   };
 };
 
+// Todo: Delete this function?
 template <class ResponseType>
 CompletionQueueTag* ServiceStub::NewCompletionQueueTag(
-    CallUptr&& call, const std::function<void(const ResponseType&)>& cb,
+    const CallSptr& call, const std::function<void(const ResponseType&)>& cb,
     const ErrorCallback& ecb) {
   assert(call && cb && ecb);
-  return new CompletionCb<ResponseType>(
-    std::forward<CallUptr>(call), cb, ecb);
+  return new CompletionCb<ResponseType>(call, cb, ecb);
   // DeleteCompletionQueueTag() will be called in ServiceStub::Run().
 }
 

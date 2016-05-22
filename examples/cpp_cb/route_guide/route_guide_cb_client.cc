@@ -105,7 +105,7 @@ class RouteGuideClient {
               << std::endl;
 
     ClientReader<Feature> reader(
-        stub_->BlockingListFeatures(rect));
+        stub_->ListFeatures(rect));
     while (reader.BlockingRead(&feature)) {
       std::cout << "Found feature called "
                 << feature.name() << " at "
@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
 
   routeguide::RouteGuide::Stub stub(channel);
   routeguide::Rectangle rect;
-  ClientReader<Feature> reader(stub.AsyncListFeatures(rect));
+  ClientReader<Feature> reader(stub.ListFeatures(rect));
   reader.SetReadCallback([](const Feature& feature){
     std::cout << "Got feature." << std::endl;
   });

@@ -64,7 +64,7 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
     ::helloworld::HelloReply* response) {
   assert(response);
   ::grpc_cb::CompletionQueue cq;
-  ::grpc_cb::CallUptr call(channel_->CreateCall(method_names[0], cq.cq()));
+  ::grpc_cb::CallSptr call(channel_->MakeCall(method_names[0], cq.cq()));
   void* tag = call.get();
   grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) return status;
@@ -77,11 +77,11 @@ void Stub::AsyncSayHello(
     const SayHelloCallback& cb,
     const ::grpc_cb::ErrorCallback& err_cb) {
   assert(cb && err_cb && cq_);
-  ::grpc_cb::CallUptr call_uptr(
-      channel_->CreateCall(method_names[0], cq_->cq()));
-  ::grpc_cb::Call* call = call_uptr.get();
+  ::grpc_cb::CallSptr call_sptr(
+      channel_->MakeCall(method_names[0], cq_->cq()));
+  ::grpc_cb::Call* call = call_sptr.get();
   ::grpc_cb::CompletionQueueTag* tag =
-      NewCompletionQueueTag(std::move(call_uptr), cb, err_cb);
+      NewCompletionQueueTag(call_sptr, cb, err_cb);
   grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) {
     DeleteCompletionQueueTag(tag);

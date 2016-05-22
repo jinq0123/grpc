@@ -66,9 +66,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h">
-      <Filter>src\cpp_cb\common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h">
       <Filter>src\cpp_cb\proto</Filter>
     </ClInclude>
@@ -77,9 +74,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h">
       <Filter>include\grp_cb\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h">
-      <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\channel_sptr.h">
       <Filter>include\grp_cb</Filter>
@@ -142,6 +136,12 @@
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\call_op.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\call_operations.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
   </ItemGroup>

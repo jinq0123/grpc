@@ -18,8 +18,20 @@ template <class Response>
 class ClientReader {
  public:
   ClientReader(const ChannelSptr& channel,
-               const ::google::protobuf::Message& request) {
-    // XXX
+               const ::google::protobuf::Message& request) :
+      call_(channel->MakeCall())
+  {
+      assert(channel);
+      assert(call_);
+      CallOperations ops;
+      ops.SendInitMetadata();
+      Status status = ops.SendMessage(request);
+      if (!status.ok()) {
+          // XXX
+      }
+      ops.RecvInitMetadata();
+      ops.ClientSendClose();
+      call_->StartBatch(ops, new Ignore);
   }
 
  public:
@@ -38,11 +50,17 @@ class ClientReader {
   }
 
  private:
+  class Ignore : public CompletionQueueTag {
+  public:
+      void DoComplete(bool success) GRPC_OVERRIDE {};
+  };
+
+ private:
   CallSptr call_;
-  CallOpSet<CallOpSendInitialMetadata, CallOpSendMessage,
-      CallOpRecvInitialMetadata, CallOpClientSendClose> init_ops_;
-  CallOpSet<CallOpRecvMessage<R>> read_ops_;
-  CallOpSet<CallOpClientRecvStatus> finish_ops_;
+  //CallOpSet<CallOpSendInitialMetadata, CallOpSendMessage,
+  //    CallOpRecvInitialMetadata, CallOpClientSendClose> init_ops_;
+  //CallOpSet<CallOpRecvMessage<R>> read_ops_;
+  //CallOpSet<CallOpClientRecvStatus> finish_ops_;
 };  // class ClientReader<>
 
 }  // namespace grpc_cb

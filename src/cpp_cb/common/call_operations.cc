@@ -1,7 +1,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#include "src/cpp_cb/common/call_operations.h"
+#include <grpc_cb/impl/call_operations.h>
 
 #include <grpc/support/alloc.h>         // for gpr_free()
 #include <grpc_cb/impl/proto_utils.h>   // for SerializeProto()
@@ -9,40 +9,29 @@
 
 namespace grpc_cb {
 
-CallOperations::CallOperations()
-    : send_buf_(nullptr) {
-  grpc_metadata_array_init(&recv_initial_metadata_arr_);
-  grpc_metadata_array_init(&recv_trailing_metadata_arr_);
-}
-
-CallOperations::~CallOperations() {
-  grpc_byte_buffer_destroy(send_buf_);
-  grpc_metadata_array_destroy(&recv_initial_metadata_arr_);
-  grpc_metadata_array_destroy(&recv_trailing_metadata_arr_);
-  gpr_free(status_details_);
-}
-
 Status CallOperations::SendMessage(
-    const ::google::protobuf::Message& message) {
-  Status status = SerializeProto(message, &send_buf_);
+    const ::google::protobuf::Message& message,
+    grpc_byte_buffer** send_buf) {
+  Status status = SerializeProto(message, send_buf);
   if (!status.ok()) return status;
-  if (send_buf_ == nullptr) return status;
+  if (*send_buf == nullptr) return status;
   grpc_op op = {GRPC_OP_SEND_MESSAGE, 0, 0, 0};
-  op.data.send_message = send_buf_;
+  op.data.send_message = *send_buf;
   cops_.push_back(op);
   return status;
 }
 
-void CallOperations::SendInitialMetadata() {
+// Todo: SendInitialMetadata()
+void CallOperations::SendInitialMetadata(const grpc_metadata_array& init_metadata) {
   grpc_op op{GRPC_OP_SEND_INITIAL_METADATA, 0, 0};
   op.data.send_initial_metadata.count = 0;
   op.data.send_initial_metadata.metadata = nullptr;
   cops_.push_back(op);
 }
 
-void CallOperations::RecvInitialMetadata() {
-  grpc_op op{GRPC_OP_RECV_INITIAL_METADATA, 0, 0};
-  op.data.recv_initial_metadata = &recv_initial_metadata_arr_;
+void CallOperations::RecvInitialMetadata(grpc_metadata_array* init_metadata) {
+  grpc_op op{GRPC_OP_RECV_INITIAL_METADATA, 0, 0};  // Todo
+  op.data.recv_initial_metadata = init_metadata;
   cops_.push_back(op);
 }
 
@@ -57,15 +46,16 @@ void CallOperations::ClientSendClose() {
   cops_.push_back(op);
 }
 
-void CallOperations::ClientRecvStatus() {
-
+void CallOperations::ClientRecvStatus(grpc_metadata_array* trailing_metadata,
+                                      grpc_status_code* status_code,
+                                      char** status_details,
+                                      size_t* status_details_capacity) {
   grpc_op op = {GRPC_OP_RECV_STATUS_ON_CLIENT, 0, 0};
-  op.data.recv_status_on_client.trailing_metadata =
-    &recv_trailing_metadata_arr_;
-  op.data.recv_status_on_client.status = &status_code_;
-  op.data.recv_status_on_client.status_details = &status_details_;
+  op.data.recv_status_on_client.trailing_metadata = trailing_metadata;
+  op.data.recv_status_on_client.status = status_code;
+  op.data.recv_status_on_client.status_details = status_details;
   op.data.recv_status_on_client.status_details_capacity =
-        &status_details_capacity_;
+      status_details_capacity;
   cops_.push_back(op);
 }
 

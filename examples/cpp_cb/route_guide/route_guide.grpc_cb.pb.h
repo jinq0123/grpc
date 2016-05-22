@@ -57,7 +57,7 @@ class Stub : public ::grpc_cb::ServiceStub {
 
   ::grpc_cb::ClientReader<::routeguide::Feature>
   ListFeatures(const ::routeguide::Rectangle& request) {
-    return ::grpc_cb::ClientReader<::routeguide::Feature>();
+    return ::grpc_cb::ClientReader<::routeguide::Feature>(channel_, request);
   }
 
   ::grpc_cb::ClientWriter<::routeguide::Point>

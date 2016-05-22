@@ -8,7 +8,7 @@
 #include <string>
 
 #include <grpc_cb/channel_sptr.h>
-#include <grpc_cb/impl/call_uptr.h>  // for CallUptr
+#include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/grpc_library.h>
 #include <grpc_cb/support/config.h>  // for GRPC_OVERRIDE
 
@@ -25,7 +25,7 @@ class Channel : public GrpcLibrary,
   virtual ~Channel() GRPC_OVERRIDE;
 
  public:
-  CallUptr CreateCall(
+  CallSptr MakeCall(
     const std::string& method,
     grpc_completion_queue& cp);
 
