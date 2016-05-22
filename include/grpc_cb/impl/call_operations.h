@@ -5,6 +5,7 @@
 #define GRPC_INTERNAL_CPP_CB_COMMON_CALL_OPERATIONS_H
 
 #include <cassert>
+#include <vector>
 
 #include <grpc/grpc.h>                     // for grpc_op
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
@@ -15,7 +16,7 @@
 
 namespace grpc_cb {
 
-class Status;
+using MetadataVector = std::vector<grpc_metadata>;
 
 // Like grpc++ CallOpSet<>.
 // Non-thread-safe.
@@ -28,7 +29,7 @@ class CallOperations GRPC_FINAL {
   inline const grpc_op* GetOps() const { return ops_; }
 
  public:
-  inline void SendInitialMetadata(const grpc_metadata_array& init_metadata);
+  inline void SendInitialMetadata(MetadataVector& init_metadata);
   inline Status SendMessage(const ::google::protobuf::Message& message,
                      grpc_byte_buffer** send_buf) GRPC_MUST_USE_RESULT;
   inline void RecvInitialMetadata(grpc_metadata_array* init_metadata = nullptr);
@@ -70,13 +71,13 @@ Status CallOperations::SendMessage(
   return status;
 }
 
-// Todo: SendInitialMetadata()
-void CallOperations::SendInitialMetadata(const grpc_metadata_array& init_metadata) {
+void CallOperations::SendInitialMetadata(MetadataVector& init_metadata) {
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_SEND_INITIAL_METADATA);
-  op.data.send_initial_metadata.count = 0;
-  op.data.send_initial_metadata.metadata = nullptr;
+  op.data.send_initial_metadata.count = init_metadata.size();
+  op.data.send_initial_metadata.metadata =
+      init_metadata.empty() ? nullptr : &init_metadata[0];
 }
 
 void CallOperations::RecvInitialMetadata(grpc_metadata_array* init_metadata) {

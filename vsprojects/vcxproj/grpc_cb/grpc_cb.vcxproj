@@ -258,7 +258,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_writer.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\client_unary_call_tag.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\client_call_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_ptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_tag.h" />

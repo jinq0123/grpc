@@ -8,6 +8,7 @@
 #include <google/protobuf/stubs/once.h>
 
 #include <grpc_cb/channel.h>
+#include <grpc_cb/client_call_cqtag.h>  // for ClientCallCqTag
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
@@ -65,26 +66,16 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   assert(response);
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call(channel_->MakeCall(method_names[0], cq.cq()));
-  ClientUnaryCallTag tag;
+  ClientCallCqTag tag;
   CallOperations ops;
-  Status status = tag.InitCallOps(ops);
+  Status status = tag.InitCallOps(ops, request);
   if (!status.ok()) {
     return status;
   }
 
-  //ops.SendInitialMetadata();
-  //Status status = ops.SendMessage(request);
-  //if (!status.ok()) {
-  //  return status;
-  //}
-  //ops.RecvInitialMetadata();
-  //ops.RecvMessage(&recv_buf_);
-  //ops.ClientSendClose();
-  //ops.ClientRecvStatus();
-
   grpc_cb::Status status = call->StartBatch(ops, &tag);
   if (!status.ok()) return status;
-  cq.Pluck(&tag);
+  cq.Pluck(&tag);  // Todo: Make suer tag was not queued if StartBatch() failed.
   return call->GetResponse(response);
 }
 
