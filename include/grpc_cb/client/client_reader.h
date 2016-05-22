@@ -8,11 +8,20 @@
 #include <functional>  // for std::function
 
 #include <grpc_cb/support/status.h>
+#include <grpc_cb/impl/call_op.h>
+#include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 
 namespace grpc_cb {
 
+// Copyable.
 template <class Response>
 class ClientReader {
+ public:
+  ClientReader(const ChannelSptr& channel,
+               const ::google::protobuf::Message& request) {
+    // XXX
+  }
+
  public:
   bool BlockingRead(Response* response) {
     assert(response);
@@ -27,6 +36,13 @@ class ClientReader {
   void SetReadCallback(std::function<void (const Response&)> readCallback) {
     // XXX
   }
+
+ private:
+  CallSptr call_;
+  CallOpSet<CallOpSendInitialMetadata, CallOpSendMessage,
+      CallOpRecvInitialMetadata, CallOpClientSendClose> init_ops_;
+  CallOpSet<CallOpRecvMessage<R>> read_ops_;
+  CallOpSet<CallOpClientRecvStatus> finish_ops_;
 };  // class ClientReader<>
 
 }  // namespace grpc_cb

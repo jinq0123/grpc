@@ -56,12 +56,7 @@ class Stub : public ::grpc_cb::ServiceStub {
       const ::grpc_cb::ErrorCallback& err_cb);
 
   ::grpc_cb::ClientReader<::routeguide::Feature>
-  BlockingListFeatures(const ::routeguide::Rectangle& request) {
-    return ::grpc_cb::ClientReader<::routeguide::Feature>();
-  }
-
-  ::grpc_cb::ClientReader<::routeguide::Feature>
-  AsyncListFeatures(const ::routeguide::Rectangle& request) {
+  ListFeatures(const ::routeguide::Rectangle& request) {
     return ::grpc_cb::ClientReader<::routeguide::Feature>();
   }
 

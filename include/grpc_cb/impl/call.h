@@ -45,7 +45,7 @@ class Call GRPC_FINAL {
   grpc_byte_buffer* recv_buf_;
   int max_message_size_;
 
-private:
+ private:
   static int default_max_message_size_;  // for all call
 };
 

@@ -48,6 +48,7 @@ Status Call::StartBatch(const ::google::protobuf::Message& request, void* tag) {
   return Status::InternalError("grpc_call_start_batch() failed");
 }
 
+// Todo: Move out. Call is only wrap of grpc_call.
 Status Call::GetResponse(::google::protobuf::Message* response) const {
   assert(response);
   // TODO: check status first...

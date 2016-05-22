@@ -31,7 +31,7 @@
  *
  */
 
-#include "src/cpp_cb/common/call_op.h"
+#include <grpc_cb/impl/call_op.h>
 
 namespace grpc_cb {
 
