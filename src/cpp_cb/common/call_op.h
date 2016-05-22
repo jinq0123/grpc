@@ -260,7 +260,6 @@ class CallOpServerSendStatus {
   void ServerSendStatus(
       const std::multimap<std::string, std::string>& trailing_metadata,
       const Status& status) {
-    trailing_metadata_count_ = trailing_metadata.size();
     FillMetadataVector(trailing_metadata, trailing_metadata_);
     send_status_available_ = true;
     send_status_code_ = static_cast<grpc_status_code>(status.error_code());
@@ -273,7 +272,7 @@ class CallOpServerSendStatus {
     grpc_op* op = &ops[(*nops)++];
     op->op = GRPC_OP_SEND_STATUS_FROM_SERVER;
     op->data.send_status_from_server.trailing_metadata_count =
-        trailing_metadata_count_;
+        trailing_metadata_.size();
     op->data.send_status_from_server.trailing_metadata =
         trailing_metadata_.empty() ? nullptr : &trailing_metadata_[0];
     op->data.send_status_from_server.status = send_status_code_;
@@ -292,7 +291,6 @@ class CallOpServerSendStatus {
   bool send_status_available_;
   grpc_status_code send_status_code_;
   std::string send_status_details_;
-  size_t trailing_metadata_count_;
   MetaDataVector trailing_metadata_;
 };
 
