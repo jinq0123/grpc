@@ -25,7 +25,7 @@ class Call GRPC_FINAL {
   ~Call();
 
  public:
-  Status StartBatch(const ::google::protobuf::Message& request, void* tag);
+  Status StartBatch(const CallOperations& ops, void* tag);
   Status GetResponse(::google::protobuf::Message* response) const;
 
   inline int GetMaxMessageSize() const { return max_message_size_; }
@@ -39,7 +39,6 @@ class Call GRPC_FINAL {
   std::unique_ptr<grpc_call, void (*)(grpc_call*)> call_;  // owned
 
  private:
-  std::shared_ptr<CallOperations> ops_;
   grpc_byte_buffer* recv_buf_;
   int max_message_size_;
 

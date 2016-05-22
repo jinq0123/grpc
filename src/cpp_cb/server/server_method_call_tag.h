@@ -19,6 +19,7 @@ namespace grpc_cb {
 class Service;
 
 // Used in class Server.
+// Todo: Rename to ServerMethodCallCqTag
 class ServerMethodCallTag GRPC_FINAL : public CompletionQueueTag {
  public:
   // registered_method is the return of grpc_server_register_method().

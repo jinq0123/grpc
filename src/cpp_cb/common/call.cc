@@ -26,21 +26,7 @@ Call::~Call() {
   grpc_byte_buffer_destroy(recv_buf_);
 }
 
-// Todo: Change to StartBatch(CallOperations, tag).
-Status Call::StartBatch(const ::google::protobuf::Message& request, void* tag) {
-  ops_.reset(new CallOperations);
-  CallOperations& ops = *ops_;
-
-  ops.SendInitialMetadata();
-  Status status = ops.SendMessage(request);
-  if (!status.ok()) {
-    return status;
-  }
-  ops.RecvInitialMetadata();
-  ops.RecvMessage(&recv_buf_);
-  ops.ClientSendClose();
-  ops.ClientRecvStatus();
-
+Status Call::StartBatch(const CallOperations& ops, void* tag) {
   grpc_call_error result = grpc_call_start_batch(
     call(), ops.GetOps(), ops.GetOpsNum(), tag, nullptr);
   if (GRPC_CALL_OK == result) {

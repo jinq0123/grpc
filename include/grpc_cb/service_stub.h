@@ -69,7 +69,7 @@ class ServiceStub {
 
  private:
   template <class ResponseType>
-  class CompletionCb : public CompletionQueueTag {
+  class CompletionCb : public CompletionQueueTag {  // Rename to ClientAsyncCallCqTag
    public:
     typedef std::function<void(const ResponseType&)> ResponseCallback;
     CompletionCb(const CallSptr& call, const ResponseCallback& cb,

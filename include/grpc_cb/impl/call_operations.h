@@ -115,8 +115,7 @@ void CallOperations::ClientRecvStatus(grpc_metadata_array* trailing_metadata,
 
 void CallOperations::ServerSendStatus(
     const grpc_metadata_array& trailing_metadata_array,
-                        const grpc_status_code& status_code,
-                        const char* status_details) {
+    const grpc_status_code& status_code, const char* status_details) {
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_SEND_STATUS_FROM_SERVER);

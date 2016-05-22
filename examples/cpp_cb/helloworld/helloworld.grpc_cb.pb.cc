@@ -65,10 +65,26 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   assert(response);
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call(channel_->MakeCall(method_names[0], cq.cq()));
-  void* tag = call.get();
-  grpc_cb::Status status = call->StartBatch(request, tag);
+  ClientUnaryCallTag tag;
+  CallOperations ops;
+  Status status = tag.InitCallOps(ops);
+  if (!status.ok()) {
+    return status;
+  }
+
+  //ops.SendInitialMetadata();
+  //Status status = ops.SendMessage(request);
+  //if (!status.ok()) {
+  //  return status;
+  //}
+  //ops.RecvInitialMetadata();
+  //ops.RecvMessage(&recv_buf_);
+  //ops.ClientSendClose();
+  //ops.ClientRecvStatus();
+
+  grpc_cb::Status status = call->StartBatch(ops, &tag);
   if (!status.ok()) return status;
-  cq.Pluck(tag);
+  cq.Pluck(&tag);
   return call->GetResponse(response);
 }
 
@@ -80,7 +96,7 @@ void Stub::AsyncSayHello(
   ::grpc_cb::CallSptr call_sptr(
       channel_->MakeCall(method_names[0], cq_->cq()));
   ::grpc_cb::Call* call = call_sptr.get();
-  ::grpc_cb::CompletionQueueTag* tag =
+  ::grpc_cb::CompletionQueueTag* tag =  // XXX Rename to ClientAsyncUnaryCallTag : public ClientUnaryCallTag
       NewCompletionQueueTag(call_sptr, cb, err_cb);
   grpc_cb::Status status = call->StartBatch(request, tag);
   if (!status.ok()) {

@@ -24,15 +24,17 @@ class ClientReader {
   {
       assert(channel);
       assert(call_);
+      ClientReaderInitCqTag* tag(new ClientReaderInitCqTag);  // Todo: XXXCqTag is good name.
       CallOperations ops;
-      ops.SendInitMetadata();
-      Status status = ops.SendMessage(request);
+      Status status = tag.InitCallOps(ops);
+      //ops.SendInitMetadata();
+      //Status status = ops.SendMessage(request);
       if (!status.ok()) {
           // XXX
       }
-      ops.RecvInitMetadata();
-      ops.ClientSendClose();
-      call_->StartBatch(ops, new Ignore);
+      //ops.RecvInitMetadata();
+      //ops.ClientSendClose();
+      call_->StartBatch(ops, tag);  // tag keeps the buffer and other.
   }
 
  public:
@@ -49,12 +51,6 @@ class ClientReader {
   void SetReadCallback(std::function<void (const Response&)> readCallback) {
     // XXX
   }
-
- private:
-  class Ignore : public CompletionQueueTag {
-  public:
-      void DoComplete(bool success) GRPC_OVERRIDE {};
-  };
 
  private:
   CallSptr call_;

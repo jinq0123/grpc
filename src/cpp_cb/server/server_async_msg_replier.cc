@@ -13,6 +13,7 @@
 
 namespace grpc_cb {
 
+// Todo: Rename to ServerReplyCqTag
 class ReplyTag GRPC_FINAL : public CompletionQueueTag {
  public:
   inline ReplyTag(const CallSptr& call_sptr, const ::google::protobuf::Message& msg);
@@ -32,12 +33,13 @@ class ReplyTag GRPC_FINAL : public CompletionQueueTag {
  private:
   inline explicit ReplyTag(const CallSptr& call_sptr);
 
+  // Todo: Use CallOperations instead.
   void SendInitialMetadata();
   Status SendMessage(const ::google::protobuf::Message& msg);
   void ServerSendStatus(const Status& status);
 
  private:
-  std::vector<grpc_op> cops_;
+  std::vector<grpc_op> cops_;  // XXX Delete
 
  private:
   grpc_byte_buffer* send_buf_;
