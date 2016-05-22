@@ -10,6 +10,7 @@
 #include <grpc_cb/support/status.h>
 #include <grpc_cb/impl/call_op.h>
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
+#include <grpc_cb/channel.h>  // for MakeCall()
 
 namespace grpc_cb {
 
