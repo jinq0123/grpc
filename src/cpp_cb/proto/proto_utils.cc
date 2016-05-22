@@ -31,7 +31,7 @@
  *
  */
 
-#include <src/cpp_cb/proto/proto_utils.h>
+#include <grpc_cb/impl/proto_utils.h>
 
 #include <climits>
 

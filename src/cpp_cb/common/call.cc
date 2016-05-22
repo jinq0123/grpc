@@ -7,9 +7,9 @@
 
 #include <grpc/grpc.h>
 #include <grpc_cb/support/status.h>
+#include <grpc_cb/impl/proto_utils.h>  // for DeserializeProto()
 
 #include "src/cpp_cb/common/call_operations.h"  // for CallOperations
-#include "src/cpp_cb/proto/proto_utils.h"  // for DeserializeProto()
 
 namespace grpc_cb {
 

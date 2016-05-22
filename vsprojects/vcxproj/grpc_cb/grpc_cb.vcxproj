@@ -277,6 +277,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_op.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_operations.h" />

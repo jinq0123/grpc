@@ -36,19 +36,20 @@
 #define GRPC_CB_COMMON_CALL_OP_H
 
 #include <map>  // for multimap
+#include <memory>  // for unique_ptr
 #include <vector>
 
-#include <grpc/grpc.h>  // for GRPC_OP_SEND_MESSAGE
+#include <grpc/grpc.h>                          // for GRPC_OP_SEND_MESSAGE
+#include <grpc_cb/completion_queue_tag.h>       // for CompletionQueueTag
+#include <grpc_cb/impl/proto_utils.h>           // for SerializeProto
 #include <grpc_cb/impl/serialization_traits.h>  // for SerializationTraits
-#include <grpc_cb/support/config.h>  // for GRPC_FINAL
-#include <grpc_cb/support/protobuf_fwd.h>  // for Message
-#include <grpc_cb/support/status.h>  // for Status
-
-#include "src/cpp_cb/proto/proto_utils.h"  // for SerializeProto
+#include <grpc_cb/support/config.h>             // for GRPC_FINAL
+#include <grpc_cb/support/protobuf_fwd.h>       // for Message
+#include <grpc_cb/support/status.h>             // for Status
+#include <grpc_cb/support/string_ref.h>
 
 namespace grpc_cb {
 
-class string_ref;
 class Status;
 
 void FillMetadataMap(
@@ -262,7 +263,7 @@ class CallOpServerSendStatus {
       const std::multimap<std::string, std::string>& trailing_metadata,
       const Status& status) {
     trailing_metadata_count_ = trailing_metadata.size();
-    trailing_metadata_ = FillMetadataArray(trailing_metadata);
+    FillMetadataVector(trailing_metadata, trailing_metadata_);
     send_status_available_ = true;
     send_status_code_ = static_cast<grpc_status_code>(status.error_code());
     send_status_details_ = status.error_message();
@@ -275,7 +276,8 @@ class CallOpServerSendStatus {
     op->op = GRPC_OP_SEND_STATUS_FROM_SERVER;
     op->data.send_status_from_server.trailing_metadata_count =
         trailing_metadata_count_;
-    op->data.send_status_from_server.trailing_metadata = trailing_metadata_;
+    op->data.send_status_from_server.trailing_metadata =
+        trailing_metadata_.empty() ? nullptr : &trailing_metadata_[0];
     op->data.send_status_from_server.status = send_status_code_;
     op->data.send_status_from_server.status_details =
         send_status_details_.empty() ? nullptr : send_status_details_.c_str();
@@ -285,7 +287,6 @@ class CallOpServerSendStatus {
 
   void FinishOp(bool* status, int max_message_size) {
     if (!send_status_available_) return;
-    gpr_free(trailing_metadata_);
     send_status_available_ = false;
   }
 
@@ -294,16 +295,16 @@ class CallOpServerSendStatus {
   grpc_status_code send_status_code_;
   std::string send_status_details_;
   size_t trailing_metadata_count_;
-  grpc_metadata* trailing_metadata_;
+  MetaDataVector trailing_metadata_;
 };
 
 class CallOpRecvInitialMetadata {
  public:
   CallOpRecvInitialMetadata() : recv_initial_metadata_(nullptr) {}
 
-  void RecvInitialMetadata(ClientContext* context) {
-    context->initial_metadata_received_ = true;
-    recv_initial_metadata_ = &context->recv_initial_metadata_;
+  void RecvInitialMetadata() {  // Todo: ClientContext* context) {
+    // Todo: context->initial_metadata_received_ = true;
+    // Todo: recv_initial_metadata_ = &context->recv_initial_metadata_;
   }
 
  protected:
@@ -331,8 +332,8 @@ class CallOpClientRecvStatus {
  public:
   CallOpClientRecvStatus() : recv_status_(nullptr) {}
 
-  void ClientRecvStatus(ClientContext* context, Status* status) {
-    recv_trailing_metadata_ = &context->trailing_metadata_;
+  void ClientRecvStatus(/* Todo: ClientContext* context, */Status* status) {
+    // Todo: recv_trailing_metadata_ = &context->trailing_metadata_;
     recv_status_ = status;
   }
 
@@ -357,16 +358,15 @@ class CallOpClientRecvStatus {
 
   void FinishOp(bool* status, int max_message_size) {
     if (recv_status_ == nullptr) return;
-    FillMetadataMap(&recv_trailing_metadata_arr_, recv_trailing_metadata_);
-    *recv_status_ = Status(
-        static_cast<StatusCode>(status_code_),
+    // Todo: FillMetadataMap(&recv_trailing_metadata_arr_, recv_trailing_metadata_);
+    *recv_status_ = Status(status_code_,
         status_details_ ? std::string(status_details_) : std::string());
-    gpr_free(status_details_);
+    // Todo: gpr_free(status_details_);
     recv_status_ = nullptr;
   }
 
  private:
-  std::multimap<string_ref, string_ref>* recv_trailing_metadata_;
+  // Todo: std::multimap<string_ref, string_ref>* recv_trailing_metadata_;
   Status* recv_status_;
   grpc_metadata_array recv_trailing_metadata_arr_;
   grpc_status_code status_code_;

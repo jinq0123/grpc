@@ -138,6 +138,9 @@
     <ClInclude Include="..\..\..\src\cpp_cb\common\call_op.h">
       <Filter>src\cpp_cb\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h">
+      <Filter>include\grp_cb\support</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

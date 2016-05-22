@@ -31,15 +31,15 @@
  *
  */
 
-#ifndef GRPCXX_SUPPORT_STRING_REF_H
-#define GRPCXX_SUPPORT_STRING_REF_H
+#ifndef GRPC_CB_SUPPORT_STRING_REF_H
+#define GRPC_CB_SUPPORT_STRING_REF_H
 
 #include <iterator>
 #include <iosfwd>
 
-#include <grpc++/support/config.h>
+#include <grpc_cb/support/config.h>
 
-namespace grpc {
+namespace grpc_cb {
 
 /// This class is a non owning reference to a string.
 ///
@@ -65,7 +65,7 @@ class string_ref {
   string_ref& operator=(const string_ref& rhs);
   string_ref(const char* s);
   string_ref(const char* s, size_t l) : data_(s), length_(l) {}
-  string_ref(const grpc::string& s) : data_(s.data()), length_(s.length()) {}
+  string_ref(const std::string& s) : data_(s.data()), length_(s.length()) {}
 
   // iterators
   const_iterator begin() const { return data_; }
@@ -118,6 +118,6 @@ bool operator>=(string_ref x, string_ref y);
 
 std::ostream& operator<<(std::ostream& stream, const string_ref& string);
 
-}  // namespace grpc
+}  // namespace grpc_cb
 
-#endif  // GRPCXX_SUPPORT_STRING_REF_H
+#endif  // GRPC_CB_SUPPORT_STRING_REF_H

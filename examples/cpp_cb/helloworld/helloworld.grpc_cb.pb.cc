@@ -10,7 +10,7 @@
 #include <grpc_cb/channel.h>
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
-#include <grpc_cb/impl/proto_utils.h>  // for Deserialize()
+#include <grpc_cb/impl/serialization_traits.h>  // for Deserialize()
 #include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 
 namespace helloworld {

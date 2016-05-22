@@ -35,6 +35,8 @@
 #ifndef GRPC_CB_IMPL_SERIALIZATION_TRAITS_H
 #define GRPC_CB_IMPL_SERIALIZATION_TRAITS_H
 
+#include <grpc_cb/impl/proto_utils.h>  // for DeserializeProto()
+
 namespace grpc_cb {
 
 /// Defines how to serialize and deserialize some type.

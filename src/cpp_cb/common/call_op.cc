@@ -49,7 +49,7 @@ void FillMetadataMap(grpc_metadata_array* arr,
 
 // TODO(yangg) if the map is changed before we send, the pointers will be a
 // mess. Make sure it does not happen.
-void FillMetadataArray(
+void FillMetadataVector(
     const std::multimap<std::string, std::string>& metadata,
     MetaDataVector& metadata_vec) {
   metadata_vec.resize(metadata.size());

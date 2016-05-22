@@ -550,7 +550,7 @@ grpc::string GetSourceIncludes(const grpc::protobuf::FileDescriptor *file,
     printer.Print("#include <grpc_cb/channel.h>\n");
     printer.Print("#include <grpc_cb/completion_queue.h>\n");
     printer.Print("#include <grpc_cb/impl/call.h>\n");
-    printer.Print("#include <grpc_cb/impl/proto_utils.h>  // for Deserialize()\n");
+    printer.Print("#include <grpc_cb/impl/serialization_traits.h>  // for Deserialize()\n");
     printer.Print("#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>\n");
     printer.Print("\n");
 
