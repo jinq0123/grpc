@@ -9,7 +9,6 @@ Not ready
 
 #Todo
 * WriteOptions
-* Delete SerializationTraits<>. Need only Deserialize<>.
 
 #Other
  

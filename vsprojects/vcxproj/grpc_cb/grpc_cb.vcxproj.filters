@@ -141,6 +141,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -185,5 +188,10 @@
     <Filter Include="include\grp_cb\server">
       <UniqueIdentifier>{5b9f9d62-4174-4c2d-b797-519b3cf0b74a}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\include\grpc_cb\impl\README.md">
+      <Filter>include\grp_cb\impl</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -550,7 +550,6 @@ grpc::string GetSourceIncludes(const grpc::protobuf::FileDescriptor *file,
     printer.Print("#include <grpc_cb/channel.h>\n");
     printer.Print("#include <grpc_cb/completion_queue.h>\n");
     printer.Print("#include <grpc_cb/impl/call.h>\n");
-    printer.Print("#include <grpc_cb/impl/serialization_traits.h>  // for Deserialize()\n");
     printer.Print("#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>\n");
     printer.Print("\n");
 
@@ -776,7 +775,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
         "  using Request = $Request$;\n"
         "  Request request;\n"
         "  ::grpc_cb::Status status =\n"
-        "      ::grpc_cb::SerializationTraits<Request>::Deserialize(\n"
+        "      ::grpc_cb::DeserializeProto(\n"
         "          &request_buffer, &request, 0 /* TODO: max_message_size*/);\n"
         "  if (status.ok()) {\n"
         "    $Method$(request, replier);\n"

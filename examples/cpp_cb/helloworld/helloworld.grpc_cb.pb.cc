@@ -10,7 +10,7 @@
 #include <grpc_cb/channel.h>
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
-#include <grpc_cb/impl/serialization_traits.h>  // for Deserialize()
+#include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
 #include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 
 namespace helloworld {
@@ -121,7 +121,7 @@ void Service::SayHello(
   using Request = ::helloworld::HelloRequest;
   Request request;
   ::grpc_cb::Status status =
-      ::grpc_cb::SerializationTraits<Request>::Deserialize(
+      ::grpc_cb::DeserializeProto(
           &request_buffer, &request, 0 /* TODO: max_message_size*/);
   if (status.ok()) {
     SayHello(request, replier);

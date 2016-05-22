@@ -265,6 +265,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_uptr.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
@@ -306,6 +307,9 @@
     <ProjectReference Include="$(SolutionDir)\..\vsprojects\vcxproj\.\grpc\grpc.vcxproj">
       <Project>{29D16885-7228-4C31-81ED-5F9187C7F2A9}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\include\grpc_cb\impl\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

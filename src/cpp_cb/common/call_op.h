@@ -42,7 +42,6 @@
 #include <grpc/grpc.h>                          // for GRPC_OP_SEND_MESSAGE
 #include <grpc_cb/completion_queue_tag.h>       // for CompletionQueueTag
 #include <grpc_cb/impl/proto_utils.h>           // for SerializeProto
-#include <grpc_cb/impl/serialization_traits.h>  // for SerializationTraits
 #include <grpc_cb/support/config.h>             // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>       // for Message
 #include <grpc_cb/support/status.h>             // for Status
@@ -153,12 +152,11 @@ class CallOpRecvMessage {
     if (recv_buf_) {
       if (*status) {
         got_message = true;
-        *status = SerializationTraits<R>::Deserialize(recv_buf_, message_,
-                                                      max_message_size).ok();
+        *status = DeserializeProto(recv_buf_, message_, max_message_size).ok();
       } else {
         got_message = false;
-        grpc_byte_buffer_destroy(recv_buf_);
       }
+      grpc_byte_buffer_destroy(recv_buf_);
     } else {
       got_message = false;
       *status = false;
@@ -183,7 +181,7 @@ class DeserializeFuncType GRPC_FINAL : public DeserializeFunc {
   DeserializeFuncType(R* message) : message_(message) {}
   Status Deserialize(grpc_byte_buffer* buf,
                      int max_message_size) GRPC_OVERRIDE {
-    return SerializationTraits<R>::Deserialize(buf, message_, max_message_size);
+    return DeserializeProto(buf, message_, max_message_size);
   }
 
  private:
