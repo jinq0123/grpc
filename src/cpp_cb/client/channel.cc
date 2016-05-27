@@ -30,9 +30,9 @@ Channel::~Channel() {
 
 CallSptr Channel::MakeCall(
     const std::string& method,
-    grpc_completion_queue& cp) {
+    grpc_completion_queue& cq) {
   grpc_call* c_call = grpc_channel_create_call(
-    c_channel_, nullptr, GRPC_PROPAGATE_DEFAULTS, &cp, method.c_str(), nullptr,
+    c_channel_, nullptr, GRPC_PROPAGATE_DEFAULTS, &cq, method.c_str(), nullptr,
     gpr_inf_future(GPR_CLOCK_REALTIME), nullptr);
   return CallSptr(new Call(c_call));  // shared_ptr
 }

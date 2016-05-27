@@ -258,6 +258,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_writer.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\client_async_call_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client_call_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_ptr.h" />
@@ -268,7 +269,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_operations.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\serialization_traits.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server\server_reader.h" />
@@ -282,8 +282,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\status.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
-    <ClInclude Include="..\..\..\src\cpp_cb\common\call_op.h" />
-    <ClInclude Include="..\..\..\src\cpp_cb\proto\proto_utils.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h" />
   </ItemGroup>
   <ItemGroup>

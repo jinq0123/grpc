@@ -23,6 +23,8 @@ public:
     grpc_byte_buffer_destroy(recv_buf_);
   }
 
+    // XXX DoComplete()
+
 public:
   inline Status InitCallOps(CallOperations& ops,
                            const ::google::protobuf::Message& request);

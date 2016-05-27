@@ -7,10 +7,11 @@
 #include <cassert>     // for assert()
 #include <functional>  // for std::function
 
-#include <grpc_cb/support/status.h>
+#include <grpc_cb/channel.h>  // for MakeCall()
+#include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/call_op.h>
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
-#include <grpc_cb/channel.h>  // for MakeCall()
+#include <grpc_cb/support/status.h>
 
 namespace grpc_cb {
 
@@ -18,23 +19,24 @@ namespace grpc_cb {
 template <class Response>
 class ClientReader {
  public:
-  ClientReader(const ChannelSptr& channel,
-               const ::google::protobuf::Message& request) :
-      call_(channel->MakeCall())
-  {
-      assert(channel);
-      assert(call_);
-      ClientReaderInitCqTag* tag(new ClientReaderInitCqTag);  // Todo: XXXCqTag is good name.
-      CallOperations ops;
-      Status status = tag.InitCallOps(ops);
-      //ops.SendInitMetadata();
-      //Status status = ops.SendMessage(request);
-      if (!status.ok()) {
-          // XXX
-      }
-      //ops.RecvInitMetadata();
-      //ops.ClientSendClose();
-      call_->StartBatch(ops, tag);  // tag keeps the buffer and other.
+  ClientReader(const ChannelSptr& channel, const std::string& method,
+               const ::google::protobuf::Message& request,
+               grpc_completion_queue& cq)
+      : call_(channel->MakeCall(method, cq)) {
+    assert(channel);
+    assert(call_);
+    ClientReaderInitCqTag* tag(
+        new ClientReaderInitCqTag);  // Todo: XXXCqTag is good name.
+    CallOperations ops;
+    Status status = tag.InitCallOps(ops);
+    // ops.SendInitMetadata();
+    // Status status = ops.SendMessage(request);
+    if (!status.ok()) {
+      // XXX
+    }
+    // ops.RecvInitMetadata();
+    // ops.ClientSendClose();
+    call_->StartBatch(ops, tag);  // tag keeps the buffer and other.
   }
 
  public:

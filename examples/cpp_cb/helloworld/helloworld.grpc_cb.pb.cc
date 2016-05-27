@@ -8,7 +8,8 @@
 #include <google/protobuf/stubs/once.h>
 
 #include <grpc_cb/channel.h>
-#include <grpc_cb/client_call_cqtag.h>  // for ClientCallCqTag
+#include <grpc_cb/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag
+#include <grpc_cb/client_call_cqtag.h>        // for ClientCallCqTag
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
@@ -87,11 +88,17 @@ void Stub::AsyncSayHello(
   ::grpc_cb::CallSptr call_sptr(
       channel_->MakeCall(method_names[0], cq_->cq()));
   ::grpc_cb::Call* call = call_sptr.get();
-  ::grpc_cb::CompletionQueueTag* tag =  // XXX Rename to ClientAsyncUnaryCallTag : public ClientUnaryCallTag
-      NewCompletionQueueTag(call_sptr, cb, err_cb);
-  ::grpc_cb::Status status = call->StartBatch(*tag, tag);
+  using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::helloworld::HelloRequest>;
+  CqTag* tag = new CqTag(cb, err_cb);
+  // DEL ::grpc_cb::CompletionQueueTag* tag =  // XXX Rename to ClientAsyncUnaryCallTag : public ClientUnaryCallTag
+  // DEL    NewCompletionQueueTag(call_sptr, cb, err_cb);
+
+  ::grpc_cb::CallOperations ops;
+  ::grpc_cb::Status status = tag->InitCallOps(ops, request);
+  if (status.ok())
+      status = call->StartBatch(ops, tag);
   if (!status.ok()) {
-    DeleteCompletionQueueTag(tag);
+    DeleteCompletionQueueTag(tag);  // XXX just delete?
     err_cb(status);
   }
 }

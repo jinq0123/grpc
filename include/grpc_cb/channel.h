@@ -27,7 +27,7 @@ class Channel : public GrpcLibrary,
  public:
   CallSptr MakeCall(
     const std::string& method,
-    grpc_completion_queue& cp);
+    grpc_completion_queue& cq);
 
  private:
   Channel(const std::string& host, grpc_channel* c_channel);
