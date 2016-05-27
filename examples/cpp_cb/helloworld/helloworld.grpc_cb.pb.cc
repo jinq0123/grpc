@@ -66,14 +66,14 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   assert(response);
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call(channel_->MakeCall(method_names[0], cq.cq()));
-  ClientCallCqTag tag;
-  CallOperations ops;
-  Status status = tag.InitCallOps(ops, request);
+  ::grpc_cb::ClientCallCqTag tag;
+  ::grpc_cb::CallOperations ops;
+  ::grpc_cb::Status status = tag.InitCallOps(ops, request);
   if (!status.ok()) {
     return status;
   }
 
-  grpc_cb::Status status = call->StartBatch(ops, &tag);
+  status = call->StartBatch(ops, &tag);
   if (!status.ok()) return status;
   cq.Pluck(&tag);  // Todo: Make suer tag was not queued if StartBatch() failed.
   return call->GetResponse(response);
@@ -89,7 +89,7 @@ void Stub::AsyncSayHello(
   ::grpc_cb::Call* call = call_sptr.get();
   ::grpc_cb::CompletionQueueTag* tag =  // XXX Rename to ClientAsyncUnaryCallTag : public ClientUnaryCallTag
       NewCompletionQueueTag(call_sptr, cb, err_cb);
-  grpc_cb::Status status = call->StartBatch(request, tag);
+  ::grpc_cb::Status status = call->StartBatch(*tag, tag);
   if (!status.ok()) {
     DeleteCompletionQueueTag(tag);
     err_cb(status);
