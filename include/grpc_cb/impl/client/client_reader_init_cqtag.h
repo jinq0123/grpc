@@ -6,16 +6,17 @@
 
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
 
-#include <grpc_cb/impl/completion_queue_tag.h>  // for CompletionQueueTag
-#include <grpc_cb/support/config.h>             // for GRPC_FINAL
+#include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
+#include <grpc_cb/support/config.h>   // for GRPC_FINAL
 
 namespace grpc_cb {
 
 class CallOperations;
 class Status;
 
-class ClientReaderInitCqTag GRPC_FINAL : public CompletionQueueTag {
-public:
+class ClientReaderInitCqTag GRPC_FINAL : public CallCqTag {
+ public:
+  ClientReaderInitCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
   Status InitCallOps(CallOperations& ops) GRPC_MUST_USE_RESULT;
 };  // class ClientReaderInitCqTag
 

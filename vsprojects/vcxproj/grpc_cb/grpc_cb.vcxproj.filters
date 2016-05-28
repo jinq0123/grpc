@@ -111,9 +111,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_ptr.h">
-      <Filter>include\grp_cb\impl</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_tag.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
@@ -152,6 +149,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_replier_cqtag.h">
       <Filter>src\cpp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\call_cqtag.h">
+      <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_uptr.h">
+      <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

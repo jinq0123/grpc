@@ -6,7 +6,7 @@
 
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
-#include <grpc_cb/impl/completion_queue_tag.h>  // for CompletionQueueTag
+#include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
@@ -17,9 +17,10 @@ class Status;
 
 // Completion queue tag (CqTag) for client call for both blocking and async calls.
 // ClientAsyncCallCqTag derives from it.
-class ClientCallCqTag : public CompletionQueueTag {
-public:
-  ClientCallCqTag() {
+class ClientCallCqTag : public CallCqTag {
+ public:
+  explicit ClientCallCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {
+    assert(call_sptr);
     grpc_metadata_array_init(&recv_init_detadata_);
     grpc_metadata_array_init(&recv_trailing_metadata_arr_);
   }

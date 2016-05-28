@@ -10,9 +10,9 @@
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/channel_sptr.h>
-#include <grpc_cb/impl/completion_queue_ptr.h>  // for CompletionQueueUptr
-#include <grpc_cb/impl/completion_queue_tag.h>  // for CompletionQueueTag
-#include <grpc_cb/support/config.h>             // for GRPC_OVERRIDE
+#include <grpc_cb/impl/completion_queue_tag.h>   // for CompletionQueueTag
+#include <grpc_cb/impl/completion_queue_uptr.h>  // for CompletionQueueUptr
+#include <grpc_cb/support/config.h>              // for GRPC_OVERRIDE
 
 namespace grpc_cb {
 

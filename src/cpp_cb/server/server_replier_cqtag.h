@@ -4,9 +4,11 @@
 #ifndef CPP_CB_SERVER_SERVER_REPLIER_CQTAT_H
 #define CPP_CB_SERVER_SERVER_REPLIER_CQTAT_H
 
+#include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
+
 namespace grpc_cb {
 
-class ServerReplierCqTag GRPC_FINAL : public CompletionQueueTag {
+class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline ServerReplierCqTag(const CallSptr& call_sptr, const ::google::protobuf::Message& msg);
   inline ServerReplierCqTag(const CallSptr& call_sptr, const Status& status);
