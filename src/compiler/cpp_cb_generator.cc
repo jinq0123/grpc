@@ -438,7 +438,7 @@ void PrintHeaderService(grpc::protobuf::io::Printer *printer,
   printer->Print("virtual const std::string& GetMethodName(size_t i) const GRPC_OVERRIDE;\n");
   printer->Print("virtual void CallMethod(\n"
                   "    size_t method_index, grpc_byte_buffer& request_buffer,\n"
-                  "    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) GRPC_OVERRIDE;\n\n");
+                  "    const ::grpc_cb::ServerReplierImpl& msg_replier) GRPC_OVERRIDE;\n\n");
   printer->Outdent();
   printer->Print(" private:\n");
   printer->Indent();
@@ -969,7 +969,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   // CallMethod() print begin.
   printer->Print("void Service::CallMethod(\n"
                  "    size_t method_index, grpc_byte_buffer& request_buffer,\n"
-                 "    const ::grpc_cb::ServerAsyncMsgReplier& msg_replier) {\n"
+                 "    const ::grpc_cb::ServerReplierImpl& msg_replier) {\n"
                  "  assert(method_index < GetMethodCount());\n"
                  "  switch (method_index) {\n");
   for (int i = 0; i < service->method_count(); ++i) {
@@ -985,7 +985,7 @@ void PrintSourceService(grpc::protobuf::io::Printer *printer,
   }  // for
   printer->Print("  }  // switch\n"
                  "  assert(false);\n"
-                 "  ::grpc_cb::ServerAsyncMsgReplier(msg_replier).ReplyError(\n"
+                 "  ::grpc_cb::ServerReplierImpl(msg_replier).ReplyError(\n"
                  "      ::grpc_cb::Status::InternalError(\"CallMethod() error\"));\n"
                  "}\n\n");
   // CallMethod() print end.

@@ -49,7 +49,7 @@ void ServerMethodCallTag::DoComplete(bool success)
   assert(call_ptr_);
   CallSptr call_sptr(new Call(call_ptr_));  // destroys grpc_call
   service_->CallMethod(method_index_, *payload_ptr_, call_sptr);
-                       // DEL ServerAsyncMsgReplier(call_ptr_));
+                       // DEL ServerReplierImpl(call_ptr_));
 
   // Request the next method call.
   // Calls grpc_server_request_registered_call() in ctr().
