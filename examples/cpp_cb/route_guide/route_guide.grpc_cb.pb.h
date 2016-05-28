@@ -5,16 +5,10 @@
 #define GRPC_CB_route_5fguide_2eproto__INCLUDED
 
 #include <grpc_cb/channel_sptr.h>
-#include <grpc_cb/client/client_reader.h>
-#include <grpc_cb/client/client_reader_writer.h>
-#include <grpc_cb/client/client_writer.h>
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
-#include <grpc_cb/server/server_reader.h>
-#include <grpc_cb/server/server_reader_writer.h>
-#include <grpc_cb/server/server_writer.h>
-#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 #include <grpc_cb/service.h>
 #include <grpc_cb/service_stub.h>
+#include <grpc_cb/support/replier_reader_writer_fwd.h>  // for ServerReplier<>
 #include <grpc_cb/support/status.h>
 
 #include "route_guide.pb.h"
@@ -59,21 +53,13 @@ class Stub : public ::grpc_cb::ServiceStub {
   ListFeatures(const ::routeguide::Rectangle& request);
 
   ::grpc_cb::ClientWriter<::routeguide::Point>
-  RecordRoute(::routeguide::RouteSummary* response) {
-    return ::grpc_cb::ClientWriter<::routeguide::Point>();
-  }
+  RecordRoute(::routeguide::RouteSummary* response);
 
   ::grpc_cb::ClientReaderWriter<
     ::routeguide::RouteNote,
     ::routeguide::RouteNote>
-  RouteChat() {
-    return ::grpc_cb::ClientReaderWriter<
-      ::routeguide::RouteNote,
-      ::routeguide::RouteNote>();
-  }
-
- private:
-};
+  RouteChat();
+};  // class Stub
 
 std::unique_ptr<Stub> NewStub(const ::grpc_cb::ChannelSptr& channel);
 
@@ -90,10 +76,10 @@ class Service : public ::grpc_cb::Service {
  private:
   void GetFeature(
       grpc_byte_buffer& request_buffer,
-      const ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>& replier);
+      const ::grpc_cb::ServerReplier<::routeguide::Feature>& replier);
   virtual void GetFeature(
       const ::routeguide::Point& request,
-      ::grpc_cb::ServerAsyncReplier<::routeguide::Feature> replier_copy);
+      ::grpc_cb::ServerReplier<::routeguide::Feature> replier_copy);
 
   virtual ::grpc_cb::Status ListFeatures(
       const ::routeguide::Rectangle& request,
@@ -101,7 +87,7 @@ class Service : public ::grpc_cb::Service {
 
   virtual ::grpc_cb::Status RecordRoute(
       ::grpc_cb::ServerReader<::routeguide::Point> reader,
-      ::grpc_cb::ServerAsyncReplier<::routeguide::RouteSummary> replier_copy);
+      ::grpc_cb::ServerReplier<::routeguide::RouteSummary> replier_copy);
 
   virtual ::grpc_cb::Status RouteChat(
       ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,

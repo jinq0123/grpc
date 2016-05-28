@@ -98,7 +98,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   void GetFeature(
       const Point& point,
-      ::grpc_cb::ServerAsyncReplier<Feature> replier_copy) override {
+      ::grpc_cb::ServerReplier<Feature> replier_copy) override {
     Feature feature;
     feature.set_name(GetFeatureName(point, feature_list_));
     feature.mutable_location()->CopyFrom(point);
@@ -126,7 +126,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   Status RecordRoute(
       ServerReader<Point> reader,
-      ::grpc_cb::ServerAsyncReplier<RouteSummary> replier_copy) override {
+      ::grpc_cb::ServerReplier<RouteSummary> replier_copy) override {
     Point point;
     int point_count = 0;
     int feature_count = 0;

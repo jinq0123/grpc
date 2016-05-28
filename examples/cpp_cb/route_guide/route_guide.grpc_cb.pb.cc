@@ -14,7 +14,7 @@
 #include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/call_operations.h>  // CallOperations
 #include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
-#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
+#include <grpc_cb/support/replier_reader_writer.h>  // for ServerReplier<> and others
 
 // package routeguide
 namespace routeguide {
@@ -110,6 +110,20 @@ Stub::ListFeatures(const ::routeguide::Rectangle& request) {
       channel_, method_names[1], request, cq_->cq());
 }
 
+::grpc_cb::ClientWriter<::routeguide::Point>
+Stub::RecordRoute(::routeguide::RouteSummary* response) {
+  return ::grpc_cb::ClientWriter<::routeguide::Point>();
+}
+
+::grpc_cb::ClientReaderWriter<
+  ::routeguide::RouteNote,
+  ::routeguide::RouteNote>
+Stub::RouteChat() {
+  return ::grpc_cb::ClientReaderWriter<
+    ::routeguide::RouteNote,
+    ::routeguide::RouteNote>();
+}
+
 Service::Service() {}
 
 Service::~Service() {}
@@ -126,21 +140,21 @@ void Service::CallMethod(
   switch (method_index) {
     case 0:
       GetFeature(request_buffer,
-          ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(call_sptr));
+          ::grpc_cb::ServerReplier<::routeguide::Feature>(call_sptr));
       return;
     case 1:
       // XXX
       //ListFeatures(request_buffer,
-      //    ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(msg_replier));
+      //    ::grpc_cb::ServerReplier<::routeguide::Feature>(msg_replier));
       return;
     case 2:
       //RecordRoute(request_buffer,
-      //    ::grpc_cb::ServerAsyncReplier<::routeguide::RouteSummary>(msg_replier));
+      //    ::grpc_cb::ServerReplier<::routeguide::RouteSummary>(msg_replier));
       return;
     case 3:
       //RouteChat(
       //    request_buffer,
-      //    ::grpc_cb::ServerAsyncReplier<::routeguide::RouteNote>(msg_replier));
+      //    ::grpc_cb::ServerReplier<::routeguide::RouteNote>(msg_replier));
       return;
   }  // switch
   assert(false);
@@ -148,7 +162,7 @@ void Service::CallMethod(
 
 void Service::GetFeature(
     grpc_byte_buffer& request_buffer,
-    const ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>& replier) {
+    const ::grpc_cb::ServerReplier<::routeguide::Feature>& replier) {
   using Request = ::routeguide::Point;
   Request request;
   ::grpc_cb::Status status =
@@ -158,12 +172,12 @@ void Service::GetFeature(
     GetFeature(request, replier);
     return;
   }
-  ::grpc_cb::ServerAsyncReplier<::routeguide::Feature>(
+  ::grpc_cb::ServerReplier<::routeguide::Feature>(
       replier).ReplyError(status);
 }
 void Service::GetFeature(
     const ::routeguide::Point& request,
-    ::grpc_cb::ServerAsyncReplier<::routeguide::Feature> replier_copy) {
+    ::grpc_cb::ServerReplier<::routeguide::Feature> replier_copy) {
   (void)request;
   replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
@@ -178,7 +192,7 @@ void Service::GetFeature(
 
 ::grpc_cb::Status Service::RecordRoute(
     ::grpc_cb::ServerReader<::routeguide::Point> reader,
-    ::grpc_cb::ServerAsyncReplier<::routeguide::RouteSummary> replier_copy) {
+    ::grpc_cb::ServerReplier<::routeguide::RouteSummary> replier_copy) {
   (void)reader;
   (void)replier_copy;
   return ::grpc_cb::Status::UNIMPLEMENTED;

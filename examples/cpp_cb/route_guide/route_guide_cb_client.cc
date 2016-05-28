@@ -39,7 +39,10 @@
 #include <thread>
 
 #include <grpc/grpc.h>
+
 #include <grpc_cb/channel.h>
+#include <grpc_cb/client/client_reader.h>  // for ClientReader<>
+
 #include "helper.h"
 #include "route_guide.grpc_cb.pb.h"
 

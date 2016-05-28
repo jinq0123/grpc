@@ -6,9 +6,9 @@
 
 #include <grpc_cb/channel_sptr.h>
 #include <grpc_cb/error_callback.h>        // for ErrorCallback
-#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 #include <grpc_cb/service.h>
 #include <grpc_cb/service_stub.h>
+#include <grpc_cb/support/replier_reader_writer_fwd.h>  // for ServerReplier<>
 #include <grpc_cb/support/status.h>
 
 #include "helloworld.pb.h"
@@ -68,10 +68,10 @@ class Service : public ::grpc_cb::Service {
  private:
   void SayHello(
       grpc_byte_buffer& request_buffer,
-      const ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>& replier);
+      const ::grpc_cb::ServerReplier<::helloworld::HelloReply>& replier);
   virtual void SayHello(
       const ::helloworld::HelloRequest& request,
-      ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply> replier_copy);
+      ::grpc_cb::ServerReplier<::helloworld::HelloReply> replier_copy);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

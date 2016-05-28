@@ -5,22 +5,25 @@
 #define GRPC_CB_SERVER_ASYNC_REPLIER_H
 
 #include <grpc_cb/impl/call_sptr.h>            // for CallSptr
-#include <grpc_cb/server_async_msg_replier.h>  // for ServerAsyncMsgReplier
+#include <grpc_cb/server/server_async_msg_replier.h>  // for ServerAsyncMsgReplier
 
 namespace grpc_cb {
+
+// ServerReplier is for unary rpc call.
+// ServerWriter is for server stream rpc.
 
 // Todo: Rename to ServerReplier, always async.
 
 // Copyable.
 template <class ResponseType>
-class ServerAsyncReplier {
+class ServerReplier {
 public:
  // Copy msg_replier.
- explicit ServerAsyncReplier(const CallSptr& call_sptr)
+ explicit ServerReplier(const CallSptr& call_sptr)
      : msg_replier_(call_sptr){
    assert(call_sptr);
  };
- ~ServerAsyncReplier(){};
+ ~ServerReplier(){};
 
 public:
     // XXX BlockingReply(), AsyncReply(response), AsyncReply(response, cb)
@@ -32,7 +35,7 @@ private:
     // XXX Add Reply(const Message&)
     // XXX Use shared_ptr<ServerReplierImpl>
   ServerAsyncMsgReplier msg_replier_;  // copyable
-};  // class ServerAsyncReplier
+};  // class ServerReplier
 
 }  // namespace grpc_cb
 

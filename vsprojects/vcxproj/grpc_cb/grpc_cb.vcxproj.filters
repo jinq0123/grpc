@@ -99,9 +99,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server_async_replier.h">
-      <Filter>include\grp_cb</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h">
       <Filter>include\grp_cb\client</Filter>
     </ClInclude>
@@ -123,9 +120,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server_async_msg_replier.h">
-      <Filter>include\grp_cb</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
@@ -140,6 +134,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h">
       <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_async_msg_replier.h">
+      <Filter>include\grp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server\server_replier.h">
+      <Filter>include\grp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\replier_reader_writer_fwd.h">
+      <Filter>include\grp_cb\support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\support\replier_reader_writer.h">
+      <Filter>include\grp_cb\support</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

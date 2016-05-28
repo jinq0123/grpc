@@ -14,7 +14,7 @@
 #include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/call_operations.h>  // for CallOperations
 #include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
-#include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
+#include <grpc_cb/support/replier_reader_writer.h>  // for ServerReplier<> and others
 
 namespace helloworld {
 
@@ -122,7 +122,7 @@ void Service::CallMethod(
   switch (method_index) {
     case 0:
       SayHello(request_buffer,
-          ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>(call_sptr));
+          ::grpc_cb::ServerReplier<::helloworld::HelloReply>(call_sptr));
       return;
   }  // switch
   assert(false);
@@ -130,7 +130,7 @@ void Service::CallMethod(
 
 void Service::SayHello(
     grpc_byte_buffer& request_buffer,
-    const ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>& replier) {
+    const ::grpc_cb::ServerReplier<::helloworld::HelloReply>& replier) {
   using Request = ::helloworld::HelloRequest;
   Request request;
   ::grpc_cb::Status status =
@@ -140,12 +140,12 @@ void Service::SayHello(
     SayHello(request, replier);
     return;
   }
-  ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply>(
+  ::grpc_cb::ServerReplier<::helloworld::HelloReply>(
       replier).ReplyError(status);
 }
 void Service::SayHello(
     const ::helloworld::HelloRequest& request,
-    ::grpc_cb::ServerAsyncReplier<::helloworld::HelloReply> replier_copy) {
+    ::grpc_cb::ServerReplier<::helloworld::HelloReply> replier_copy) {
   (void) request;
   replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
