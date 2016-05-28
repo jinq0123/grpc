@@ -97,7 +97,7 @@ void Stub::AsyncSayHello(
   if (status.ok())
       status = call->StartBatch(ops, tag);
   if (!status.ok()) {
-    DeleteCompletionQueueTag(tag);  // XXX just delete?
+    delete tag;  // DEL DeleteCompletionQueueTag(tag);  // XXX just delete?
     err_cb(status);
   }
 }

@@ -52,12 +52,13 @@ class ServiceStub {
   // Request the shutdown of all runs.
   void Shutdown();
 
- public:
-  template <class ResponseType>
-  CompletionQueueTag* NewCompletionQueueTag(
-      const CallSptr& call, const std::function<void(const ResponseType&)>& cb,
-      const ErrorCallback& ecb);
-  void DeleteCompletionQueueTag(CompletionQueueTag* tag) { delete tag; }
+  // DEL
+ //public:
+ // template <class ResponseType>
+ // CompletionQueueTag* NewCompletionQueueTag(
+ //     const CallSptr& call, const std::function<void(const ResponseType&)>& cb,
+ //     const ErrorCallback& ecb);
+ // void DeleteCompletionQueueTag(CompletionQueueTag* tag) { delete tag; }
 
  protected:
   ChannelSptr channel_;
@@ -66,49 +67,50 @@ class ServiceStub {
 
  protected:
   static ErrorCallback default_error_callback_;
+  // DEL
+ //private:
+ // template <class ResponseType>
+ // class CompletionCb : public CompletionQueueTag {  // Rename to ClientAsyncCallCqTag
+ //  public:
+ //   typedef std::function<void(const ResponseType&)> ResponseCallback;
+ //   CompletionCb(const CallSptr& call, const ResponseCallback& cb,
+ //                const ErrorCallback& ecb)
+ //       : call_(call), cb_(cb), ecb_(ecb){};
+ //   virtual void DoComplete(bool success) GRPC_OVERRIDE;
 
- private:
-  template <class ResponseType>
-  class CompletionCb : public CompletionQueueTag {  // Rename to ClientAsyncCallCqTag
-   public:
-    typedef std::function<void(const ResponseType&)> ResponseCallback;
-    CompletionCb(const CallSptr& call, const ResponseCallback& cb,
-                 const ErrorCallback& ecb)
-        : call_(call), cb_(cb), ecb_(ecb){};
-    virtual void DoComplete(bool success) GRPC_OVERRIDE;
-
-   private:
-    CallSptr call_;
-    ResponseCallback cb_;
-    ErrorCallback ecb_;
-  };
+ //  private:
+ //   CallSptr call_;
+ //   ResponseCallback cb_;
+ //   ErrorCallback ecb_;
+ // };
 };
 
 // Todo: Delete this function?
-template <class ResponseType>
-CompletionQueueTag* ServiceStub::NewCompletionQueueTag(
-    const CallSptr& call, const std::function<void(const ResponseType&)>& cb,
-    const ErrorCallback& ecb) {
-  assert(call && cb && ecb);
-  return new CompletionCb<ResponseType>(call, cb, ecb);
-  // DeleteCompletionQueueTag() will be called in ServiceStub::Run().
-}
+//template <class ResponseType>
+//CompletionQueueTag* ServiceStub::NewCompletionQueueTag(
+//    const CallSptr& call, const std::function<void(const ResponseType&)>& cb,
+//    const ErrorCallback& ecb) {
+//  assert(call && cb && ecb);
+//  return new CompletionCb<ResponseType>(call, cb, ecb);
+//  // DeleteCompletionQueueTag() will be called in ServiceStub::Run().
+//}
 
-template <class ResponseType>
-void ServiceStub::CompletionCb<ResponseType>::DoComplete(bool success) {
-  assert(cb_ && ecb_ && call_);
-  if (!success) {
-    ecb_(Status::InternalError("Failed to complete"));
-    return;
-  }
-  ResponseType response;
-  Status status = call_->GetResponse(&response);
-  if (status.ok()) {
-    cb_(response);
-    return;
-  }
-  ecb_(status);
-}
+// DEL
+//template <class ResponseType>
+//void ServiceStub::CompletionCb<ResponseType>::DoComplete(bool success) {
+//  assert(cb_ && ecb_ && call_);
+//  if (!success) {
+//    ecb_(Status::InternalError("Failed to complete"));
+//    return;
+//  }
+//  ResponseType response;
+//  Status status = call_->GetResponse(&response);
+//  if (status.ok()) {
+//    cb_(response);
+//    return;
+//  }
+//  ecb_(status);
+//}
 
 }  // namespace grpc_cb
 

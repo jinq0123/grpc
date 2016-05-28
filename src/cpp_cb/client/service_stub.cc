@@ -32,7 +32,7 @@ void ServiceStub::BlockingRun() {
         auto* tag = static_cast<CompletionQueueTag*>(ev.tag);
         assert(tag);
         tag->DoComplete(0 != ev.success);
-        DeleteCompletionQueueTag(tag);  // Match NewCompletionQueueTag().
+        delete tag;  // DEL DeleteCompletionQueueTag(tag);  // Match NewCompletionQueueTag().
         break;
       }  // case
       case GRPC_QUEUE_SHUTDOWN:
