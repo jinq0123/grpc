@@ -60,9 +60,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\support\status.h">
-      <Filter>include\grp_cb\support</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
@@ -86,24 +83,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h">
       <Filter>include\grp_cb\support</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h">
-      <Filter>include\grp_cb\client</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_writer.h">
-      <Filter>include\grp_cb\client</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\client\client_writer.h">
-      <Filter>include\grp_cb\client</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server\server_reader.h">
-      <Filter>include\grp_cb\server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server\server_reader_writer.h">
-      <Filter>include\grp_cb\server</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server\server_writer.h">
-      <Filter>include\grp_cb\server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h">
       <Filter>include\grp_cb\impl</Filter>
@@ -129,9 +108,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\server_replier.h">
       <Filter>include\grp_cb</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\stream.h">
-      <Filter>include\grp_cb</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\channel_sptr.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
@@ -143,6 +119,27 @@
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_tag.h">
       <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\client_reader.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\client_reader_writer.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\client_writer.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server_reader.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server_reader_writer.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\server_writer.h">
+      <Filter>include\grp_cb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\status.h">
+      <Filter>include\grp_cb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
