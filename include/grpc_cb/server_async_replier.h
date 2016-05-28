@@ -9,6 +9,8 @@
 
 namespace grpc_cb {
 
+// Todo: Rename to ServerReplier, always async.
+
 // Copyable.
 template <class ResponseType>
 class ServerAsyncReplier {
@@ -21,10 +23,14 @@ public:
  ~ServerAsyncReplier(){};
 
 public:
+    // XXX BlockingReply(), AsyncReply(response), AsyncReply(response, cb)
   void Reply(const ResponseType& response) { msg_replier_.Reply(response); }
+  // XXX Reply(ResponseType&) calls Reply(Message&) to hide impl.
   void ReplyError(const Status& status) { msg_replier_.ReplyError(status); }
 
 private:
+    // XXX Add Reply(const Message&)
+    // XXX Use shared_ptr<ServerReplierImpl>
   ServerAsyncMsgReplier msg_replier_;  // copyable
 };  // class ServerAsyncReplier
 
