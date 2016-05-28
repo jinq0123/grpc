@@ -37,9 +37,6 @@
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_async_msg_replier.cc">
       <Filter>src\cpp_cb\server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\cpp_cb\common\call_op.cc">
-      <Filter>src\cpp_cb\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\cpp_cb\client\client_reader_init_cqtag.cc">
       <Filter>src\cpp_cb\client</Filter>
     </ClCompile>
@@ -133,9 +130,6 @@
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h">
-      <Filter>include\grp_cb\impl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\call_op.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_operations.h">

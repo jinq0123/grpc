@@ -7,6 +7,9 @@
 
 namespace grpc_cb {
 
-Status InitCallOps(CallOperations& ops) { return Status::OK; }
+Status ClientReaderInitCqTag::InitCallOps(CallOperations& ops) {
+  // XXX ClientReaderInifCqTag::InitCallOps()
+  return Status::OK;
+}
 
 }  // namespace grpc_cb
