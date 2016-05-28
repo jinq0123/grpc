@@ -6,7 +6,7 @@
 
 namespace grpc_cb {
 
-// Interface of grpc_cb completion queue tag.
+// Interface of grpc_cb completion queue tag. CqTag.
 class CompletionQueueTag {
  public:
   virtual ~CompletionQueueTag() {}

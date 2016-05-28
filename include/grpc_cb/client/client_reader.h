@@ -7,7 +7,8 @@
 #include <cassert>     // for assert()
 #include <functional>  // for std::function
 
-#include <grpc_cb/channel.h>  // for MakeCall()
+#include <grpc_cb/channel.h>                          // for MakeCall()
+#include <grpc_cb/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
 #include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/call_op.h>
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
@@ -25,10 +26,9 @@ class ClientReader {
       : call_(channel->MakeCall(method, cq)) {
     assert(channel);
     assert(call_);
-    ClientReaderInitCqTag* tag(
-        new ClientReaderInitCqTag);  // Todo: XXXCqTag is good name.
+    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag;
     CallOperations ops;
-    Status status = tag.InitCallOps(ops);
+    Status status = tag->InitCallOps(ops);
     // ops.SendInitMetadata();
     // Status status = ops.SendMessage(request);
     if (!status.ok()) {

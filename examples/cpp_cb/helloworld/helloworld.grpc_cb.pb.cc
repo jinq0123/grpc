@@ -8,10 +8,11 @@
 #include <google/protobuf/stubs/once.h>
 
 #include <grpc_cb/channel.h>
-#include <grpc_cb/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag
-#include <grpc_cb/client_call_cqtag.h>        // for ClientCallCqTag
+#include <grpc_cb/client/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag
+#include <grpc_cb/client/client_call_cqtag.h>        // for ClientCallCqTag
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
+#include <grpc_cb/impl/call_operations.h>  // for CallOperations
 #include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
 #include <grpc_cb/server_async_replier.h>  // for ServerAsyncReplier<>
 
@@ -70,7 +71,7 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   ::grpc_cb::ClientCallCqTag tag;
   ::grpc_cb::CallOperations ops;
   ::grpc_cb::Status status;
-  status = tag.InitCallOps(ops, request);
+  status = tag.InitCallOps(request, ops);
   if (!status.ok()) return status;
   status = call->StartBatch(ops, &tag);
   if (!status.ok()) return status;
@@ -92,7 +93,7 @@ void Stub::AsyncSayHello(
   // DEL    NewCompletionQueueTag(call_sptr, cb, err_cb);
 
   ::grpc_cb::CallOperations ops;
-  ::grpc_cb::Status status = tag->InitCallOps(ops, request);
+  ::grpc_cb::Status status = tag->InitCallOps(request, ops);
   if (status.ok())
       status = call->StartBatch(ops, tag);
   if (!status.ok()) {

@@ -4,7 +4,7 @@
 #ifndef GRPC_CB_CLIENT_ASYNC_CALL_CQTAG_H
 #define GRPC_CB_CLIENT_ASYNC_CALL_CQTAG_H
 
-#include <grpc_cb/client_call_cqtag.h>  // for ClientCallCqTag
+#include <grpc_cb/client/client_call_cqtag.h>  // for ClientCallCqTag
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 
 namespace grpc_cb {

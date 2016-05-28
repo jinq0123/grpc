@@ -5,18 +5,15 @@
 #define GRPC_INTERNAL_CPP_CB_COMMON_CALL_OPERATIONS_H
 
 #include <cassert>
-#include <vector>
 
-#include <grpc/grpc.h>                     // for grpc_op
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
+#include <grpc_cb/impl/metadata_vector.h>      // for MetadataVector
 #include <grpc_cb/impl/proto_utils.h>      // for SerializeProto()
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 #include <grpc_cb/support/status.h>        // for Status
 
 namespace grpc_cb {
-
-using MetadataVector = std::vector<grpc_metadata>;
 
 // Like grpc++ CallOpSet<>.
 // Non-thread-safe.

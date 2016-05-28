@@ -256,10 +256,9 @@
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\service_stub.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\channel_sptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_init_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client\client_writer.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\client_async_call_cqtag.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\client_call_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_ptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\completion_queue_tag.h" />
@@ -268,6 +267,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_op.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_operations.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
@@ -286,6 +286,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\client\client_call_cqtag.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\client\client_reader_init_cqtag.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\client\service_stub.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call_op.cc" />

@@ -40,6 +40,12 @@
     <ClCompile Include="..\..\..\src\cpp_cb\common\call_op.cc">
       <Filter>src\cpp_cb\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\client\client_reader_init_cqtag.cc">
+      <Filter>src\cpp_cb\client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\client\client_call_cqtag.cc">
+      <Filter>src\cpp_cb\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -135,11 +141,11 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_operations.h">
       <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\client_call_cqtag.h">
-      <Filter>include\grp_cb</Filter>
+    <ClInclude Include="..\..\..\include\grpc_cb\client\client_reader_init_cqtag.h">
+      <Filter>include\grp_cb\client</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\client_async_call_cqtag.h">
-      <Filter>include\grp_cb</Filter>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h">
+      <Filter>include\grp_cb\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
