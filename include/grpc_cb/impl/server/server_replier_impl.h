@@ -21,7 +21,7 @@ class ServerReplierImpl GRPC_FINAL {
   explicit ServerReplierImpl(const CallSptr& call_sptr)
       : call_sptr_(call_sptr){
     assert(call_sptr);
-  };  // XXX
+  };
 
  public:
   void Reply(const ::google::protobuf::Message& msg);

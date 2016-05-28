@@ -284,6 +284,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\server\server_replier_cqtag.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />
@@ -297,6 +298,7 @@
     <ClCompile Include="..\..\..\src\cpp_cb\server\server.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_credentials.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_method_call_tag.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\server\server_replier_cqtag.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_replier_impl.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\service.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc" />

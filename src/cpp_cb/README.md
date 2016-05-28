@@ -11,6 +11,7 @@ Not ready
 * WriteOptions
 * Add interfaces for protobuf bytes message.
 * DoComplete(bool success) use success parameter.
+* Handle ServerReplier, ServerReader ServerWriter likely.
 
 #Design
 CompletionQueueTag is the element of CompletionQueue.
