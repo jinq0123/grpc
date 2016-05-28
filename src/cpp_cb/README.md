@@ -10,7 +10,6 @@ Not ready
 #Todo
 * WriteOptions
 * Add interfaces for protobuf bytes message.
-* Delete call_op.h.
 * DoComplete(bool success) use success parameter.
 
 #Design
