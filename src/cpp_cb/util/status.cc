@@ -1,7 +1,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#include <grpc_cb/support/status.h>
+#include <grpc_cb/status.h>
 
 namespace grpc_cb {
 

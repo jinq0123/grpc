@@ -124,7 +124,7 @@ grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
       "#include <grpc_cb/server_async_replier.h>  // for ServerReplier<>\n"
       "#include <grpc_cb/service.h>\n"
       "#include <grpc_cb/service_stub.h>\n"
-      "#include <grpc_cb/support/status.h>\n"
+      "#include <grpc_cb/status.h>\n"
       "\n"
       "#include \"$filename_base$.pb.h\"\n"
       "\n");

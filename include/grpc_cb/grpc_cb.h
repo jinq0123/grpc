@@ -10,6 +10,7 @@
 #include <grpc_cb/server_replier.h>  // for ServerReplier<>
 #include <grpc_cb/service.h>         // for Service
 #include <grpc_cb/service_stub.h>    // for ServiceStub
+#include <grpc_cb/status.h>          // for Status
 #include <grpc_cb/stream.h>          // for ClientReader<> and others
 
 #endif  // GRPC_CB_GRPC_CB_H

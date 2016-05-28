@@ -3,10 +3,6 @@
 
 #include <grpc_cb/impl/call_operations.h>
 
-#include <grpc/support/alloc.h>         // for gpr_free()
-#include <grpc_cb/impl/proto_utils.h>   // for SerializeProto()
-#include <grpc_cb/support/status.h>
-
 namespace grpc_cb {
 
 

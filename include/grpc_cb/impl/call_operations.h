@@ -7,11 +7,11 @@
 #include <cassert>
 
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
-#include <grpc_cb/impl/metadata_vector.h>      // for MetadataVector
+#include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
 #include <grpc_cb/impl/proto_utils.h>      // for SerializeProto()
+#include <grpc_cb/status.h>                // for Status
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
-#include <grpc_cb/support/status.h>        // for Status
 
 namespace grpc_cb {
 
