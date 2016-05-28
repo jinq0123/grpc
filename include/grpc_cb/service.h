@@ -6,15 +6,12 @@
 
 #include <string>
 
-#include <grpc_cb/impl/call_sptr.h>        // for CallSptr
-#include <grpc_cb/support/protobuf_fwd.h>  // for Message
-#include <grpc_cb/support/status.h>        // for Status
+#include <grpc_cb/impl/call_sptr.h>  // for CallSptr
+#include <grpc_cb/support/protobuf_fwd.h>  // for ServiceDescriptor
 
 struct grpc_byte_buffer;
 
 namespace grpc_cb {
-
-class ServerAsyncMsgReplier;
 
 // Service base class.
 class Service {

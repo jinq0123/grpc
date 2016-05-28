@@ -4,12 +4,7 @@
 #ifndef GRPC_CB_route_5fguide_2eproto__INCLUDED
 #define GRPC_CB_route_5fguide_2eproto__INCLUDED
 
-#include <grpc_cb/channel_sptr.h>
-#include <grpc_cb/error_callback.h>  // for ErrorCallback
-#include <grpc_cb/service.h>
-#include <grpc_cb/service_stub.h>
-#include <grpc_cb/support/replier_reader_writer_fwd.h>  // for ServerReplier<>
-#include <grpc_cb/support/status.h>
+#include <grpc_cb/grpc_cb.h>  // Include all for user.
 
 #include "route_guide.pb.h"
 
