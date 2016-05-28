@@ -30,7 +30,7 @@
  *
  */
 
-#include <grpc_cb/completion_queue.h>
+#include <grpc_cb/impl/completion_queue.h>
 
 #include <cassert>
 #include <memory>

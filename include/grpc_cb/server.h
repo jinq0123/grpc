@@ -9,7 +9,7 @@
 
 #include <grpc/support/time.h>  // for gpr_inf_future()
 
-#include <grpc_cb/completion_queue_ptr.h>  // for CompletionQueuePtr
+#include <grpc_cb/impl/completion_queue_ptr.h>  // for CompletionQueuePtr
 #include <grpc_cb/impl/grpc_library.h>  // for GrpcLibrary
 #include <grpc_cb/support/config.h>  // for GRPC_FINAL
 #include <grpc_cb/support/time.h>  // for TimePoint

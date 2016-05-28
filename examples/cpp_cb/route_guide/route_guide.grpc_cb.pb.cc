@@ -9,10 +9,10 @@
 
 #include <grpc_cb/client/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag<>
 #include <grpc_cb/client/client_call_cqtag.h>        // for ClientCallCqTag
-#include <grpc_cb/completion_queue.h>
-#include <grpc_cb/impl/call.h>
-#include <grpc_cb/impl/call_operations.h>  // CallOperations
-#include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
+#include <grpc_cb/impl/call.h>                       // for Call
+#include <grpc_cb/impl/call_operations.h>            // CallOperations
+#include <grpc_cb/impl/completion_queue.h>           // for CompletionQueue
+#include <grpc_cb/impl/proto_utils.h>                // for DeserializeProto()
 
 // package routeguide
 namespace routeguide {

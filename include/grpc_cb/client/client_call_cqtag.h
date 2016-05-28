@@ -6,7 +6,7 @@
 
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
-#include <grpc_cb/completion_queue_tag.h>  // for CompletionQueueTag
+#include <grpc_cb/impl/completion_queue_tag.h>  // for CompletionQueueTag
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 

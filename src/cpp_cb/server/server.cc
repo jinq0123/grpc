@@ -9,7 +9,7 @@
 #include <grpc/grpc_security.h>  // for grpc_server_add_secure_http2_port()
 #include <grpc/support/log.h>    // for GPR_ASSERT()
 
-#include <grpc_cb/completion_queue.h>             // for CompletionQueue
+#include <grpc_cb/impl/completion_queue.h>        // for CompletionQueue
 #include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
 #include <grpc_cb/service.h>
 

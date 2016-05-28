@@ -4,11 +4,11 @@
 #include <grpc_cb/server/server_async_msg_replier.h>
 
 #include <google/protobuf/message.h>
-#include <grpc/grpc.h>                     // for grpc_op
-#include <grpc/support/log.h>              // for GPR_ASSERT()
-#include <grpc_cb/completion_queue_tag.h>  // for CompletionQueueTag
-#include <grpc_cb/impl/call.h>             // for Call::call()
-#include <grpc_cb/impl/proto_utils.h>      // for SerializeProto()
+#include <grpc/grpc.h>                          // for grpc_op
+#include <grpc/support/log.h>                   // for GPR_ASSERT()
+#include <grpc_cb/impl/call.h>                  // for Call::call()
+#include <grpc_cb/impl/completion_queue_tag.h>  // for CompletionQueueTag
+#include <grpc_cb/impl/proto_utils.h>           // for SerializeProto()
 #include <grpc_cb/service.h>
 
 namespace grpc_cb {
