@@ -7,12 +7,12 @@
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/stubs/once.h>
 
-#include <grpc_cb/client/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag
-#include <grpc_cb/client/client_call_cqtag.h>        // for ClientCallCqTag
-#include <grpc_cb/impl/call.h>                       // for Call
-#include <grpc_cb/impl/call_operations.h>            // for CallOperations
-#include <grpc_cb/impl/completion_queue.h>           // for CompletionQueue
-#include <grpc_cb/impl/proto_utils.h>                // for DeserializeProto()
+#include <grpc_cb/impl/call.h>                            // for Call
+#include <grpc_cb/impl/call_operations.h>                 // for CallOperations
+#include <grpc_cb/impl/client/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag
+#include <grpc_cb/impl/client/client_call_cqtag.h>        // for ClientCallCqTag
+#include <grpc_cb/impl/completion_queue.h>                // for CompletionQueue
+#include <grpc_cb/impl/proto_utils.h>  // for DeserializeProto()
 
 namespace helloworld {
 
