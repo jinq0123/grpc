@@ -41,6 +41,8 @@ private:
   size_t status_details_capacity_ = 0;
 };  // class ClientCallCqTag
 
+// XXX MOve ops to the last and use pointer instead of ref.
+// XXX Move into ctr(), and use GetOps()? GetStatus()/ IsStatusOk()?
 Status ClientCallCqTag::InitCallOps(
     CallOperations& ops, const ::google::protobuf::Message& request) {
   Status status = ops.SendMessage(request, &send_buf_);

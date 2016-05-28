@@ -56,9 +56,7 @@ class Stub : public ::grpc_cb::ServiceStub {
       const ::grpc_cb::ErrorCallback& err_cb);
 
   ::grpc_cb::ClientReader<::routeguide::Feature>
-  ListFeatures(const ::routeguide::Rectangle& request) {
-    return ::grpc_cb::ClientReader<::routeguide::Feature>(channel_, request);
-  }
+  ListFeatures(const ::routeguide::Rectangle& request);
 
   ::grpc_cb::ClientWriter<::routeguide::Point>
   RecordRoute(::routeguide::RouteSummary* response) {

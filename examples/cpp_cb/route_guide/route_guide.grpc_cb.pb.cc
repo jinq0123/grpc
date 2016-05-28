@@ -8,6 +8,8 @@
 #include <google/protobuf/stubs/once.h>
 
 #include <grpc_cb/channel.h>
+#include <grpc_cb/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag<>
+#include <grpc_cb/client_call_cqtag.h>        // for ClientCallCqTag
 #include <grpc_cb/completion_queue.h>
 #include <grpc_cb/impl/call.h>
 #include <grpc_cb/impl/proto_utils.h>      // for DeserializeProto()
@@ -68,28 +70,43 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   assert(response);
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call(channel_->MakeCall(method_names[0], cq.cq()));
-  void* tag = call.get();
-  grpc_cb::Status status = call->StartBatch(request, tag);
+  ::grpc_cb::ClientCallCqTag tag;
+  ::grpc_cb::CallOperations ops;
+  ::grpc_cb::Status status;
+  status = tag.InitCallOps(ops, request);
   if (!status.ok()) return status;
-  cq.Pluck(tag);
-  return call->GetResponse(response);
+  status = call->StartBatch(ops, &tag);
+  cq.Pluck(&tag);
+  return call->GetResponse(response);  // XXX tag.GetResponse()
 }
 
 void Stub::AsyncGetFeature(
     const ::routeguide::Point& request,
     const GetFeatureCallback& cb,
-    const ::grpc_cb::ErrorCallback& err_cb) {
+    const ::grpc_cb::ErrorCallback& err_cb) {  // XXX rename to ecb
   assert(cb && err_cb && cq_);
   ::grpc_cb::CallSptr call_sptr(
       channel_->MakeCall(method_names[0], cq_->cq()));
   ::grpc_cb::Call* call = call_sptr.get();
-  ::grpc_cb::CompletionQueueTag* tag =
-      NewCompletionQueueTag(call_sptr, cb, err_cb);
-  grpc_cb::Status status = call->StartBatch(request, tag);
+  using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::routeguide::Feature>;
+  CqTag* tag = new CqTag(cb, err_cb);
+  //::grpc_cb::CompletionQueueTag* tag =
+  //    NewCompletionQueueTag(call_sptr, cb, err_cb);
+  ::grpc_cb::CallOperations ops;
+  ::grpc_cb::Status status = tag->InitCallOps(ops, request);
+  if (status.ok())
+      status = call->StartBatch(ops, tag);
   if (!status.ok()) {
-    DeleteCompletionQueueTag(tag);
+    // DEL DeleteCompletionQueueTag(tag);
+    delete tag;
     err_cb(status);
   }
+}
+
+::grpc_cb::ClientReader<::routeguide::Feature>
+Stub::ListFeatures(const ::routeguide::Rectangle& request) {
+  return ::grpc_cb::ClientReader<::routeguide::Feature>(
+      channel_, method_names[1], request, cq_->cq());
 }
 
 Service::Service() {}

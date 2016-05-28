@@ -13,6 +13,15 @@ Not ready
 * Delete call_op.h.
 * DoComplete(bool success) use success parameter.
 
+#Design
+CompletionQueueTag is the element of CompletionQueue.
+On completion, CompletionQueueTag is poped, and DoComplete() is called,
+and then got deleted.
+CompletionQueueTag keeps the input and output of one rpc call.
+CallOperations keeps references to members of CompletionQueueTag, and is 
+used in Call::StartBatch().
+Async rpc callback is got called in DoComplete().
+
 #Other
  
 To generate grpc_cb files:

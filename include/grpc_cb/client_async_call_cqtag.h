@@ -4,7 +4,8 @@
 #ifndef GRPC_CB_CLIENT_ASYNC_CALL_CQTAG_H
 #define GRPC_CB_CLIENT_ASYNC_CALL_CQTAG_H
 
-#include <grpc_cb/client_call_cqtag.h>
+#include <grpc_cb/client_call_cqtag.h>  // for ClientCallCqTag
+#include <grpc_cb/error_callback.h>  // for ErrorCallback
 
 namespace grpc_cb {
 
@@ -13,16 +14,16 @@ namespace grpc_cb {
 template <class ResponseType>
 class ClientAsyncCallCqTag : public ClientCallCqTag {
 public:
-  using Callback = std::function<void(const ResponseType&)>;
+  using ResponseCallback = std::function<void (const ResponseType&)>;
 public:
-  ClientAsyncCallCqTag(const Callback& cb, const ErrorCallback& ecb)
+  ClientAsyncCallCqTag(const ResponseCallback& cb, const ErrorCallback& ecb)
      : cb_(cb), ecb_(ecb) {}
   virtual ~ClientAsyncCallCqTag() {}
 
   // XXX DoComplete()
 
  private:
-  Callback cb_;
+  ResponseCallback cb_;
   ErrorCallback ecb_;
 };  // class ClientAsyncCallCqTag
 
