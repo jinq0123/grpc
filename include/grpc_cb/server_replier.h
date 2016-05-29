@@ -5,7 +5,6 @@
 #define GRPC_CB_SERVER_ASYNC_REPLIER_H
 
 #include <grpc_cb/impl/call_sptr.h>                   // for CallSptr
-#include <grpc_cb/impl/server/server_replier_impl.h>  // for ServerReplierImpl
 
 namespace grpc_cb {
 
@@ -27,11 +26,17 @@ public:
 
  public:
   // Todo: Add BlockingReply(response), AsyncReply(response), AsyncReply(response, cb)
-  void Reply(const ResponseType& response) { msg_replier_.Reply(response); }
-  void ReplyError(const Status& status) { msg_replier_.ReplyError(status); }
+  void Reply(const ResponseType& response) {
+    auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
+    tag->StartReply(response); 
+  }
+  void ReplyError(const Status& status) {
+    auto* tag = new ServerReplierCqTag(call_sptr);  // delete in Run()
+    tag->StartReplyError(status);
+  }
 
 private:
-  ServerReplierImpl msg_replier_;  // copyable
+  CallSptr call_sptr_;  // copyable
 };  // class ServerReplier
 
 }  // namespace grpc_cb

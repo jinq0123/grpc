@@ -272,7 +272,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_uptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_impl.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server_reader.h" />
@@ -302,7 +301,6 @@
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_credentials.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_method_call_tag.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_replier_cqtag.cc" />
-    <ClCompile Include="..\..\..\src\cpp_cb\server\server_replier_impl.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\service.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\util\status.cc" />
   </ItemGroup>
