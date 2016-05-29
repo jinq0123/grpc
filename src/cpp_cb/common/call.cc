@@ -42,4 +42,6 @@ Status Call::GetResponse(::google::protobuf::Message* response) const {
   return DeserializeProto(recv_buf_, response, max_message_size_);
 }
 
+// Todo: Inline these.
+
 }  // namespace grpc_cb

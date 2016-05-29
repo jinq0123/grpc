@@ -17,10 +17,10 @@ class Status;
 // Used as base class of other call CqTag which keeps a CallSptr.
 class CallCqTag : public CompletionQueueTag {
  public:
-  CallCqTag(const CallSptr& call_sptr) : call_sptr_(call_sptr) {
+  explicit CallCqTag(const CallSptr& call_sptr) : call_sptr_(call_sptr) {
     assert(call_sptr);
   }
-  virtual ~CallCqTag();
+  virtual ~CallCqTag() {}
 
   const CallSptr& GetCallSptr() const { return call_sptr_; }
 

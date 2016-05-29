@@ -293,7 +293,6 @@
     <ClCompile Include="..\..\..\src\cpp_cb\client\client_reader_init_cqtag.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\client\service_stub.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call.cc" />
-    <ClCompile Include="..\..\..\src\cpp_cb\common\call_cqtag.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call_operations.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc" />
