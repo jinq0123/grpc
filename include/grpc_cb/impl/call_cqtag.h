@@ -11,6 +11,8 @@
 
 namespace grpc_cb {
 
+class Status;
+
 // Call completion queue tag.
 // Used as base class of other call CqTag which keeps a CallSptr.
 class CallCqTag : public CompletionQueueTag {
@@ -18,7 +20,10 @@ class CallCqTag : public CompletionQueueTag {
   CallCqTag(const CallSptr& call_sptr) : call_sptr_(call_sptr) {
     assert(call_sptr);
   }
-  virtual ~CallCqTag() { assert(call_sptr_); }
+  virtual ~CallCqTag();
+
+ public:
+  virtual Status Start();
 
  private:
   // call_sptr is not used. Just keep it until completed.

@@ -38,7 +38,7 @@ class ClientCallCqTag : public CallCqTag {
 
  private:
   grpc_byte_buffer* send_buf_ = nullptr;
-  MetadataVector send_init_metadata_;
+  CodSendInitMd cod_send_init_md_;  // Todo: set init metadata
   grpc_metadata_array recv_init_detadata_;
   grpc_byte_buffer* recv_buf_ = nullptr;
 

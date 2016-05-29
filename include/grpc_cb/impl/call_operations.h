@@ -17,6 +17,9 @@ namespace grpc_cb {
 
 // Like grpc++ CallOpSet<>.
 // Non-thread-safe.
+// Fill grpc_op array for rpc call.
+// Only reference to the call operation data, but not the real data,
+//   which are kept in CallCqTag, because this object is transient.
 class CallOperations GRPC_FINAL {
  public:
   inline size_t GetOpsNum() const {
@@ -26,10 +29,12 @@ class CallOperations GRPC_FINAL {
   inline const grpc_op* GetOps() const { return ops_; }
 
  public:
-  inline void SendInitialMetadata(MetadataVector& init_metadata);
+  // Send initial metadata.
+  inline void SendInitMd(MetadataVector& init_metadata);
   inline Status SendMessage(const ::google::protobuf::Message& message,
                      grpc_byte_buffer** send_buf) GRPC_MUST_USE_RESULT;
-  inline void RecvInitialMetadata(grpc_metadata_array* init_metadata = nullptr);
+  // Receive initial metadata.
+  inline void RecvInitMd(grpc_metadata_array* init_metadata = nullptr);
   inline void RecvMessage(grpc_byte_buffer** recv_buf);
 
   inline void ClientSendClose();
@@ -68,7 +73,7 @@ Status CallOperations::SendMessage(
   return status;
 }
 
-void CallOperations::SendInitialMetadata(MetadataVector& init_metadata) {
+void CallOperations::SendInitMd(MetadataVector& init_metadata) {
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_SEND_INITIAL_METADATA);
@@ -77,7 +82,7 @@ void CallOperations::SendInitialMetadata(MetadataVector& init_metadata) {
       init_metadata.empty() ? nullptr : &init_metadata[0];
 }
 
-void CallOperations::RecvInitialMetadata(grpc_metadata_array* init_metadata) {
+void CallOperations::RecvInitMd(grpc_metadata_array* init_metadata) {
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_RECV_INITIAL_METADATA);  // Todo

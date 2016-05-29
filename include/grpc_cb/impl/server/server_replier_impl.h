@@ -12,23 +12,21 @@
 
 namespace grpc_cb {
 
-class ReplyTag;
 class Status;
 
 // Reply ::google::protobuf::Message.
+// Copyable.
 class ServerReplierImpl GRPC_FINAL {
  public:
   explicit ServerReplierImpl(const CallSptr& call_sptr)
       : call_sptr_(call_sptr){
     assert(call_sptr);
   };
+  ~ServerReplierImpl();
 
  public:
   void Reply(const ::google::protobuf::Message& msg);
   void ReplyError(const Status& status);
-
- private:
-  void StartBatch(ReplyTag* tag);
 
  private:
   CallSptr call_sptr_;

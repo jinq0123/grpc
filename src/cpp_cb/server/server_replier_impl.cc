@@ -10,23 +10,23 @@
 
 namespace grpc_cb {
 
+ServerReplierImpl::~ServerReplierImpl() {}
+
 void ServerReplierImpl::Reply(const ::google::protobuf::Message& msg) {
-  ReplyTag* tag = new ReplyTag(call_sptr_, msg);  // Delete in Run().
-  StartBatch(tag);
+  assert(call_sptr_);
+  ServerReplierCqTag* tag = new ServerReplierCqTag(call_sptr_);  // Delete in Run().
+  CallOperations ops;
+  tag->InitOps(msg, ops);
+  Status status = call_sptr_->StartBatch(ops, tag);
+  GPR_ASSERT(status.ok());
 }
 
 void ServerReplierImpl::ReplyError(const Status& status) {
-  ReplyTag* tag = new ReplyTag(call_sptr_, status);  // Delete in Run().
-  StartBatch(tag);
-}
-
-void ServerReplierImpl::StartBatch(ReplyTag* tag) {
-  assert(tag);
   assert(call_sptr_);
-  // XXX Status result = call_sptr_->StartBatch(tag);
-  grpc_call_error result = grpc_call_start_batch(
-    call_sptr_->call(), tag->GetOps(), tag->GetOpsNum(), tag, nullptr);
-  GPR_ASSERT(GRPC_CALL_OK == result);
+  ServerReplierCqTag* tag = new ServerReplierCqTag(call_sptr_);  // Delete in Run().
+  // XXX ops
+  Status status = call_sptr_->StartBatch(ops, tag);
+  GPR_ASSERT(status.ok());
 }
 
 }  // namespace grpc_cb
