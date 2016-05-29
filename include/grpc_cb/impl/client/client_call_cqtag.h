@@ -23,13 +23,10 @@ class ClientCallCqTag : public CallCqTag {
  public:
   explicit ClientCallCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {
     assert(call_sptr);
-    grpc_metadata_array_init(&recv_trailing_metadata_arr_);
   }
-  virtual ~ClientCallCqTag() {
-    grpc_metadata_array_destroy(&recv_trailing_metadata_arr_);
-  }
+  virtual ~ClientCallCqTag() {}
 
-    // XXX DoComplete()
+  // XXX DoComplete()
 
  public:
   Status InitCallOps(const ::google::protobuf::Message& request,
@@ -46,11 +43,7 @@ public:
   CodSendMessage cod_send_message_;
   CodRecvInitMd cod_recv_init_md_;
   CodRecvMessage cod_recv_message_;
-
-  grpc_metadata_array recv_trailing_metadata_arr_;
-  grpc_status_code status_code_ = GRPC_STATUS_OK;
-  char* status_details_ = nullptr;
-  size_t status_details_capacity_ = 0;
+  CodClientRecvStatus cod_client_recv_status_;
 };  // class ClientCallCqTag
 
 }  // namespace grpc_cb

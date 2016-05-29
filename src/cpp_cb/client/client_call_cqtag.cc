@@ -19,8 +19,7 @@ Status ClientCallCqTag::InitCallOps(const ::google::protobuf::Message& request,
   ops.RecvInitMd(cod_recv_init_md_);
   ops.RecvMessage(cod_recv_message_);
   ops.ClientSendClose();
-  ops.ClientRecvStatus(&recv_trailing_metadata_arr_,
-      &status_code_, &status_details_, &status_details_capacity_);
+  ops.ClientRecvStatus(cod_client_recv_status_);
   return status;
 }
 

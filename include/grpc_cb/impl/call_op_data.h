@@ -1,6 +1,7 @@
 #ifndef GRPC_CB_IMPL_CALL_OP_DATA_H
 #define GRPC_CB_IMPL_CALL_OP_DATA_H
 
+#include <grpc/support/alloc.h>          // for gpr_free()
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
@@ -51,6 +52,24 @@ class CodSendMessage GRPC_FINAL {
   //   or outside in CallOperations::SendMessage()?
 };  // class CodSendMessage
 
+// Cod to receive initial metadata.
+class CodRecvInitMd GRPC_FINAL {
+ public:
+  CodRecvInitMd() {
+    grpc_metadata_array_init(&recv_init_md_arr_);
+  }
+  ~CodRecvInitMd() {
+    grpc_metadata_array_destroy(&recv_init_md_arr_);
+  }
+
+  grpc_metadata_array* GetRecvInitMdArrPtr() { return &recv_init_md_arr_; }
+  // Todo: Get result metadata.
+
+ private:
+  // std::multimap<grpc::string_ref, grpc::string_ref>* recv_init_md_;
+  grpc_metadata_array recv_init_md_arr_;
+};  // class CodRecvInitMd
+
 // Cod to receive message.
 class CodRecvMessage GRPC_FINAL {
  public:
@@ -67,22 +86,35 @@ class CodRecvMessage GRPC_FINAL {
   grpc_byte_buffer* recv_buf_ = nullptr;  // owned
 };  // class CodRecvMessage
 
-// Cod to receive initial metadata.
-class CodRecvInitMd GRPC_FINAL {
+// No Cod for ClientSendClose
+
+// Cod for client to receive status.
+class CodClientRecvStatus {
  public:
-  CodRecvInitMd() {
-    grpc_metadata_array_init(&recv_init_md_arr_);
+  CodClientRecvStatus() {
+    grpc_metadata_array_init(&recv_trail_md_arr_);
   }
-  ~CodRecvInitMd() {
-    grpc_metadata_array_destroy(&recv_init_md_arr_);
+  ~CodClientRecvStatus() {
+    grpc_metadata_array_destroy(&recv_trail_md_arr_);
+    gpr_free(status_details_);
   }
 
-  grpc_metadata_array* GetRecvInitMdArrPtr() { return &recv_init_md_arr_; }
+ public:
+  grpc_metadata_array* GetTrailMdArrPtr() { return &recv_trail_md_arr_; }
+  grpc_status_code* GetStatusCodePtr() { return &status_code_; }
+  char** GetStatusDetailsBufPtr() { return &status_details_; }
+  size_t* GetStatusDetailsCapacityPtr() { return &status_details_capacity_; }
 
  private:
-  // std::multimap<grpc::string_ref, grpc::string_ref>* recv_init_md_;
-  grpc_metadata_array recv_init_md_arr_;
-};  // class CodRecvInitMd
+  // Todo: std::multimap<grpc::string_ref, grpc::string_ref>* recv_trailing_metadata_;
+  // Todo: Status* recv_status_ = nullptr;
+
+  // Metadata array to receive trailing metadata.
+  grpc_metadata_array recv_trail_md_arr_;
+  grpc_status_code status_code_ = GRPC_STATUS_OK;
+  char* status_details_ = nullptr;
+  size_t status_details_capacity_ = 0;
+};
 
 // XXX Other Cod...
 

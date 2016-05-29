@@ -37,6 +37,7 @@ class CallOperations GRPC_FINAL {
   inline Status SendMessage(const ::google::protobuf::Message& message,
                             CodSendMessage& cod_send_message)
       GRPC_MUST_USE_RESULT;
+
   // Receive initial metadata.
   inline void RecvInitMd(CodRecvInitMd& cod_recv_init_md) {
       RecvInitMd(cod_recv_init_md.GetRecvInitMdArrPtr());
@@ -48,6 +49,7 @@ class CallOperations GRPC_FINAL {
   inline void RecvMessage(grpc_byte_buffer** recv_buf);
 
   inline void ClientSendClose();
+  inline void ClientRecvStatus(CodClientRecvStatus& cod_client_recv_status);
   inline void ClientRecvStatus(grpc_metadata_array* trailing_metadata,
                         grpc_status_code* status_code, char** status_details,
                         size_t* status_details_capacity);
@@ -113,6 +115,12 @@ void CallOperations::ClientSendClose() {
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_SEND_CLOSE_FROM_CLIENT);
+}
+
+void CallOperations::ClientRecvStatus(CodClientRecvStatus& cod) {
+  ClientRecvStatus(cod.GetTrailMdArrPtr(), cod.GetStatusCodePtr(),
+                   cod.GetStatusDetailsBufPtr(),
+                   cod.GetStatusDetailsCapacityPtr());
 }
 
 void CallOperations::ClientRecvStatus(grpc_metadata_array* trailing_metadata,
