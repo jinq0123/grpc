@@ -74,8 +74,8 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   if (!status.ok()) return status;
   status = call_sptr->StartBatch(ops, &tag);
   if (!status.ok()) return status;
-  cq.Pluck(&tag);  // Todo: Make suer tag was not queued if StartBatch() failed.
-  return call_sptr->GetResponse(response);  // XXX tag.GetResponse()
+  cq.Pluck(&tag);  // Todo: Make sure tag was not queued if StartBatch() failed.
+  return tag.GetResponse(*response);
 }
 
 void Stub::AsyncSayHello(

@@ -9,11 +9,4 @@
 
 namespace grpc_cb {
 
-Status CodSendMessage::SerializeMessage(
-    const ::google::protobuf::Message& message) {
-  // send_buf_ is created here and destroyed in dtr().
-  return SerializeProto(message, &send_buf_);
-
-}
-
 }  // namespace grpc_cb

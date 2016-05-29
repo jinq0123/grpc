@@ -28,7 +28,6 @@ class ClientCallCqTag : public CallCqTag {
   virtual ~ClientCallCqTag() {
     grpc_metadata_array_destroy(&recv_init_detadata_);
     grpc_metadata_array_destroy(&recv_trailing_metadata_arr_);
-    grpc_byte_buffer_destroy(recv_buf_);
   }
 
     // XXX DoComplete()
@@ -37,11 +36,16 @@ class ClientCallCqTag : public CallCqTag {
   Status InitCallOps(const ::google::protobuf::Message& request,
                      CallOperations& ops) GRPC_MUST_USE_RESULT;
 
+public:
+  Status GetResponse(::google::protobuf::Message& message) {
+      cod_recv_message_.GetResponse(message);
+  }
+
  private:
   CodSendInitMd cod_send_init_md_;  // Todo: set init metadata
   CodSendMessage cod_send_message_;
   grpc_metadata_array recv_init_detadata_;
-  grpc_byte_buffer* recv_buf_ = nullptr;
+  CodRecvMessage cod_recv_message_;
 
   grpc_metadata_array recv_trailing_metadata_arr_;
   grpc_status_code status_code_ = GRPC_STATUS_OK;

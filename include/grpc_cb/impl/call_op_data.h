@@ -4,6 +4,7 @@
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
+#include <grpc_cb/impl/proto_utils.h>      // for SerializeProto()
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
@@ -32,19 +33,39 @@ class CodSendInitMd GRPC_FINAL {
 // Cod to send message.
 class CodSendMessage GRPC_FINAL {
  public:
-  CodSendMessage() : send_buf_(nullptr) {}
   ~CodSendMessage() {
     grpc_byte_buffer_destroy(send_buf_);
   }
 
   Status SerializeMessage(const ::google::protobuf::Message& message)
-      GRPC_MUST_USE_RESULT;
+      GRPC_MUST_USE_RESULT {
+    // send_buf_ is created here and destroyed in dtr().
+    return SerializeProto(message, &send_buf_);
+  }
+
   grpc_byte_buffer* GetSendBuf() { return send_buf_; }
 
  private:
-  grpc_byte_buffer* send_buf_;  // owned
+  // send_buf_ is created in SerializeMessage() and destroyed in dtr().
+  grpc_byte_buffer* send_buf_ = nullptr;  // owned
   // Todo: WriteOptions write_options_;
   //   or outside in CallOperations::SendMessage()?
+};
+
+class CodRecvMessage GRPC_FINAL {
+ public:
+  ~CodRecvMessage() {
+    grpc_byte_buffer_destroy(recv_buf_);
+  }
+  grpc_byte_buffer** GetRecvBufPtr() { return &recv_buf_; }
+
+  Status GetResponse(::google::protobuf::Message& message) {
+    // TODO: check status first...
+    return DeserializeProto(recv_buf_, &message, max_message_size_);
+  }
+
+ private:
+  grpc_byte_buffer* recv_buf_ = nullptr;  // owned
 };
 
 // XXX Other Cod...

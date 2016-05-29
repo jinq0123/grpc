@@ -76,7 +76,7 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   if (!status.ok()) return status;
   status = call_sptr->StartBatch(ops, &tag);
   cq.Pluck(&tag);
-  return call_sptr->GetResponse(response);  // XXX tag.GetResponse()
+  return tag.GetResponse(*response);
 }
 
 void Stub::AsyncGetFeature(
