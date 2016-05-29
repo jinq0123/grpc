@@ -4,9 +4,12 @@
 #ifndef CPP_CB_SERVER_SERVER_REPLIER_CQTAT_H
 #define CPP_CB_SERVER_SERVER_REPLIER_CQTAT_H
 
-#include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
-#include <grpc_cb/impl/call_sptr.h>   // for CallSptr
-#include <grpc_cb/support/config.h>   // for GRPC_FINAL
+#include <grpc_cb/impl/call.h>             // for Call
+#include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
+#include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
+#include <grpc_cb/impl/call_operations.h>  // for CallOperations
+#include <grpc_cb/impl/call_sptr.h>        // for CallSptr
+#include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 namespace grpc_cb {
@@ -20,24 +23,24 @@ class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
   inline void StartReplyError(const Status& status);
 
  private:
-  // Todo: Use CallOperations instead.
-  void SendInitialMetadata();
-  Status SendMessage(const ::google::protobuf::Message& msg);
-  void ServerSendStatus(const Status& status);
-
- private:
-  //grpc_byte_buffer* send_buf_;
-  //std::string send_status_details_;
-
-  // XXX Use COD member variables instead of such things as grpc_byte_buffer.
+  CodSendInitMd cod_send_init_md_;
+  CodSendMessage cod_send_message_;
+  CodServerSendStatus cod_server_send_status_;
 };
 
 void ServerReplierCqTag::StartReply(const ::google::protobuf::Message& msg) {
-  // XXX
+  CallOperations ops;
+  ops.SendInitMd(cod_send_init_md_);  // Todo: init metadata
+  Status status = ops.SendMessage(msg, cod_send_message_);
+  ops.ServerSendStatus(status, cod_server_send_status_);
+  GetCallSptr()->StartBatch(ops, this);
 }
 
 void ServerReplierCqTag::StartReplyError(const Status& status) {
-    // XXX
+  CallOperations ops;
+  ops.SendInitMd(cod_send_init_md_);
+  ops.ServerSendStatus(status, cod_server_send_status_);
+  GetCallSptr()->StartBatch(ops, this);
 }
 
 //  SendInitialMetadata();

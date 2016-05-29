@@ -54,9 +54,11 @@ class CallOperations GRPC_FINAL {
                         grpc_status_code* status_code, char** status_details,
                         size_t* status_details_capacity);
 
-  inline void ServerSendStatus(
-      const grpc_metadata_array& trailing_metadata_array,
-      const grpc_status_code& status_code, const char* status_details);
+  inline void ServerSendStatus(const Status& status,
+                               CodServerSendStatus& cod_server_send_status);
+  inline void ServerSendStatus(grpc_metadata* trail_md, size_t trail_md_count,
+                               const grpc_status_code& status_code,
+                               const char* status_details);
 
  private:
   static const size_t MAX_OPS = 8;
@@ -137,16 +139,21 @@ void CallOperations::ClientRecvStatus(grpc_metadata_array* trailing_metadata,
       status_details_capacity;
 }
 
+void CallOperations::ServerSendStatus(const Status& status,
+                               CodServerSendStatus& cod) {
+  cod.SetStatus(status);  // Must save in Cod to live until completion.
+  ServerSendStatus(cod.GetTrailMdArrPtr(), cod.GetTrailMdCount(),
+      cod.GetStatusCode(), cod.GetStatusDetailsBuf());
+}
+
 void CallOperations::ServerSendStatus(
-    const grpc_metadata_array& trailing_metadata_array,
+    grpc_metadata* trail_md, size_t trail_md_count,
     const grpc_status_code& status_code, const char* status_details) {
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_SEND_STATUS_FROM_SERVER);
-  op.data.send_status_from_server.trailing_metadata_count =
-      trailing_metadata_array.count;
-  op.data.send_status_from_server.trailing_metadata =
-      trailing_metadata_array.metadata;
+  op.data.send_status_from_server.trailing_metadata_count = trail_md_count,
+  op.data.send_status_from_server.trailing_metadata = trail_md;
   op.data.send_status_from_server.status = status_code;
   op.data.send_status_from_server.status_details = status_details;
 }

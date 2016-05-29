@@ -26,8 +26,6 @@ class ClientCallCqTag : public CallCqTag {
   }
   virtual ~ClientCallCqTag() {}
 
-  // XXX DoComplete()
-
  public:
   Status InitCallOps(const ::google::protobuf::Message& request,
                      CallOperations& ops) GRPC_MUST_USE_RESULT;

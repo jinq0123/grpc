@@ -1,6 +1,8 @@
 #ifndef GRPC_CB_IMPL_CALL_OP_DATA_H
 #define GRPC_CB_IMPL_CALL_OP_DATA_H
 
+#include <cassert>
+
 #include <grpc/support/alloc.h>          // for gpr_free()
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
@@ -15,6 +17,23 @@ namespace grpc_cb {
 // Call operation data (Cod) classes.
 // Call operation data need to be kept in CallCqTag instead of CallOperations,
 //   because CallOperations object is transient.
+
+/*
+CallOperations object has 7 operations, and need 6 Cod:
+  SendInitMd(MetadataVector&)
+  SendMessage(const Message&, CodSendMessage&)
+  RecvInitMd(CodRecvInitMd&)
+  RecvMessage(CodRecvMessage&)
+  ClientSendClose() (do not need Cod)
+  ClientRecvStatus(CodClientRecvStatus&)
+  ServerSendStatus(CodServerSendStatus&)
+*/
+class CodSendInitMd;
+class CodSendMessage;
+class CodRecvInitMd;
+class CodRecvMessage;
+class CodClientRecvStatus;
+class CodServerSendStatus;
 
 // Cod to send initial metadata.
 class CodSendInitMd GRPC_FINAL {
@@ -120,7 +139,32 @@ class CodClientRecvStatus {
   size_t status_details_capacity_ = 0;
 };
 
-// XXX Other Cod...
+// Cod for server to send status.
+class CodServerSendStatus GRPC_FINAL {
+ public:
+  void SetStatus(const Status& status) {
+    // Should set only once.
+    assert(GRPC_STATUS_OK == send_status_code_);
+    assert(send_status_details_.empty());
+    send_status_code_ = status.error_code();
+    send_status_details_ = status.error_message();
+  }
+
+  // Todo: set trailing metadata.
+
+  grpc_metadata* GetTrailMdArrPtr() {
+    return trail_md_vec_.empty() ? nullptr : &trail_md_vec_[0];
+  }
+  size_t GetTrailMdCount() const { return trail_md_vec_.size(); }
+  grpc_status_code GetStatusCode() const { return send_status_code_; }
+  const char* GetStatusDetailsBuf() const { return send_status_details_.c_str(); }
+
+ private:
+  grpc_status_code send_status_code_ = GRPC_STATUS_OK;
+  std::string send_status_details_;
+  // Trailing metadata.
+  MetadataVector trail_md_vec_;
+};  // class CodServerSendStatus
 
 }  // namespace grpc_cb
 #endif  // GRPC_CB_IMPL_CALL_OP_DATA_H
