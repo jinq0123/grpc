@@ -105,6 +105,10 @@ class CodClientRecvStatus {
   char** GetStatusDetailsBufPtr() { return &status_details_; }
   size_t* GetStatusDetailsCapacityPtr() { return &status_details_capacity_; }
 
+ public:
+  bool IsStatusOk() const { return status_code_ == GRPC_STATUS_OK; }
+  Status GetStatus() const;
+
  private:
   // Todo: std::multimap<grpc::string_ref, grpc::string_ref>* recv_trailing_metadata_;
   // Todo: Status* recv_status_ = nullptr;

@@ -3,10 +3,13 @@
 
 #include <grpc_cb/impl/call_op_data.h>
 
-// Tood: Move proto_utils.h to src dir.
-#include <grpc_cb/impl/proto_utils.h>  // for SerializeProto()
-#include <grpc_cb/status.h>            // for Status
+#include <grpc_cb/status.h>  // for Status
 
 namespace grpc_cb {
+
+Status CodClientRecvStatus::GetStatus() const {
+  return Status(status_code_,
+                status_details_ ? std::string(status_details_) : "");
+}
 
 }  // namespace grpc_cb
