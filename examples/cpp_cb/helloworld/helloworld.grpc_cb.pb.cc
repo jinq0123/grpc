@@ -65,16 +65,17 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
     ::helloworld::HelloReply* response) {
   assert(response);
   ::grpc_cb::CompletionQueue cq;
-  ::grpc_cb::CallSptr call(channel_->MakeCall(method_names[0], cq.cq()));
-  ::grpc_cb::ClientCallCqTag tag;
+  ::grpc_cb::CallSptr call_sptr(channel_->MakeCall(method_names[0], cq.cq()));
+  ::grpc_cb::ClientCallCqTag tag(call_sptr);
   ::grpc_cb::CallOperations ops;
   ::grpc_cb::Status status;
+  // Todo: status = tag->Start(request)
   status = tag.InitCallOps(request, ops);
   if (!status.ok()) return status;
-  status = call->StartBatch(ops, &tag);
+  status = call_sptr->StartBatch(ops, &tag);
   if (!status.ok()) return status;
   cq.Pluck(&tag);  // Todo: Make suer tag was not queued if StartBatch() failed.
-  return call->GetResponse(response);  // XXX tag.GetResponse()
+  return call_sptr->GetResponse(response);  // XXX tag.GetResponse()
 }
 
 void Stub::AsyncSayHello(
@@ -84,16 +85,16 @@ void Stub::AsyncSayHello(
   assert(cb && err_cb && cq_);
   ::grpc_cb::CallSptr call_sptr(
       channel_->MakeCall(method_names[0], cq_->cq()));
-  ::grpc_cb::Call* call = call_sptr.get();
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::helloworld::HelloReply>;
-  CqTag* tag = new CqTag(cb, err_cb);
+  CqTag* tag = new CqTag(call_sptr, cb, err_cb);
   // DEL ::grpc_cb::CompletionQueueTag* tag =  // XXX Rename to ClientAsyncUnaryCallTag : public ClientUnaryCallTag
   // DEL    NewCompletionQueueTag(call_sptr, cb, err_cb);
 
+  // Todo: tag->Start(request);
   ::grpc_cb::CallOperations ops;
   ::grpc_cb::Status status = tag->InitCallOps(request, ops);
   if (status.ok())
-      status = call->StartBatch(ops, tag);
+      status = call_sptr->StartBatch(ops, tag);
   if (!status.ok()) {
     delete tag;  // DEL DeleteCompletionQueueTag(tag);  // XXX just delete?
     err_cb(status);

@@ -4,9 +4,11 @@
 #ifndef GRPC_CB_IMPL_CALL_H
 #define GRPC_CB_IMPL_CALL_H
 
+#include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
+
 #include <grpc_cb/impl/call_sptr.h>
-#include <grpc_cb/support/config.h>  // for GRPC_FINAL
-#include <grpc_cb/support/protobuf_fwd.h>  // for Message
+#include <grpc_cb/support/config.h>         // for GRPC_FINAL
+#include <grpc_cb/support/protobuf_fwd.h>   // for Message
 
 struct grpc_byte_buffer;
 struct grpc_call;
@@ -25,8 +27,8 @@ class Call GRPC_FINAL {
   ~Call();
 
  public:
-  Status StartBatch(const CallOperations& ops, void* tag);
-  Status GetResponse(::google::protobuf::Message* response) const;
+  Status StartBatch(const CallOperations& ops, void* tag) GRPC_MUST_USE_RESULT;
+  Status GetResponse(::google::protobuf::Message* response) const GRPC_MUST_USE_RESULT;
 
   inline int GetMaxMessageSize() const { return max_message_size_; }
   inline void SetMaxMessageSize(int size) { max_message_size_ = size; }

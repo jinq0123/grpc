@@ -14,7 +14,8 @@ namespace grpc_cb {
 class CodSendInitMd GRPC_FINAL {
  public:
   // Todo: Set metadata.
-  
+  MetadataVector& GetMdVec() { return init_md_vec_; }
+
  private:
   // MetadataVector is only references of keys and values.
   // The key-value strings must live until completion.

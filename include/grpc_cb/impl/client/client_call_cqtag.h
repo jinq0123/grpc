@@ -7,6 +7,7 @@
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
 #include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
+#include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 

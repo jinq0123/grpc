@@ -7,21 +7,17 @@
 #include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
 #include <grpc_cb/impl/call_sptr.h>   // for CallSptr
 #include <grpc_cb/support/config.h>   // for GRPC_FINAL
+#include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 namespace grpc_cb {
 
 class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
  public:
-  inline ServerReplierCqTag(const CallSptr& call_sptr, const ::google::protobuf::Message& msg);
-  inline ServerReplierCqTag(const CallSptr& call_sptr, const Status& status);
+  ServerReplierCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
+  virtual ~ServerReplierCqTag() {}
 
-  inline virtual ~ServerReplierCqTag() GRPC_OVERRIDE;
-
- public:
-  inline size_t GetOpsNum() const { return cops_.size(); }
-  inline const grpc_op* GetOps() const {
-    return cops_.empty() ? nullptr : &cops_[0];
-  }
+  inline void StartReply(const ::google::protobuf::Message& msg);
+  inline void StartReplyError(const Status& status);
 
  private:
   // Todo: Use CallOperations instead.
@@ -30,34 +26,30 @@ class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
   void ServerSendStatus(const Status& status);
 
  private:
-  grpc_byte_buffer* send_buf_;
-  std::string send_status_details_;
+  //grpc_byte_buffer* send_buf_;
+  //std::string send_status_details_;
 
   // XXX Use COD member variables instead of such things as grpc_byte_buffer.
 };
 
-ReplyTag::ReplyTag(const CallSptr& call_sptr,
-                   const ::google::protobuf::Message& msg)
-    : CallCqTag(call_sptr) {
-  SendInitialMetadata();
-  Status status = SendMessage(msg);
-  ServerSendStatus(status);
+void ServerReplierCqTag::StartReply(const ::google::protobuf::Message& msg) {
+  // XXX
 }
 
-ReplyTag::ReplyTag(const CallSptr& call_sptr, const Status& status)
-    : CallCqTag(call_sptr) {
-  SendInitialMetadata();
-  ServerSendStatus(status);
+void ServerReplierCqTag::StartReplyError(const Status& status) {
+    // XXX
 }
 
-ReplyTag::~ReplyTag() {
-  assert(call_sptr_);  // auto destroy by shared_ptr
-  grpc_byte_buffer_destroy(send_buf_);
-}
+//  SendInitialMetadata();
+//  Status status = SendMessage(msg);
+//  ServerSendStatus(status);
+//}
 
-ReplyTag::ReplyTag(const CallSptr& call_sptr) : send_buf_(nullptr), call_sptr_(call_sptr) {
-  assert(call_sptr);
-}
+//ReplyTag::ReplyTag(const CallSptr& call_sptr, const Status& status)
+//    : CallCqTag(call_sptr) {
+//  SendInitialMetadata();
+//  ServerSendStatus(status);
+//}
 
 //void ReplyTag::SendInitialMetadata() {
 //  grpc_op op{GRPC_OP_SEND_INITIAL_METADATA, 0, 0};

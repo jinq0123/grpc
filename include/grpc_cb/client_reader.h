@@ -22,10 +22,10 @@ class ClientReader {
   ClientReader(const ChannelSptr& channel, const std::string& method,
                const ::google::protobuf::Message& request,
                grpc_completion_queue& cq)
-      : call_(channel->MakeCall(method, cq)) {
+      : call_sptr_(channel->MakeCall(method, cq)) {
     assert(channel);
-    assert(call_);
-    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag;
+    assert(call_sptr_);
+    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(call_sptr_);
     CallOperations ops;
     Status status = tag->InitCallOps(ops);
     // XXX Move into InitCallOps()
@@ -36,7 +36,7 @@ class ClientReader {
     }
     // ops.RecvInitMetadata();
     // ops.ClientSendClose();
-    call_->StartBatch(ops, tag);  // tag keeps the buffer and other.
+    call_sptr_->StartBatch(ops, tag);  // tag keeps the buffer and other.
   }
 
  public:
@@ -55,7 +55,7 @@ class ClientReader {
   }
 
  private:
-  CallSptr call_;
+  CallSptr call_sptr_;
   //CallOpSet<CallOpSendInitialMetadata, CallOpSendMessage,
   //    CallOpRecvInitialMetadata, CallOpClientSendClose> init_ops_;
   //CallOpSet<CallOpRecvMessage<R>> read_ops_;

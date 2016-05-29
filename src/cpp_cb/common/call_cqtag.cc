@@ -14,11 +14,6 @@ CallCqTag::~CallCqTag() {
 	assert(call_sptr_);
 }
 
-Status Start() {
-    CallOperations ops;
-    return call_sptr->StartBatch(ops, this);
-}
-
 }  // namespace grpc_cb
 
 #endif  // GRPC_CB_CPP_CB_COMMON_CALL_CQTAG_H

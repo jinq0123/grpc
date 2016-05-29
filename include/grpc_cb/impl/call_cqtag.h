@@ -22,11 +22,10 @@ class CallCqTag : public CompletionQueueTag {
   }
   virtual ~CallCqTag();
 
- public:
-  virtual Status Start();
+  const CallSptr& GetCallSptr() const { return call_sptr_; }
 
  private:
-  // call_sptr is not used. Just keep it until completed.
+  // call_sptr is kept until completion.
   CallSptr call_sptr_;
 };
 

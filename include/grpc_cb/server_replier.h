@@ -5,6 +5,7 @@
 #define GRPC_CB_SERVER_ASYNC_REPLIER_H
 
 #include <grpc_cb/impl/call_sptr.h>                   // for CallSptr
+#include <grpc_cb/impl/server/server_replier_cqtag.h>  // for ServerReplierCqTag
 
 namespace grpc_cb {
 
@@ -14,12 +15,13 @@ class Status;
 // ServerWriter is for server stream rpc.
 
 // Copyable.
+// Safe to delete before completion.
 template <class ResponseType>
 class ServerReplier {
 public:
   // Copy msg_replier.
   explicit ServerReplier(const CallSptr& call_sptr)
-     : msg_replier_(call_sptr) {
+     : call_sptr_(call_sptr) {
    assert(call_sptr);
   };
   virtual ~ServerReplier() {};
@@ -31,7 +33,7 @@ public:
     tag->StartReply(response); 
   }
   void ReplyError(const Status& status) {
-    auto* tag = new ServerReplierCqTag(call_sptr);  // delete in Run()
+    auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
     tag->StartReplyError(status);
   }
 

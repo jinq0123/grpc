@@ -7,6 +7,7 @@
 #include <cassert>
 
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
+#include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
 #include <grpc_cb/impl/proto_utils.h>      // for SerializeProto()
 #include <grpc_cb/status.h>                // for Status
@@ -30,6 +31,9 @@ class CallOperations GRPC_FINAL {
 
  public:
   // Send initial metadata.
+  inline void SendInitMd(CodSendInitMd& cod_send_init_md) {
+      SendInitMd(cod_send_init_md.GetMdVec());
+  }
   inline void SendInitMd(MetadataVector& init_metadata);
   inline Status SendMessage(const ::google::protobuf::Message& message,
                      grpc_byte_buffer** send_buf) GRPC_MUST_USE_RESULT;

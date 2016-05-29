@@ -13,14 +13,16 @@ namespace grpc_cb {
 // Derived from ClientCallCqTag, adding cb, err_cb.
 template <class ResponseType>
 class ClientAsyncCallCqTag : public ClientCallCqTag {
-public:
+ public:
   using ResponseCallback = std::function<void (const ResponseType&)>;
-public:
-  ClientAsyncCallCqTag(const ResponseCallback& cb, const ErrorCallback& ecb)
-     : cb_(cb), ecb_(ecb) {}
+
+ public:
+  ClientAsyncCallCqTag(const CallSptr call_sptr, const ResponseCallback& cb,
+                      const ErrorCallback& ecb)
+     : ClientCallCqTag(call_sptr), cb_(cb), ecb_(ecb) {}
   virtual ~ClientAsyncCallCqTag() {}
 
-  // XXX DoComplete()
+ // XXX DoComplete()
 
  private:
   ResponseCallback cb_;
