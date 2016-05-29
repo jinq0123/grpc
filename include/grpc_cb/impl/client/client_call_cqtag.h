@@ -6,6 +6,7 @@
 
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
+#include <grpc_cb/impl/call.h>             // for GetMaxMessageSize()
 #include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
 #include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
@@ -38,7 +39,8 @@ class ClientCallCqTag : public CallCqTag {
 
 public:
   Status GetResponse(::google::protobuf::Message& message) {
-      cod_recv_message_.GetResponse(message);
+    return cod_recv_message_.GetResponse(message,
+                                         GetCallSptr()->GetMaxMessageSize());
   }
 
  private:

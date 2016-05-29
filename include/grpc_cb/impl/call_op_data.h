@@ -5,12 +5,11 @@
 
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
 #include <grpc_cb/impl/proto_utils.h>      // for SerializeProto()
+#include <grpc_cb/status.h>                // for Status
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 namespace grpc_cb {
-
-class Status;
 
 // Call operation data (Cod) classes.
 // Call operation data need to be kept in CallCqTag instead of CallOperations,
@@ -59,9 +58,9 @@ class CodRecvMessage GRPC_FINAL {
   }
   grpc_byte_buffer** GetRecvBufPtr() { return &recv_buf_; }
 
-  Status GetResponse(::google::protobuf::Message& message) {
+  Status GetResponse(::google::protobuf::Message& message, int max_message_size) {
     // TODO: check status first...
-    return DeserializeProto(recv_buf_, &message, max_message_size_);
+    return DeserializeProto(recv_buf_, &message, max_message_size);
   }
 
  private:

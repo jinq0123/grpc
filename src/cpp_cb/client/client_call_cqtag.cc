@@ -24,4 +24,6 @@ Status ClientCallCqTag::InitCallOps(const ::google::protobuf::Message& request,
   return status;
 }
 
+// Todo: inline this
+
 }  // namespace grpc_cb

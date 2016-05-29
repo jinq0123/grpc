@@ -12,4 +12,5 @@ Status ClientReaderInitCqTag::InitCallOps(CallOperations& ops) {
   return Status::OK;
 }
 
+// Todo: inline this
 }  // namespace grpc_cb
