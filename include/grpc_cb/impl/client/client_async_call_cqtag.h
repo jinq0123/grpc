@@ -22,7 +22,17 @@ class ClientAsyncCallCqTag : public ClientCallCqTag {
      : ClientCallCqTag(call_sptr), cb_(cb), ecb_(ecb) {}
   virtual ~ClientAsyncCallCqTag() {}
 
- // XXX DoComplete()
+ public:
+  void DoComplete(bool success) GRPC_OVERRIDE {
+    assert(success);
+    ResponseType resp;
+    Status status = GetResponse(resp);
+    if (status.ok()) {
+      if (cb_) cb_(resp);
+      return;
+    }
+    if (ecb_) ecb_(status);
+  };  // Todo: What is the use of 'success'?
 
  private:
   ResponseCallback cb_;
