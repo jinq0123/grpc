@@ -9,7 +9,6 @@
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
 #include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
-#include <grpc_cb/impl/proto_utils.h>      // for SerializeProto()
 #include <grpc_cb/status.h>                // for Status
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
@@ -36,7 +35,8 @@ class CallOperations GRPC_FINAL {
   }
   inline void SendInitMd(MetadataVector& init_metadata);
   inline Status SendMessage(const ::google::protobuf::Message& message,
-                     grpc_byte_buffer** send_buf) GRPC_MUST_USE_RESULT;
+                            CodSendMessage& cod_send_message)
+      GRPC_MUST_USE_RESULT;
   // Receive initial metadata.
   inline void RecvInitMd(grpc_metadata_array* init_metadata = nullptr);
   inline void RecvMessage(grpc_byte_buffer** recv_buf);
@@ -63,17 +63,20 @@ static inline void InitOp(grpc_op& op, grpc_op_type type, uint32_t flags = 0) {
     op.reserved = nullptr;
 }
 
+// Todo: Set write options.
 Status CallOperations::SendMessage(
     const ::google::protobuf::Message& message,
-    grpc_byte_buffer** send_buf) {
-  Status status = SerializeProto(message, send_buf);
+    CodSendMessage& cod_send_message) {
+  Status status = cod_send_message.SerializeMessage(message);
   if (!status.ok()) return status;
-  if (*send_buf == nullptr) return status;
+  if (nullptr == cod_send_message.GetSendBuf())
+      return status;
 
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_SEND_MESSAGE);
-  op.data.send_message = *send_buf;
+  op.data.send_message = cod_send_message.GetSendBuf();
+  // Todo: op->flags = write_options_.flags();
   return status;
 }
 

@@ -38,8 +38,8 @@ class ClientCallCqTag : public CallCqTag {
                      CallOperations& ops) GRPC_MUST_USE_RESULT;
 
  private:
-  grpc_byte_buffer* send_buf_ = nullptr;
   CodSendInitMd cod_send_init_md_;  // Todo: set init metadata
+  CodSendMessage cod_send_message_;
   grpc_metadata_array recv_init_detadata_;
   grpc_byte_buffer* recv_buf_ = nullptr;
 

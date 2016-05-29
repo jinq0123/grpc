@@ -34,12 +34,13 @@
 #ifndef GRPC_INTERNAL_CPP_CB_PROTO_PROTO_UTILS_H
 #define GRPC_INTERNAL_CPP_CB_PROTO_PROTO_UTILS_H
 
-#include <grpc_cb/status.h>
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 struct grpc_byte_buffer;
 
 namespace grpc_cb {
+
+class Status;
 
 // Serialize the msg into a buffer created inside the function. The caller
 // should destroy the returned buffer when done with it. If serialization fails,

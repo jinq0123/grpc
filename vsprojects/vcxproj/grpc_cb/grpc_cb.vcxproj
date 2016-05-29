@@ -294,6 +294,7 @@
     <ClCompile Include="..\..\..\src\cpp_cb\client\service_stub.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\call_operations.cc" />
+    <ClCompile Include="..\..\..\src\cpp_cb\common\call_op_data.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\common\completion_queue.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\proto\proto_utils.cc" />
     <ClCompile Include="..\..\..\src\cpp_cb\server\server.cc" />

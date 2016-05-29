@@ -46,9 +46,11 @@
 #include <grpc/support/slice.h>
 #include <grpc/support/slice_buffer.h>
 #include <grpc/support/port_platform.h>
-#include <grpc_cb/support/config.h>
 
-#include "src/core/profiling/timers.h"
+#include <grpc_cb/support/config.h>
+#include <grpc_cb/status.h>  // for Status
+
+// #include "src/core/profiling/timers.h"  // for GPR_TIMER_SCOPE()
 
 const int kMaxBufferLength = 8192;
 
@@ -170,7 +172,7 @@ namespace grpc_cb {
 
 Status SerializeProto(const ::google::protobuf::Message& msg,
                       grpc_byte_buffer** bp) {
-  GPR_TIMER_SCOPE("SerializeProto", 0);
+  // GPR_TIMER_SCOPE("SerializeProto", 0);
   int byte_size = msg.ByteSize();
   if (byte_size <= kMaxBufferLength) {
     gpr_slice slice = gpr_slice_malloc(byte_size);
@@ -190,7 +192,7 @@ Status SerializeProto(const ::google::protobuf::Message& msg,
 Status DeserializeProto(grpc_byte_buffer* buffer,
                         ::google::protobuf::Message* msg,
                         int max_message_size) {
-  GPR_TIMER_SCOPE("DeserializeProto", 0);
+  // GPR_TIMER_SCOPE("DeserializeProto", 0);
   if (!buffer) {
     return Status::InternalError("No payload");
   }

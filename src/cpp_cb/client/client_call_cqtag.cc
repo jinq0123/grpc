@@ -10,7 +10,7 @@ namespace grpc_cb {
 // XXX MOve ops to the last.
 Status ClientCallCqTag::InitCallOps(const ::google::protobuf::Message& request,
                                     CallOperations& ops) {
-  Status status = ops.SendMessage(request, &send_buf_);
+  Status status = ops.SendMessage(request, cod_send_message_);
   if (!status.ok()) {
     return status;
   }
