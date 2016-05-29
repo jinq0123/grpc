@@ -16,7 +16,7 @@ Status ClientCallCqTag::InitCallOps(const ::google::protobuf::Message& request,
   }
   // Todo: Fill send_init_md_array_ -> FillMetadataVector()
   ops.SendInitMd(cod_send_init_md_);
-  ops.RecvInitMd(&recv_init_detadata_);
+  ops.RecvInitMd(cod_recv_init_md_);
   ops.RecvMessage(cod_recv_message_);
   ops.ClientSendClose();
   ops.ClientRecvStatus(&recv_trailing_metadata_arr_,

@@ -23,11 +23,9 @@ class ClientCallCqTag : public CallCqTag {
  public:
   explicit ClientCallCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {
     assert(call_sptr);
-    grpc_metadata_array_init(&recv_init_detadata_);
     grpc_metadata_array_init(&recv_trailing_metadata_arr_);
   }
   virtual ~ClientCallCqTag() {
-    grpc_metadata_array_destroy(&recv_init_detadata_);
     grpc_metadata_array_destroy(&recv_trailing_metadata_arr_);
   }
 
@@ -46,7 +44,7 @@ public:
  private:
   CodSendInitMd cod_send_init_md_;  // Todo: set init metadata
   CodSendMessage cod_send_message_;
-  grpc_metadata_array recv_init_detadata_;
+  CodRecvInitMd cod_recv_init_md_;
   CodRecvMessage cod_recv_message_;
 
   grpc_metadata_array recv_trailing_metadata_arr_;

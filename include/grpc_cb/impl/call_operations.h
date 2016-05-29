@@ -38,6 +38,9 @@ class CallOperations GRPC_FINAL {
                             CodSendMessage& cod_send_message)
       GRPC_MUST_USE_RESULT;
   // Receive initial metadata.
+  inline void RecvInitMd(CodRecvInitMd& cod_recv_init_md) {
+      RecvInitMd(cod_recv_init_md.GetRecvInitMdArrPtr());
+  }
   inline void RecvInitMd(grpc_metadata_array* init_metadata = nullptr);
   inline void RecvMessage(CodRecvMessage& cod_recv_message) {
       RecvMessage(cod_recv_message.GetRecvBufPtr());

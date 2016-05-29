@@ -49,8 +49,9 @@ class CodSendMessage GRPC_FINAL {
   grpc_byte_buffer* send_buf_ = nullptr;  // owned
   // Todo: WriteOptions write_options_;
   //   or outside in CallOperations::SendMessage()?
-};
+};  // class CodSendMessage
 
+// Cod to receive message.
 class CodRecvMessage GRPC_FINAL {
  public:
   ~CodRecvMessage() {
@@ -59,13 +60,29 @@ class CodRecvMessage GRPC_FINAL {
   grpc_byte_buffer** GetRecvBufPtr() { return &recv_buf_; }
 
   Status GetResponse(::google::protobuf::Message& message, int max_message_size) {
-    // TODO: check status first...
     return DeserializeProto(recv_buf_, &message, max_message_size);
   }
 
  private:
   grpc_byte_buffer* recv_buf_ = nullptr;  // owned
-};
+};  // class CodRecvMessage
+
+// Cod to receive initial metadata.
+class CodRecvInitMd GRPC_FINAL {
+ public:
+  CodRecvInitMd() {
+    grpc_metadata_array_init(&recv_init_md_arr_);
+  }
+  ~CodRecvInitMd() {
+    grpc_metadata_array_destroy(&recv_init_md_arr_);
+  }
+
+  grpc_metadata_array* GetRecvInitMdArrPtr() { return &recv_init_md_arr_; }
+
+ private:
+  // std::multimap<grpc::string_ref, grpc::string_ref>* recv_init_md_;
+  grpc_metadata_array recv_init_md_arr_;
+};  // class CodRecvInitMd
 
 // XXX Other Cod...
 
