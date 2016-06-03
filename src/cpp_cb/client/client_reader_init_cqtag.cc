@@ -7,9 +7,14 @@
 
 namespace grpc_cb {
 
-Status ClientReaderInitCqTag::InitCallOps(CallOperations& ops) {
-  // XXX ClientReaderInifCqTag::InitCallOps()
-  return Status::OK;
+Status ClientReaderInitCqTag::InitCallOps(
+    const ::google::protobuf::Message& request, CallOperations& ops) {
+  Status status = ops.SendMessage(request, cod_send_message_);
+  if (!status.ok()) return status;
+  ops.SendInitMd(cod_send_init_md_);
+  ops.RecvInitMd(cod_recv_init_md_);
+  ops.ClientSendClose();
+  return status;
 }
 
 // Todo: inline this

@@ -6,7 +6,9 @@
 #include <cassert>
 
 #include <grpc/grpc.h>
+
 #include <grpc_cb/impl/call.h>
+#include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue
 
 namespace grpc_cb {
 
@@ -30,11 +32,16 @@ Channel::~Channel() {
 
 CallSptr Channel::MakeCall(
     const std::string& method,
-    grpc_completion_queue& cq) {
+    grpc_completion_queue& cq) const {
   grpc_call* c_call = grpc_channel_create_call(
     c_channel_, nullptr, GRPC_PROPAGATE_DEFAULTS, &cq, method.c_str(), nullptr,
     gpr_inf_future(GPR_CLOCK_REALTIME), nullptr);
   return CallSptr(new Call(c_call));  // shared_ptr
+}
+
+CallSptr Channel::MakeCall(const std::string& method,
+                           CompletionQueue& cq) const {
+  return MakeCall(method, cq.cq());
 }
 
 }  // namespace grpc_cb

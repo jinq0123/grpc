@@ -11,7 +11,8 @@
 #include <grpc_cb/impl/call.h>                             // for StartBatch()
 #include <grpc_cb/impl/call_sptr.h>                        // for CallSptr
 #include <grpc_cb/impl/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
-#include <grpc_cb/status.h>                                // for Status
+#include <grpc_cb/impl/completion_queue_sptr.h>  // for CompletionQueueSptr
+#include <grpc_cb/status.h>                      // for Status
 
 namespace grpc_cb {
 
@@ -21,29 +22,35 @@ class ClientReader {
  public:
   ClientReader(const ChannelSptr& channel, const std::string& method,
                const ::google::protobuf::Message& request,
-               grpc_completion_queue& cq)
-      : call_sptr_(channel->MakeCall(method, cq)) {
+               const CompletionQueueSptr& cq_sptr)
+      : cq_sptr_(cq_sptr), call_sptr_(channel->MakeCall(method, *cq_sptr)) {
+    assert(cq_sptr);
     assert(channel);
     assert(call_sptr_);
+    assert(cq_sptr->cq() == call_sptr_->call()->cq);
     ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(call_sptr_);
     CallOperations ops;
-    Status status = tag->InitCallOps(ops);
-    // XXX Move into InitCallOps()
-    // ops.SendInitMetadata();
-    // Status status = ops.SendMessage(request);
-    if (!status.ok()) {
-      // XXX
+    status_ = tag->InitCallOps(request, ops);
+    if (status_.ok()) {
+      status_ = call_sptr_->StartBatch(ops, tag);  // tag keeps the buffer and other.
+      return;
     }
-    // ops.RecvInitMetadata();
-    // ops.ClientSendClose();
-    call_sptr_->StartBatch(ops, tag);  // tag keeps the buffer and other.
+    delete tag;
   }
 
  public:
   bool BlockingRead(Response* response) {
     assert(response);
+    if (!status_.ok())
+        return false;
+    ClientReaderReadCqTag tag(call_sptr_);
+    CallOperations ops;
+    tag.InitCallOps(ops);
+    call_sptr_->StartBatch(ops, &tag);
+    cq_sptr_->Pluck(&tag);
+    tag.GetResponse(*response);  // XXX return result
     // XXX
-    return false;
+    return true;
   }
 
   ::grpc_cb::Status BlockingRecvStatus() {
@@ -55,11 +62,9 @@ class ClientReader {
   }
 
  private:
+  CompletionQueueSptr cq_sptr_;
   CallSptr call_sptr_;
-  //CallOpSet<CallOpSendInitialMetadata, CallOpSendMessage,
-  //    CallOpRecvInitialMetadata, CallOpClientSendClose> init_ops_;
-  //CallOpSet<CallOpRecvMessage<R>> read_ops_;
-  //CallOpSet<CallOpClientRecvStatus> finish_ops_;
+  Status status_;
 };  // class ClientReader<>
 
 }  // namespace grpc_cb

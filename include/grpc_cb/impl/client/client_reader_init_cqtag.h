@@ -8,6 +8,7 @@
 
 #include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
 #include <grpc_cb/support/config.h>   // for GRPC_FINAL
+#include <grpc_cb/impl/call_op_data.h>  // for CodSendInitMd
 
 namespace grpc_cb {
 
@@ -17,7 +18,13 @@ class Status;
 class ClientReaderInitCqTag GRPC_FINAL : public CallCqTag {
  public:
   ClientReaderInitCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
-  Status InitCallOps(CallOperations& ops) GRPC_MUST_USE_RESULT;
+  Status InitCallOps(const ::google::protobuf::Message& request,
+      CallOperations& ops) GRPC_MUST_USE_RESULT;
+
+ private:
+  CodSendMessage cod_send_message_;
+  CodSendInitMd cod_send_init_md_;
+  CodRecvInitMd cod_recv_init_md_;
 };  // class ClientReaderInitCqTag
 
 };  // namespace grpc_cb
