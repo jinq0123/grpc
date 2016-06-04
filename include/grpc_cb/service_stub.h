@@ -61,14 +61,6 @@ class ServiceStub {
   // Request the shutdown of all runs.
   void Shutdown();
 
-  // DEL
- //public:
- // template <class ResponseType>
- // CompletionQueueTag* NewCompletionQueueTag(
- //     const CallSptr& call, const std::function<void(const ResponseType&)>& cb,
- //     const ErrorCallback& ecb);
- // void DeleteCompletionQueueTag(CompletionQueueTag* tag) { delete tag; }
-
  private:
   ChannelSptr channel_sptr_;
   ErrorCallback error_callback_;

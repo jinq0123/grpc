@@ -84,15 +84,8 @@ void Stub::AsyncGetFeature(
       GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::routeguide::Feature>;
   CqTag* tag = new CqTag(call_sptr, cb, err_cb);
-  //::grpc_cb::CompletionQueueTag* tag =
-  //    NewCompletionQueueTag(call_sptr, cb, err_cb);
-  // Todo: tag->Start(request)
-  ::grpc_cb::CallOperations ops;
-  ::grpc_cb::Status status = tag->InitCallOps(request, ops);
-  if (status.ok())
-      status = call_sptr->StartBatch(ops, tag);
+  ::grpc_cb::Status status = tag->Start(request);
   if (!status.ok()) {
-    // DEL DeleteCompletionQueueTag(tag);
     delete tag;
     err_cb(status);
   }

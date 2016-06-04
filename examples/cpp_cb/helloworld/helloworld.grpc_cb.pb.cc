@@ -67,12 +67,7 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call_sptr(GetChannel().MakeSharedCall(method_names[0], cq));
   ::grpc_cb::ClientCallCqTag tag(call_sptr);
-  ::grpc_cb::CallOperations ops;
-  ::grpc_cb::Status status;
-  // Todo: status = tag->Start(request)
-  status = tag.InitCallOps(request, ops);
-  if (!status.ok()) return status;
-  status = call_sptr->StartBatch(ops, &tag);
+  ::grpc_cb::Status status = tag.Start(request);
   if (!status.ok()) return status;
   cq.Pluck(&tag);  // Todo: Make sure tag was not queued if StartBatch() failed.
   return tag.GetResponse(*response);
@@ -87,16 +82,9 @@ void Stub::AsyncSayHello(
       GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::helloworld::HelloReply>;
   CqTag* tag = new CqTag(call_sptr, cb, err_cb);
-  // DEL ::grpc_cb::CompletionQueueTag* tag =  // XXX Rename to ClientAsyncUnaryCallTag : public ClientUnaryCallTag
-  // DEL    NewCompletionQueueTag(call_sptr, cb, err_cb);
-
-  // Todo: tag->Start(request);
-  ::grpc_cb::CallOperations ops;
-  ::grpc_cb::Status status = tag->InitCallOps(request, ops);
-  if (status.ok())
-      status = call_sptr->StartBatch(ops, tag);
+  ::grpc_cb::Status status = tag->Start(request);
   if (!status.ok()) {
-    delete tag;  // DEL DeleteCompletionQueueTag(tag);  // XXX just delete?
+    delete tag;
     err_cb(status);
   }
 }
