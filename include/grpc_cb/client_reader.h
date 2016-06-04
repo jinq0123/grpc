@@ -37,10 +37,11 @@ class ClientReader {
   inline void AsyncReadEach(const ReadCallback& readCallback) const;
 
  private:
+  using ReadCqTag = ClientReaderReadCqTag;
   // Callback on each message.
-  inline void OnReadEach(ClientReaderReadCqTag& tag) const;
+  inline void OnReadEach(ReadCqTag& tag) const;
   // Setup next async read.
-  inline void AsyncReadNext(ClientReaderReadCqTag& tag) const;
+  inline void AsyncReadNext() const;
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
@@ -75,7 +76,7 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
   if (!status.ok()) return false;
 
   CallSptr& call_sptr = data_sptr_->call_sptr;
-  ClientReaderReadCqTag tag(call_sptr);
+  ReadCqTag tag(call_sptr);
   status = tag.Start();
   if (!status.ok()) return false;
 
@@ -90,14 +91,21 @@ void ClientReader<Response>::AsyncReadEach(const ReadCallback& readCallback) con
   Status& status = data_sptr_->status;
   if (!status.ok()) return;
   data_sptr_->readCb = readCallback;
+  AsyncReadNext();
+}
+
+template <class Response>
+void ClientReader<Response>::AsyncReadNext() const {
+  Status& status = data_sptr_->status;
+  assert(status.ok());
 
   CallSptr& call_sptr = data_sptr_->call_sptr;
   using std::placeholders::_1;
   // This ClientReader is copied in callback.
   ClientReader<Response> this_copy = *this;
-  auto* tag = new ClientReaderReadCqTag(call_sptr, [this_copy](ClientReaderReadCqTag& tag) {
-      this_copy.OnReadEach(tag);
-  });
+  ReadCqTag* tag = new ReadCqTag(
+      call_sptr,
+      [this_copy](ReadCqTag& tag) { this_copy.OnReadEach(tag); });
   status = tag->Start();
 }
 
@@ -112,16 +120,9 @@ void ClientReader<Response>::OnReadEach(ClientReaderReadCqTag& tag) const {
   ReadCallback& readCb = data_sptr_->readCb;
   if (!readCb) return;
   readCb(resp);
-  AsyncReadNext(readCb);
-}
 
-template <class Response>
-void ClientReader<Response>::AsyncReadNext(ClientReaderReadCqTag& tag) const {
-  Status& status = data_sptr_->status;
-  assert(status.ok());
-  auto* tag = new ClientReaderReadCqTag(tag);
-  status = tag->Start();
-  // Old tag will be deleted after return.
+  AsyncReadNext();
+  // Old tag will be deleted after return in BlockingRun().
 }
 
 }  // namespace grpc_cb
