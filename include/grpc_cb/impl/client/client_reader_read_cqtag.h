@@ -12,9 +12,6 @@
 
 namespace grpc_cb {
 
-class CallOperations;
-class Status;
-
 class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline ClientReaderReadCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}

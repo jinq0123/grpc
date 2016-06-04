@@ -6,14 +6,13 @@
 
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
 
-#include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
-#include <grpc_cb/support/config.h>   // for GRPC_FINAL
-#include <grpc_cb/impl/call_op_data.h>  // for CodSendInitMd
+#include <grpc_cb/impl/call.h>             // for StartBatch()
+#include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
+#include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
+#include <grpc_cb/impl/call_operations.h>  // for CallOperations
+#include <grpc_cb/support/config.h>        // for GRPC_FINAL
 
 namespace grpc_cb {
-
-class CallOperations;
-class Status;
 
 class ClientReaderInitCqTag GRPC_FINAL : public CallCqTag {
  public:
