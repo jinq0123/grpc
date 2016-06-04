@@ -35,8 +35,8 @@ public:
     // Todo: Get trailing metadata.
     if (!cod_client_recv_status_.IsStatusOk())
       return cod_client_recv_status_.GetStatus();
-    return cod_recv_message_.GetResponse(message,
-                                         GetCallSptr()->GetMaxMessageSize());
+    return cod_recv_message_.GetResultMessage(message,
+                                        GetCallSptr()->GetMaxMessageSize());
   }
 
  private:

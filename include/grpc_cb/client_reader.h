@@ -51,7 +51,7 @@ class ClientReader {
     tag.InitCallOps(ops);
     call_sptr->StartBatch(ops, &tag);
     data_sptr_->cq_sptr->Pluck(&tag);
-    tag.GetMessage(*response);  // XXX return result
+    tag.GetResultMessage(*response);  // XXX return result
     // XXX
     return true;
   }

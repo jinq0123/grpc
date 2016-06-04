@@ -189,6 +189,7 @@ Status SerializeProto(const ::google::protobuf::Message& msg,
   }
 }
 
+// max_message_size <= 0 means no limit.
 Status DeserializeProto(grpc_byte_buffer* buffer,
                         ::google::protobuf::Message* msg,
                         int max_message_size) {

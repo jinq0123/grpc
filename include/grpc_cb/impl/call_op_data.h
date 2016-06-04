@@ -97,7 +97,7 @@ class CodRecvMessage GRPC_FINAL {
   }
   grpc_byte_buffer** GetRecvBufPtr() { return &recv_buf_; }
 
-  Status GetResponse(::google::protobuf::Message& message, int max_message_size) {
+  Status GetResultMessage(::google::protobuf::Message& message, int max_message_size) {
     return DeserializeProto(recv_buf_, &message, max_message_size);
   }
 

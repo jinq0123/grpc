@@ -17,10 +17,12 @@ class Status;
 
 class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
  public:
-  ClientReaderReadCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
-  void InitCallOps(CallOperations& ops);
-  Status GetMessage(::google::protobuf::Message& message) GRPC_MUST_USE_RESULT;
-
+  inline ClientReaderReadCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
+  inline void InitCallOps(CallOperations& ops);
+  inline Status GetResultMessage(::google::protobuf::Message& message) GRPC_MUST_USE_RESULT {
+    return cod_recv_message_.GetResultMessage(
+        message, GetCallSptr()->GetMaxMessageSize());
+  }
   // XXX DoComplete() GRPC_OVERRIDE
  private:
   CodRecvMessage cod_recv_message_;
