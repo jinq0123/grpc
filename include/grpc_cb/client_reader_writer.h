@@ -13,7 +13,7 @@ class ClientReaderWriter {
     // XXX
   }
 
-  bool BlockingRead(const Response* response)
+  bool BlockingReadOne(const Response* response)
   {
     assert(response);
     // XXX

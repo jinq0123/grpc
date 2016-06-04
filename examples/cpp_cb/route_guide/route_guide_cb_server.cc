@@ -134,7 +134,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     Point previous;
 
     system_clock::time_point start_time = system_clock::now();
-    while (reader.BlockingRead(&point)) {
+    while (reader.BlockingReadOne(&point)) {
       point_count++;
       if (!GetFeatureName(point, feature_list_).empty()) {
         feature_count++;
@@ -159,7 +159,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
   Status RouteChat(ServerReaderWriter<RouteNote, RouteNote> stream) override {
     std::vector<RouteNote> received_notes;
     RouteNote note;
-    while (stream.BlockingRead(&note)) {
+    while (stream.BlockingReadOne(&note)) {
       for (const RouteNote& n : received_notes) {
         if (n.location().latitude() == note.location().latitude() &&
             n.location().longitude() == note.location().longitude()) {

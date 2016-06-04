@@ -26,14 +26,14 @@ class ClientReader {
                const CompletionQueueSptr& cq_sptr);
 
  public:
-  inline bool BlockingRead(Response* response) const;
+  inline bool BlockingReadOne(Response* response) const;
 
   inline Status BlockingRecvStatus() {
       // XXX BlockingRecvStatus()
     return Status::OK;
   }
 
-  void SetReadCallback(std::function<void (const Response&)> readCallback) {
+  void AsyncReadEach(std::function<void (const Response&)> readCallback) {
     // XXX
   }
 
@@ -63,7 +63,7 @@ ClientReader<Response>::ClientReader(
 }
 
 template <class Response>
-bool ClientReader<Response>::BlockingRead(Response* response) const {
+bool ClientReader<Response>::BlockingReadOne(Response* response) const {
   assert(response);
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;

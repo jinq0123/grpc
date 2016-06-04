@@ -11,7 +11,7 @@ namespace grpc_cb {
 template <class Request, class Response>
 class ServerReaderWriter {
  public:
-  bool BlockingRead(Request* request) {
+  bool BlockingReadOne(Request* request) {
     assert(request);
     // XXX
     return false;

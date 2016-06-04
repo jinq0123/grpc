@@ -104,7 +104,7 @@ class RouteGuideClient {
 
     ClientReader<Feature> reader(
         stub_->ListFeatures(rect));
-    while (reader.BlockingRead(&feature)) {
+    while (reader.BlockingReadOne(&feature)) {
       std::cout << "Found feature called "
                 << feature.name() << " at "
                 << feature.location().latitude()/kCoordFactor_ << ", "
@@ -177,7 +177,7 @@ class RouteGuideClient {
     });
 
     RouteNote server_note;
-    while (stream.BlockingRead(&server_note)) {
+    while (stream.BlockingReadOne(&server_note)) {
       std::cout << "Got message " << server_note.message()
                 << " at " << server_note.location().latitude() << ", "
                 << server_note.location().longitude() << std::endl;
@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
   routeguide::RouteGuide::Stub stub(channel);
   routeguide::Rectangle rect;
   ClientReader<Feature> reader(stub.ListFeatures(rect));
-  reader.SetReadCallback([](const Feature& feature){
+  reader.AsyncReadEach([](const Feature& feature){
     std::cout << "Got feature." << std::endl;
   });
   stub.BlockingRun();
