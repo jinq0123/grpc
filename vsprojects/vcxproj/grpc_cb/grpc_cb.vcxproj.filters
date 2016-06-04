@@ -165,6 +165,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\noncopyable.h">
       <Filter>include\grp_cb\support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_writer_init_cqtag.h">
+      <Filter>include\grp_cb\impl\client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

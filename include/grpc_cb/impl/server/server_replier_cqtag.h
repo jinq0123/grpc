@@ -16,7 +16,7 @@ namespace grpc_cb {
 
 class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
  public:
-  ServerReplierCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
+  explicit ServerReplierCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
   virtual ~ServerReplierCqTag() {}
 
   inline void StartReply(const ::google::protobuf::Message& msg);

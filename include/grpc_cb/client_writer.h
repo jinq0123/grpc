@@ -4,8 +4,21 @@
 #ifndef GRPC_CB_CLIENT_CLIENT_WRITER_H
 #define GRPC_CB_CLIENT_CLIENT_WRITER_H
 
+#include <cassert>     // for assert()
+#include <functional>  // for std::function
+
+#include <grpc_cb/channel.h>         // for MakeSharedCall()
+#include <grpc_cb/impl/call.h>       // for StartBatch()
+#include <grpc_cb/impl/call_sptr.h>  // for CallSptr
+#include <grpc_cb/impl/client/client_writer_init_cqtag.h>  // for ClientWriterInitCqTag
+#include <grpc_cb/impl/completion_queue.h>       // for CompletionQueue::Pluck()
+#include <grpc_cb/status.h>                      // for Status
+
 namespace grpc_cb {
 
+// Use template class instead of template member function
+//    to ensure client input the correct request type.
+// Todo: Use non_template class as the implement.
 template <class Request>
 class ClientWriter {
  public:
@@ -13,7 +26,9 @@ class ClientWriter {
                       const CompletionQueueSptr& cq_sptr);
 
  public:
-  bool Write(const Request& request) {
+  inline Status BlockingGetResponse(::google::protobuf::Message* response) const;
+
+  bool BlockingWriteOne(const Request& request) const {
     // XXX
     return false;
   }
@@ -32,9 +47,10 @@ class ClientWriter {
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientWriter<>
 
-ClientWriter::ClientWriter(const ChannelSptr& channel,
-                           const std::string& method,
-                           const CompletionQueueSptr& cq_sptr)
+template <class Request>
+ClientWriter<Request>::ClientWriter(const ChannelSptr& channel,
+                                    const std::string& method,
+                                    const CompletionQueueSptr& cq_sptr)
     // Todo: same as ClientReader?
     : data_sptr_(new Data{cq_sptr, channel->MakeSharedCall(method, *cq_sptr)}) {
   assert(cq_sptr);

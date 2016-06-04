@@ -21,6 +21,7 @@ namespace grpc_cb {
 template <class Response>
 class ClientReader {
  public:
+  // Todo: Also need to template request?
   inline ClientReader(const ChannelSptr& channel, const std::string& method,
                const ::google::protobuf::Message& request,
                const CompletionQueueSptr& cq_sptr);
