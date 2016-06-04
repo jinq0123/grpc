@@ -40,15 +40,17 @@ class ClientReader {
     Status& status = data_sptr_->status;
     if (!status.ok())
         return false;
+
     CallSptr& call_sptr = data_sptr_->call_sptr;
     ClientReaderReadCqTag tag(call_sptr);
-    CallOperations ops;
-    tag.InitCallOps(ops);
-    call_sptr->StartBatch(ops, &tag);
+    status = tag.Start();
+    if (!status.ok())
+        return false;
+
+    // tag.Start() has queued the tag. Wait for completion.
     data_sptr_->cq_sptr->Pluck(&tag);
-    tag.GetResultMessage(*response);  // XXX return result
-    // XXX
-    return true;
+    status = tag.GetResultMessage(*response);
+    return status.ok();
   }
 
   ::grpc_cb::Status BlockingRecvStatus() {

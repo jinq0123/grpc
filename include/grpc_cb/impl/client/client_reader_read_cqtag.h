@@ -15,7 +15,7 @@ namespace grpc_cb {
 class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline ClientReaderReadCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
-  inline void InitCallOps(CallOperations& ops);
+  inline Status Start();
   inline Status GetResultMessage(::google::protobuf::Message& message) GRPC_MUST_USE_RESULT {
     return cod_recv_message_.GetResultMessage(
         message, GetCallSptr()->GetMaxMessageSize());
@@ -25,7 +25,11 @@ class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
   CodRecvMessage cod_recv_message_;
 };  // class ClientReaderReadCqTag
 
-// XXX Implement ClientReaderReadCqTag
+Status ClientReaderReadCqTag::Start() {
+  CallOperations ops;
+  ops.RecvMessage(cod_recv_message_);
+  return GetCallSptr()->StartBatch(ops, this);
+}
 
 };  // namespace grpc_cb
 
