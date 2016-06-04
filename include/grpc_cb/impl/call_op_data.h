@@ -1,3 +1,4 @@
+#include "../support/noncopyable.h"
 #ifndef GRPC_CB_IMPL_CALL_OP_DATA_H
 #define GRPC_CB_IMPL_CALL_OP_DATA_H
 
@@ -11,6 +12,7 @@
 #include <grpc_cb/status.h>                // for Status
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
+#include <grpc_cb/support/noncopyable.h>   // for noncopyable
 
 namespace grpc_cb {
 
@@ -50,7 +52,7 @@ class CodSendInitMd GRPC_FINAL {
 };  // class CodSendInitMd
 
 // Cod to send message.
-class CodSendMessage GRPC_FINAL {
+class CodSendMessage GRPC_FINAL : noncopyable {
  public:
   ~CodSendMessage() {
     grpc_byte_buffer_destroy(send_buf_);
@@ -72,7 +74,7 @@ class CodSendMessage GRPC_FINAL {
 };  // class CodSendMessage
 
 // Cod to receive initial metadata.
-class CodRecvInitMd GRPC_FINAL {
+class CodRecvInitMd GRPC_FINAL : noncopyable {
  public:
   CodRecvInitMd() {
     grpc_metadata_array_init(&recv_init_md_arr_);
@@ -90,7 +92,7 @@ class CodRecvInitMd GRPC_FINAL {
 };  // class CodRecvInitMd
 
 // Cod to receive message.
-class CodRecvMessage GRPC_FINAL {
+class CodRecvMessage GRPC_FINAL : noncopyable {
  public:
   ~CodRecvMessage() {
     grpc_byte_buffer_destroy(recv_buf_);
@@ -108,7 +110,7 @@ class CodRecvMessage GRPC_FINAL {
 // No Cod for ClientSendClose
 
 // Cod for client to receive status.
-class CodClientRecvStatus {
+class CodClientRecvStatus : noncopyable {
  public:
   CodClientRecvStatus() {
     grpc_metadata_array_init(&recv_trail_md_arr_);

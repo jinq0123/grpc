@@ -14,21 +14,33 @@ namespace grpc_cb {
 
 class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
  public:
-  inline ClientReaderReadCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
+  using Callback = std::function<void (ClientReaderReadCqTag&)>;
+  inline explicit ClientReaderReadCqTag(const CallSptr& call_sptr,
+                                        const Callback& cb = Callback())
+      : CallCqTag(call_sptr), cb_(cb) {}
   inline Status Start();
-  inline Status GetResultMessage(::google::protobuf::Message& message) GRPC_MUST_USE_RESULT {
+  inline Status GetResultMessage(::google::protobuf::Message& message)
+      GRPC_MUST_USE_RESULT {
     return cod_recv_message_.GetResultMessage(
         message, GetCallSptr()->GetMaxMessageSize());
   }
-  // XXX DoComplete() GRPC_OVERRIDE
+  inline void DoComplete(bool success) GRPC_OVERRIDE;
+
  private:
   CodRecvMessage cod_recv_message_;
+  // Callback will be triggered on completion in DoComplet().
+  Callback cb_;
 };  // class ClientReaderReadCqTag
 
 Status ClientReaderReadCqTag::Start() {
   CallOperations ops;
   ops.RecvMessage(cod_recv_message_);
   return GetCallSptr()->StartBatch(ops, this);
+}
+
+void ClientReaderReadCqTag::DoComplete(bool success) {
+  assert(success);
+  if (cb_) cb_(*this);
 }
 
 };  // namespace grpc_cb
