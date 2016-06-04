@@ -37,7 +37,7 @@ class Stub : public ::grpc_cb::ServiceStub {
   inline void AsyncGetFeature(
       const ::routeguide::Point& request,
       const GetFeatureCallback& cb) {
-    return AsyncGetFeature(request, cb, error_callback_);  // Use default error callback.
+    return AsyncGetFeature(request, cb, GetErrorCallback());  // Use default error callback.
   }
   void AsyncGetFeature(
       const ::routeguide::Point& request,

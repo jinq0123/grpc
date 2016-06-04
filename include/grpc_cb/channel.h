@@ -27,10 +27,10 @@ class Channel : public GrpcLibrary,
   virtual ~Channel() GRPC_OVERRIDE;
 
  public:
-  CallSptr MakeCall(
+  CallSptr MakeSharedCall(
     const std::string& method,
-    grpc_completion_queue& cq) const;
-  CallSptr MakeCall(
+    grpc_completion_queue& c_cq) const;
+  CallSptr MakeSharedCall(
     const std::string& method,
     CompletionQueue& cq) const;
 
@@ -39,6 +39,7 @@ class Channel : public GrpcLibrary,
 
  private: 
   const std::string host_;
+  // Todo: Use unique ptr like Call.
   grpc_channel* const c_channel_;  // owned
 };
 

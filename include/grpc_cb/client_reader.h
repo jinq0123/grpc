@@ -7,10 +7,11 @@
 #include <cassert>     // for assert()
 #include <functional>  // for std::function
 
-#include <grpc_cb/channel.h>                               // for MakeCall()
-#include <grpc_cb/impl/call.h>                             // for StartBatch()
-#include <grpc_cb/impl/call_sptr.h>                        // for CallSptr
+#include <grpc_cb/channel.h>         // for MakeSharedCall()
+#include <grpc_cb/impl/call.h>       // for StartBatch()
+#include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
+#include <grpc_cb/impl/client/client_reader_read_cqtag.h>  // for ClientReaderReadCqTag
 #include <grpc_cb/impl/completion_queue_sptr.h>  // for CompletionQueueSptr
 #include <grpc_cb/status.h>                      // for Status
 
@@ -23,16 +24,17 @@ class ClientReader {
   ClientReader(const ChannelSptr& channel, const std::string& method,
                const ::google::protobuf::Message& request,
                const CompletionQueueSptr& cq_sptr)
-      : cq_sptr_(cq_sptr), call_sptr_(channel->MakeCall(method, *cq_sptr)) {
+      : data_sptr_(new Data{cq_sptr, channel->MakeSharedCall(method, *cq_sptr)}) {
     assert(cq_sptr);
     assert(channel);
-    assert(call_sptr_);
-    assert(cq_sptr->cq() == call_sptr_->call()->cq);
-    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(call_sptr_);
+    assert(data_sptr_->call_sptr);
+    assert(data_sptr_->cq_sptr->cq() == data_sptr_->call_sptr_->call()->cq);
+    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(data_sptr_->call_sptr_);
     CallOperations ops;
-    status_ = tag->InitCallOps(request, ops);
-    if (status_.ok()) {
-      status_ = call_sptr_->StartBatch(ops, tag);  // tag keeps the buffer and other.
+    Status& status = data_sptr->status;
+    status = tag->InitCallOps(request, ops);
+    if (status.ok()) {
+      status = data_sptr_->call_sptr->StartBatch(ops, tag);  // tag keeps the buffer and other.
       return;
     }
     delete tag;
@@ -41,13 +43,15 @@ class ClientReader {
  public:
   bool BlockingRead(Response* response) {
     assert(response);
-    if (!status_.ok())
+    Status& status = data_sptr_->status;
+    if (!status.ok())
         return false;
-    ClientReaderReadCqTag tag(call_sptr_);
+    CallSptr& call_sptr = data_sptr_->call_sptr;
+    ClientReaderReadCqTag tag(call_sptr);
     CallOperations ops;
     tag.InitCallOps(ops);
-    call_sptr_->StartBatch(ops, &tag);
-    cq_sptr_->Pluck(&tag);
+    call_sptr->StartBatch(ops, &tag);
+    data_sptr_->cq_sptr->Pluck(&tag);
     tag.GetResponse(*response);  // XXX return result
     // XXX
     return true;
@@ -62,9 +66,13 @@ class ClientReader {
   }
 
  private:
-  CompletionQueueSptr cq_sptr_;
-  CallSptr call_sptr_;
-  Status status_;
+  // Wrap all data in shared struct pointer to make copy quick.
+  struct Data {
+    CompletionQueueSptr cq_sptr;
+    CallSptr call_sptr;
+    Status status;
+  };
+  std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientReader<>
 
 }  // namespace grpc_cb

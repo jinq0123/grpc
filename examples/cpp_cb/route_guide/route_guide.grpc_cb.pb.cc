@@ -68,7 +68,7 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
     ::routeguide::Feature* response) {
   assert(response);
   ::grpc_cb::CompletionQueue cq;
-  ::grpc_cb::CallSptr call_sptr(channel_->MakeCall(method_names[0], cq.cq()));
+  ::grpc_cb::CallSptr call_sptr(GetChannel().MakeSharedCall(method_names[0], cq));
   ::grpc_cb::ClientCallCqTag tag(call_sptr);
   ::grpc_cb::CallOperations ops;
   ::grpc_cb::Status status;  // Todo: = tag->Start(request)
@@ -83,9 +83,9 @@ void Stub::AsyncGetFeature(
     const ::routeguide::Point& request,
     const GetFeatureCallback& cb,
     const ::grpc_cb::ErrorCallback& err_cb) {  // XXX rename to ecb
-  assert(cb && err_cb && cq_);
+  assert(cb && err_cb);
   ::grpc_cb::CallSptr call_sptr(
-      channel_->MakeCall(method_names[0], cq_->cq()));
+      GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::routeguide::Feature>;
   CqTag* tag = new CqTag(call_sptr, cb, err_cb);
   //::grpc_cb::CompletionQueueTag* tag =
@@ -105,7 +105,7 @@ void Stub::AsyncGetFeature(
 ::grpc_cb::ClientReader<::routeguide::Feature>
 Stub::ListFeatures(const ::routeguide::Rectangle& request) {
   return ::grpc_cb::ClientReader<::routeguide::Feature>(
-      channel_, method_names[1], request, cq_->cq());
+      GetChannelSptr(), method_names[1], request, GetCqSptr());
 }
 
 ::grpc_cb::ClientWriter<::routeguide::Point>

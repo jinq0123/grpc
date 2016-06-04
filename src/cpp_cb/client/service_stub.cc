@@ -10,21 +10,22 @@ namespace grpc_cb {
 
 ErrorCallback ServiceStub::default_error_callback_(&ServiceStub::IgnoreError);
 
-ServiceStub::ServiceStub(const ChannelSptr& channel) :
-    channel_(channel),  // copy shared_ptr
+ServiceStub::ServiceStub(const ChannelSptr& channel_sptr) :
+    channel_sptr_(channel_sptr),  // copy shared_ptr
     error_callback_(default_error_callback_),
-    cq_(new CompletionQueue) {
-  assert(channel);
+    cq_sptr_(new CompletionQueue) {
+  assert(channel_sptr);
   assert(error_callback_);
 }
 
 ServiceStub::~ServiceStub() {
+  assert(cq_sptr_);
 }
 
 // Blocking run stub.
 void ServiceStub::BlockingRun() {
-  assert(cq_);
-  CompletionQueue& cq = *cq_;
+  assert(cq_sptr_);
+  CompletionQueue& cq = *cq_sptr_;
   while (true) {
     grpc_event ev = cq.Next();
     switch (ev.type) {
@@ -48,8 +49,8 @@ void ServiceStub::BlockingRun() {
 }
 
 void ServiceStub::Shutdown() {
-  assert(cq_);
-  cq_->Shutdown();
+  assert(cq_sptr_);
+  cq_sptr_->Shutdown();
 }
 
 }  // namespace grpc_cb

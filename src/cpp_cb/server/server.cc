@@ -18,12 +18,13 @@
 namespace grpc_cb {
 
 Server::Server()
-    : cq_(new CompletionQueue),  // unique_ptr
+    : cq_uptr_(new CompletionQueue),  // unique_ptr
       started_(false),
       shutdown_(false),
-      server_(CreateServer()) {
-  assert(cq_ && server_);
-  grpc_server_register_completion_queue(server_.get(), &cq_->cq(), nullptr);
+      c_server_uptr_(MakeUniqueGrpcServer()) {
+  assert(cq_uptr_ && c_server_uptr_);
+  grpc_server_register_completion_queue(c_server_uptr_.get(), &cq_uptr_->c_cq(),
+                                        nullptr);
 }
 
 Server::~Server() { Shutdown(); }
@@ -37,25 +38,26 @@ void Server::RegisterService(Service& service) {
   for (size_t i = 0; i < service.GetMethodCount(); ++i) {
     const std::string& name = service.GetMethodName(i);
     void* registered_method = grpc_server_register_method(
-        server_.get(), name.c_str(), nullptr);         // TODO: host
+        c_server_uptr_.get(), name.c_str(), nullptr);  // TODO: host
     registered_methods.push_back(registered_method);  // maybe null
   }
 }
 
-int Server::AddListeningPort(const grpc::string& addr,
+int Server::AddListeningPort(const std::string& addr,
                              const ServerCredentials& creds) {
   assert(!started_);
-  assert(server_);
-  grpc_server_credentials* c_creds = creds.creds();
+  assert(c_server_uptr_);
+  grpc_server_credentials* c_creds = creds.c_creds();
   if (c_creds) {
-    return grpc_server_add_secure_http2_port(server_.get(), addr.c_str(),
+    return grpc_server_add_secure_http2_port(c_server_uptr_.get(), addr.c_str(),
                                              c_creds);
   } else {
-    return grpc_server_add_insecure_http2_port(server_.get(), addr.c_str());
+    return grpc_server_add_insecure_http2_port(c_server_uptr_.get(),
+                                               addr.c_str());
   }
 }
 
-int Server::AddListeningPort(const grpc::string& addr) {
+int Server::AddListeningPort(const std::string& addr) {
   return AddListeningPort(addr, InsecureServerCredentials());
 }
 
@@ -64,22 +66,22 @@ void Server::ShutdownInternal(gpr_timespec deadline) {
   if (shutdown_) return;
   shutdown_ = true;
 
-  assert(cq_);
-  grpc_server_shutdown_and_notify(server_.get(), &cq_->cq(), this);
-  cq_->Pluck(this);
-  cq_->Shutdown();
+  assert(cq_uptr_);
+  grpc_server_shutdown_and_notify(c_server_uptr_.get(), &cq_uptr_->c_cq(), this);
+  cq_uptr_->Pluck(this);
+  cq_uptr_->Shutdown();
 }
 
 void Server::BlockingRun() {
   assert(!started_);
   assert(!shutdown_);
-  assert(server_);
+  assert(c_server_uptr_);
   started_ = true;
-  grpc_server_start(server_.get());
+  grpc_server_start(c_server_uptr_.get());
   RequestMethodsCalls();
 
-  assert(cq_);
-  CompletionQueue& cq = *cq_;
+  assert(cq_uptr_);
+  CompletionQueue& cq = *cq_uptr_;
   while (true) {
     grpc_event ev = cq.Next();
     switch (ev.type) {
@@ -116,11 +118,12 @@ void Server::RequestServiceMethodsCalls(const RegisteredService& rs) const {
   for (size_t i = 0; i < rms.size(); ++i) {
     if (!rms[i]) continue;
     // Delete in Run(). Calls grpc_server_request_registered_call() in ctr().
-    new ServerMethodCallTag(server_.get(), rs.service, i, rms[i], &cq_->cq());
+    new ServerMethodCallTag(c_server_uptr_.get(), rs.service, i, rms[i],
+                            &cq_uptr_->c_cq());
   }
 }
 
-Server::GrpcServerUptr Server::CreateServer() {
+Server::GrpcServerUptr Server::MakeUniqueGrpcServer() {
   grpc_channel_args channel_args{0, nullptr};
   grpc_server* svr = grpc_server_create(&channel_args, nullptr);
   return GrpcServerUptr(svr, grpc_server_destroy);

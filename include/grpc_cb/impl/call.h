@@ -35,10 +35,11 @@ class Call GRPC_FINAL {
   static void SetDefaultMaxMessageSize(int size) { default_max_message_size_ = size; }
 
  public:
-  inline grpc_call* call() const { return call_.get(); }
+     // Todo: return reference? None-null?
+  inline grpc_call* c_call() const { return c_call_uptr_.get(); }
 
  private:
-  std::unique_ptr<grpc_call, void (*)(grpc_call*)> call_;  // owned
+  std::unique_ptr<grpc_call, void (*)(grpc_call*)> c_call_uptr_;  // owned
 
  private:
   // DEL grpc_byte_buffer* recv_buf_;

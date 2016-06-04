@@ -36,7 +36,7 @@ class Stub : public ::grpc_cb::ServiceStub {
   inline void AsyncSayHello(
       const ::helloworld::HelloRequest& request,
       const SayHelloCallback& cb) {
-    return AsyncSayHello(request, cb, error_callback_);  // Use default error callback.
+    return AsyncSayHello(request, cb, GetErrorCallback());  // Use default error callback.
   }
   void AsyncSayHello(
       const ::helloworld::HelloRequest& request,

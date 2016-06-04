@@ -11,7 +11,7 @@ namespace grpc_cb {
 // Wrapper around \a grpc_server_credentials, a way to authenticate a server.
 class ServerCredentials {
  public:
-  virtual grpc_server_credentials* creds() const { return nullptr; }
+  virtual grpc_server_credentials* c_creds() const { return nullptr; }
 };
 
 class InsecureServerCredentials : public ServerCredentials {

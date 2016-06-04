@@ -10,8 +10,8 @@
 #include <grpc_cb/error_callback.h>  // for ErrorCallback
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/channel_sptr.h>
+#include <grpc_cb/impl/completion_queue_sptr.h>  // for CompletionQueueSptr
 #include <grpc_cb/impl/completion_queue_tag.h>   // for CompletionQueueTag
-#include <grpc_cb/impl/completion_queue_uptr.h>  // for CompletionQueueUptr
 #include <grpc_cb/support/config.h>              // for GRPC_OVERRIDE
 
 namespace grpc_cb {
@@ -19,11 +19,15 @@ namespace grpc_cb {
 // The base of generated service stubs.
 class ServiceStub {
  public:
-  explicit ServiceStub(const ChannelSptr& channel);
+  explicit ServiceStub(const ChannelSptr& channel_sptr);
   virtual ~ServiceStub();
 
  public:
-  inline ChannelSptr GetChannelSptr() const { return channel_; }
+  inline Channel& GetChannel() const {
+      assert(channel_sptr_);
+      return *channel_sptr_;
+  }
+  inline ChannelSptr GetChannelSptr() const { return channel_sptr_; }
   inline const ErrorCallback& GetErrorCallback() const {
     return error_callback_;
   }
@@ -31,6 +35,11 @@ class ServiceStub {
     assert(cb);
     error_callback_ = cb;
   }
+  inline CompletionQueue& GetCq() const {
+    assert(cq_sptr_);
+    return *cq_sptr_;
+  }
+  inline CompletionQueueSptr GetCqSptr() const { return cq_sptr_; }
 
  public:
   static inline ErrorCallback& GetDefaultErrorCallback() {
@@ -60,12 +69,12 @@ class ServiceStub {
  //     const ErrorCallback& ecb);
  // void DeleteCompletionQueueTag(CompletionQueueTag* tag) { delete tag; }
 
- protected:
-  ChannelSptr channel_;
+ private:
+  ChannelSptr channel_sptr_;
   ErrorCallback error_callback_;
-  CompletionQueueUptr cq_;
+  CompletionQueueSptr cq_sptr_;
 
- protected:
+ private:
   static ErrorCallback default_error_callback_;
   // DEL
  //private:

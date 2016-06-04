@@ -110,9 +110,9 @@ class CompletionQueue : public GrpcLibrary {
 
   /// Returns the underlying \a grpc_completion_queue
   /// instance.
-  grpc_completion_queue& cq() const {
-    assert(cq_);
-    return *cq_;
+  grpc_completion_queue& c_cq() const {
+    assert(c_cq_);
+    return *c_cq_;
   }
 
  private:
@@ -120,7 +120,8 @@ class CompletionQueue : public GrpcLibrary {
   grpc_event PluckInternal(void* tag, gpr_timespec deadline);
 
  private:
-  grpc_completion_queue* const cq_;  // owned
+     // Todo: Use unique_ptr like Call.
+  grpc_completion_queue* const c_cq_;  // owned
 };
 
 }  // namespace grpc_cb

@@ -14,11 +14,11 @@ namespace grpc_cb {
 
 int Call::default_max_message_size_ = -1;
 
-// Owns call.
-Call::Call(grpc_call* call) :
-    call_(call, grpc_call_destroy),
+// Owns c_call.
+Call::Call(grpc_call* c_call) :
+    c_call_uptr_(c_call, grpc_call_destroy),
     max_message_size_(default_max_message_size_) {
-  assert(call);
+  assert(c_call);
 }
 
 Call::~Call() {
@@ -26,7 +26,7 @@ Call::~Call() {
 
 Status Call::StartBatch(const CallOperations& ops, void* tag) {
   grpc_call_error result = grpc_call_start_batch(
-    call(), ops.GetOps(), ops.GetOpsNum(), tag, nullptr);
+    c_call(), ops.GetOps(), ops.GetOpsNum(), tag, nullptr);
   if (GRPC_CALL_OK == result) {
     return Status::OK;
   }

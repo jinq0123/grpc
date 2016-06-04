@@ -50,7 +50,7 @@ class Server GRPC_FINAL : public GrpcLibrary {
 
   /// Register a service. This call does not take ownership of the service.
   /// The service must exist for the lifetime of the Server instance.
-  // bool RegisterService(/*const grpc::string* host, RpcService* service*/);
+  // bool RegisterService(/*const std::string* host, RpcService* service*/);
   void RegisterService(Service& service);
 
   /// Tries to bind \a server to the given \a addr.
@@ -64,9 +64,9 @@ class Server GRPC_FINAL : public GrpcLibrary {
   /// \return bound port number on sucess, 0 on failure.
   ///
   /// \warning It's an error to call this method on an already started server.
-  int AddListeningPort(const grpc::string& addr,
+  int AddListeningPort(const std::string& addr,
                        const ServerCredentials& creds);
-  int AddListeningPort(const grpc::string& addr);  // with InsecureServerCredentials
+  int AddListeningPort(const std::string& addr);  // with InsecureServerCredentials
 
  private:
   using RegisteredMethodVec = std::vector<void*>;
@@ -82,18 +82,18 @@ class Server GRPC_FINAL : public GrpcLibrary {
 
  private:
   typedef std::unique_ptr<grpc_server, void (*)(grpc_server*)> GrpcServerUptr;
-  static GrpcServerUptr CreateServer();
+  static GrpcServerUptr MakeUniqueGrpcServer();
 
  private:
   // Completion queue.
-  const CompletionQueueUptr cq_;
+  const CompletionQueueUptr cq_uptr_;
 
   // Sever status
   bool started_;
   bool shutdown_;
 
   // Pointer to the c grpc server. Owned.
-  const std::unique_ptr<grpc_server, void (*)(grpc_server*)> server_;
+  const std::unique_ptr<grpc_server, void (*)(grpc_server*)> c_server_uptr_;
   std::unordered_map<std::string, RegisteredService> service_map_;
 };
 

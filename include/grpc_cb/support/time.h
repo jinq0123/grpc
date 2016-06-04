@@ -34,8 +34,8 @@
 #ifndef GRPC_CB_SUPPORT_TIME_H
 #define GRPC_CB_SUPPORT_TIME_H
 
-#include <grpc++/support/config.h>
 #include <grpc/support/time.h>
+#include <grpc_cb/support/config.h>
 
 namespace grpc_cb {
 

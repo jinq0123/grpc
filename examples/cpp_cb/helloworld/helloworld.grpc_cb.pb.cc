@@ -65,7 +65,7 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
     ::helloworld::HelloReply* response) {
   assert(response);
   ::grpc_cb::CompletionQueue cq;
-  ::grpc_cb::CallSptr call_sptr(channel_->MakeCall(method_names[0], cq.cq()));
+  ::grpc_cb::CallSptr call_sptr(GetChannel().MakeSharedCall(method_names[0], cq));
   ::grpc_cb::ClientCallCqTag tag(call_sptr);
   ::grpc_cb::CallOperations ops;
   ::grpc_cb::Status status;
@@ -82,9 +82,9 @@ void Stub::AsyncSayHello(
     const ::helloworld::HelloRequest& request,
     const SayHelloCallback& cb,
     const ::grpc_cb::ErrorCallback& err_cb) {
-  assert(cb && err_cb && cq_);
+  assert(cb && err_cb);
   ::grpc_cb::CallSptr call_sptr(
-      channel_->MakeCall(method_names[0], cq_->cq()));
+      GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::helloworld::HelloReply>;
   CqTag* tag = new CqTag(call_sptr, cb, err_cb);
   // DEL ::grpc_cb::CompletionQueueTag* tag =  // XXX Rename to ClientAsyncUnaryCallTag : public ClientUnaryCallTag
