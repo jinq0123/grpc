@@ -85,13 +85,6 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
   return status.ok();
 }
 
-// Used to bind to ClientReaderReadCqTag::Callback.
-template <class Response>
-void ReaderReadEach(const ClientReader<Response>& reader,
-                ClientReaderReadCqTag& tag) {
-  reader.OnReadEach(tag);
-}
-
 template <class Response>
 void ClientReader<Response>::AsyncReadEach(const ReadCallback& readCallback) const {
   Status& status = data_sptr_->status;
@@ -101,8 +94,10 @@ void ClientReader<Response>::AsyncReadEach(const ReadCallback& readCallback) con
   CallSptr& call_sptr = data_sptr_->call_sptr;
   using std::placeholders::_1;
   // This ClientReader is copied in callback.
-  ClientReaderReadCqTag::Callback cb = std::bind(ReaderReadEach<Response>, *this, _1);
-  auto* tag = new ClientReaderReadCqTag(call_sptr, cb);
+  ClientReader<Response> this_copy = *this;
+  auto* tag = new ClientReaderReadCqTag(call_sptr, [this_copy](ClientReaderReadCqTag& tag) {
+      this_copy.OnReadEach(tag);
+  });
   status = tag->Start();
 }
 
