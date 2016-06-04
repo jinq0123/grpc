@@ -98,8 +98,9 @@ Stub::ListFeatures(const ::routeguide::Rectangle& request) {
 }
 
 ::grpc_cb::ClientWriter<::routeguide::Point>
-Stub::RecordRoute(::routeguide::RouteSummary* response) {
-  return ::grpc_cb::ClientWriter<::routeguide::Point>();
+Stub::RecordRoute() {
+  return ::grpc_cb::ClientWriter<::routeguide::Point>(
+      GetChannelSptr(), method_names[2], GetCqSptr());
 }
 
 ::grpc_cb::ClientReaderWriter<

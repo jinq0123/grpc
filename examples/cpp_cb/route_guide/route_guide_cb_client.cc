@@ -120,7 +120,6 @@ class RouteGuideClient {
 
   void RecordRoute() {
     Point point;
-    RouteSummary stats;
     const int kPoints = 10;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 
@@ -130,21 +129,26 @@ class RouteGuideClient {
     std::uniform_int_distribution<int> delay_distribution(
         500, 1500);
 
-    ClientWriter<Point> writer(
-        stub_->RecordRoute(&stats));
+    ClientWriter<Point> writer(stub_->RecordRoute());
+    RouteSummary stats;
+    Status status = writer.BlockingGetResponse(&stats);  // Todo: timeout
+    if (!status.ok()) {
+      std::cout << "RecordRoute rpc failed to get response." << std::endl;
+      return;
+    }
     for (int i = 0; i < kPoints; i++) {
       const Feature& f = feature_list_[feature_distribution(generator)];
       std::cout << "Visiting point "
                 << f.location().latitude()/kCoordFactor_ << ", "
                 << f.location().longitude()/kCoordFactor_ << std::endl;
-      if (!writer.Write(f.location())) {
+      if (!writer.BlockingWriteOne(f.location())) {
         // Broken stream.
         break;
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(
           delay_distribution(generator)));
     }
-    Status status = writer.Finish();
+    status = writer.Finish();
     if (status.ok()) {
       std::cout << "Finished trip with " << stats.point_count() << " points\n"
                 << "Passed " << stats.feature_count() << " features\n"

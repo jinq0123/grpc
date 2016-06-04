@@ -28,7 +28,6 @@ class Call GRPC_FINAL {
 
  public:
   Status StartBatch(const CallOperations& ops, void* tag) GRPC_MUST_USE_RESULT;
-  // DEL Status GetResponse(::google::protobuf::Message* response) const GRPC_MUST_USE_RESULT;
 
   inline int GetMaxMessageSize() const { return max_message_size_; }
   inline void SetMaxMessageSize(int size) { max_message_size_ = size; }
@@ -42,8 +41,7 @@ class Call GRPC_FINAL {
   std::unique_ptr<grpc_call, void (*)(grpc_call*)> c_call_uptr_;  // owned
 
  private:
-  // DEL grpc_byte_buffer* recv_buf_;
-  int max_message_size_;  // XXX necessary?
+  int max_message_size_;  // XXX necessary? Move to Channel?
 
  private:
   static int default_max_message_size_;  // for all call

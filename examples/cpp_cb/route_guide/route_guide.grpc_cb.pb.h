@@ -48,7 +48,7 @@ class Stub : public ::grpc_cb::ServiceStub {
   ListFeatures(const ::routeguide::Rectangle& request);
 
   ::grpc_cb::ClientWriter<::routeguide::Point>
-  RecordRoute(::routeguide::RouteSummary* response);
+  RecordRoute();
 
   ::grpc_cb::ClientReaderWriter<
     ::routeguide::RouteNote,
