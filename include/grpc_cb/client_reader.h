@@ -12,7 +12,7 @@
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
 #include <grpc_cb/impl/client/client_reader_read_cqtag.h>  // for ClientReaderReadCqTag
-#include <grpc_cb/impl/completion_queue_sptr.h>  // for CompletionQueueSptr
+#include <grpc_cb/impl/completion_queue.h>       // for CompletionQueue::Pluck()
 #include <grpc_cb/status.h>                      // for Status
 
 namespace grpc_cb {
@@ -28,10 +28,9 @@ class ClientReader {
     assert(cq_sptr);
     assert(channel);
     assert(data_sptr_->call_sptr);
-    assert(data_sptr_->cq_sptr->cq() == data_sptr_->call_sptr_->call()->cq);
-    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(data_sptr_->call_sptr_);
+    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(data_sptr_->call_sptr);
     CallOperations ops;
-    Status& status = data_sptr->status;
+    Status& status = data_sptr_->status;
     status = tag->InitCallOps(request, ops);
     if (status.ok()) {
       status = data_sptr_->call_sptr->StartBatch(ops, tag);  // tag keeps the buffer and other.
@@ -52,7 +51,7 @@ class ClientReader {
     tag.InitCallOps(ops);
     call_sptr->StartBatch(ops, &tag);
     data_sptr_->cq_sptr->Pluck(&tag);
-    tag.GetResponse(*response);  // XXX return result
+    tag.GetMessage(*response);  // XXX return result
     // XXX
     return true;
   }
