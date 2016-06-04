@@ -21,40 +21,16 @@ namespace grpc_cb {
 template <class Response>
 class ClientReader {
  public:
-  ClientReader(const ChannelSptr& channel, const std::string& method,
+  inline ClientReader(const ChannelSptr& channel, const std::string& method,
                const ::google::protobuf::Message& request,
-               const CompletionQueueSptr& cq_sptr)
-      : data_sptr_(new Data{cq_sptr, channel->MakeSharedCall(method, *cq_sptr)}) {
-    assert(cq_sptr);
-    assert(channel);
-    assert(data_sptr_->call_sptr);
-    ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(data_sptr_->call_sptr);
-    Status& status = data_sptr_->status;
-    status = tag->Start(request);
-    if (!status.ok()) delete tag;
-  }
+               const CompletionQueueSptr& cq_sptr);
 
  public:
-  bool BlockingRead(Response* response) {
-    assert(response);
-    Status& status = data_sptr_->status;
-    if (!status.ok())
-        return false;
+  inline bool BlockingRead(Response* response) const;
 
-    CallSptr& call_sptr = data_sptr_->call_sptr;
-    ClientReaderReadCqTag tag(call_sptr);
-    status = tag.Start();
-    if (!status.ok())
-        return false;
-
-    // tag.Start() has queued the tag. Wait for completion.
-    data_sptr_->cq_sptr->Pluck(&tag);
-    status = tag.GetResultMessage(*response);
-    return status.ok();
-  }
-
-  ::grpc_cb::Status BlockingRecvStatus() {
-    return ::grpc_cb::Status::OK;
+  inline Status BlockingRecvStatus() {
+      // XXX BlockingRecvStatus()
+    return Status::OK;
   }
 
   void SetReadCallback(std::function<void (const Response&)> readCallback) {
@@ -70,6 +46,38 @@ class ClientReader {
   };
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientReader<>
+
+template <class Response>
+ClientReader<Response>::ClientReader(
+    const ChannelSptr& channel, const std::string& method,
+    const ::google::protobuf::Message& request,
+    const CompletionQueueSptr& cq_sptr)
+    : data_sptr_(new Data{cq_sptr, channel->MakeSharedCall(method, *cq_sptr)}) {
+  assert(cq_sptr);
+  assert(channel);
+  assert(data_sptr_->call_sptr);
+  ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(data_sptr_->call_sptr);
+  Status& status = data_sptr_->status;
+  status = tag->Start(request);
+  if (!status.ok()) delete tag;
+}
+
+template <class Response>
+bool ClientReader<Response>::BlockingRead(Response* response) const {
+  assert(response);
+  Status& status = data_sptr_->status;
+  if (!status.ok()) return false;
+
+  CallSptr& call_sptr = data_sptr_->call_sptr;
+  ClientReaderReadCqTag tag(call_sptr);
+  status = tag.Start();
+  if (!status.ok()) return false;
+
+  // tag.Start() has queued the tag. Wait for completion.
+  data_sptr_->cq_sptr->Pluck(&tag);
+  status = tag.GetResultMessage(*response);
+  return status.ok();
+}
 
 }  // namespace grpc_cb
 
