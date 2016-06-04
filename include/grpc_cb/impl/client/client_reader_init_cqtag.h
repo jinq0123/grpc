@@ -17,15 +17,26 @@ class Status;
 
 class ClientReaderInitCqTag GRPC_FINAL : public CallCqTag {
  public:
-  ClientReaderInitCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
-  Status InitCallOps(const ::google::protobuf::Message& request,
-      CallOperations& ops) GRPC_MUST_USE_RESULT;
+  inline ClientReaderInitCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
+  inline Status Start(const ::google::protobuf::Message& request) GRPC_MUST_USE_RESULT;
 
  private:
   CodSendMessage cod_send_message_;
   CodSendInitMd cod_send_init_md_;
   CodRecvInitMd cod_recv_init_md_;
 };  // class ClientReaderInitCqTag
+
+Status ClientReaderInitCqTag::Start(const ::google::protobuf::Message& request) {
+  CallOperations ops;
+  Status status = ops.SendMessage(request, cod_send_message_);
+  if (!status.ok()) return status;
+
+  // Todo: Fill send_init_md_array_ -> FillMetadataVector()
+  ops.SendInitMd(cod_send_init_md_);
+  ops.RecvInitMd(cod_recv_init_md_);
+  ops.ClientSendClose();
+  return GetCallSptr()->StartBatch(ops, this);
+}
 
 };  // namespace grpc_cb
 

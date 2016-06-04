@@ -29,14 +29,9 @@ class ClientReader {
     assert(channel);
     assert(data_sptr_->call_sptr);
     ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(data_sptr_->call_sptr);
-    CallOperations ops;
     Status& status = data_sptr_->status;
-    status = tag->InitCallOps(request, ops);
-    if (status.ok()) {
-      status = data_sptr_->call_sptr->StartBatch(ops, tag);  // tag keeps the buffer and other.
-      return;
-    }
-    delete tag;
+    status = tag->Start(request);
+    if (!status.ok()) delete tag;
   }
 
  public:
