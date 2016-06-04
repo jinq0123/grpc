@@ -9,13 +9,11 @@
 #include <grpc_cb/impl/call.h>             // for GetMaxMessageSize()
 #include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
 #include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
+#include <grpc_cb/impl/call_operations.h>  // for CallOperations
 #include <grpc_cb/impl/metadata_vector.h>  // for MetadataVector
 #include <grpc_cb/support/protobuf_fwd.h>  // for Message
 
 namespace grpc_cb {
-
-class CallOperations;
-class Status;
 
 // Completion queue tag (CqTag) for client call for both blocking and async calls.
 // ClientAsyncCallCqTag derives from it.
@@ -27,8 +25,7 @@ class ClientCallCqTag : public CallCqTag {
   virtual ~ClientCallCqTag() {}
 
  public:
-  Status InitCallOps(const ::google::protobuf::Message& request,
-                     CallOperations& ops) GRPC_MUST_USE_RESULT;
+  inline Status Start(const ::google::protobuf::Message& request) GRPC_MUST_USE_RESULT;
 
 public:
   Status GetResponse(::google::protobuf::Message& message) {
@@ -46,6 +43,20 @@ public:
   CodRecvMessage cod_recv_message_;
   CodClientRecvStatus cod_client_recv_status_;
 };  // class ClientCallCqTag
+
+Status ClientCallCqTag::Start(const ::google::protobuf::Message& request) {
+  CallOperations ops;
+  Status status = ops.SendMessage(request, cod_send_message_);
+  if (!status.ok()) return status;
+
+  // Todo: Fill send_init_md_array_ -> FillMetadataVector()
+  ops.SendInitMd(cod_send_init_md_);
+  ops.RecvInitMd(cod_recv_init_md_);
+  ops.RecvMessage(cod_recv_message_);
+  ops.ClientSendClose();
+  ops.ClientRecvStatus(cod_client_recv_status_);
+  return GetCallSptr()->StartBatch(ops, this);
+}
 
 }  // namespace grpc_cb
 #endif  // GRPC_CB_CLIENT_CALL_CQTAG_H

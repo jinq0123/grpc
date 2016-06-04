@@ -8,7 +8,6 @@
 #include <google/protobuf/stubs/once.h>
 
 #include <grpc_cb/impl/call.h>                            // for Call
-#include <grpc_cb/impl/call_operations.h>                 // CallOperations
 #include <grpc_cb/impl/client/client_async_call_cqtag.h>  // for ClientAsyncCallCqTag<>
 #include <grpc_cb/impl/client/client_call_cqtag.h>  // for ClientCallCqTag
 #include <grpc_cb/impl/completion_queue.h>          // for CompletionQueue
@@ -70,11 +69,8 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call_sptr(GetChannel().MakeSharedCall(method_names[0], cq));
   ::grpc_cb::ClientCallCqTag tag(call_sptr);
-  ::grpc_cb::CallOperations ops;
-  ::grpc_cb::Status status;  // Todo: = tag->Start(request)
-  status = tag.InitCallOps(request, ops);
+  ::grpc_cb::Status status = tag.Start(request);
   if (!status.ok()) return status;
-  status = call_sptr->StartBatch(ops, &tag);
   cq.Pluck(&tag);
   return tag.GetResponse(*response);
 }
