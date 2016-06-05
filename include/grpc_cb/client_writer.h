@@ -10,9 +10,10 @@
 #include <grpc_cb/channel.h>         // for MakeSharedCall()
 #include <grpc_cb/impl/call.h>       // for StartBatch()
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
+#include <grpc_cb/impl/client/client_writer_finish_cqtag.h>  // for ClientWriterFinishCqTag
 #include <grpc_cb/impl/client/client_writer_init_cqtag.h>  // for ClientWriterInitCqTag
-#include <grpc_cb/impl/completion_queue.h>       // for CompletionQueue::Pluck()
-#include <grpc_cb/status.h>                      // for Status
+#include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
+#include <grpc_cb/status.h>                 // for Status
 
 namespace grpc_cb {
 
@@ -62,9 +63,15 @@ Status ClientWriter<Request>::BlockingFinish(
     ::google::protobuf::Message* response) const {
   assert(data_sptr_);
   assert(data_sptr_->call_sptr);
-  ClientWriterFinishCqTag* tag = new ClientWriterFinishCqTag(data_sptr_->call_sptr);
-  Status& status = 
-  return Status::OK;
+  Status& status = data_sptr_->status;
+  if (!status.ok()) return status;
+  ClientWriterFinishCqTag tag(data_sptr_->call_sptr);
+  status = tag.Start();
+  if (!status.ok()) return status;
+
+  data_sptr_->cq_sptr->Pluck(&tag);
+  status = tag.GetResponse(*response);
+  return status;
 }
 
 }  // namespace grpc_cb
