@@ -143,6 +143,7 @@ class RouteGuideClient {
           delay_distribution(generator)));
     }
     RouteSummary stats;
+    // Recv reponse and status. BlockingRecvRespAndStatus()?
     Status status = writer.BlockingFinish(&stats);  // Todo: timeout
     if (status.ok()) {
       std::cout << "Finished trip with " << stats.point_count() << " points\n"
@@ -154,6 +155,9 @@ class RouteGuideClient {
       std::cout << "RecordRoute rpc failed." << std::endl;
     }
   }
+
+  // Tood: writing is always non-blocking.
+  // Todo: Callback on client stream response and status.
 
   void RouteChat() {
     ClientReaderWriter<RouteNote, RouteNote> stream(
@@ -172,7 +176,7 @@ class RouteGuideClient {
                   << note.location().longitude() << std::endl;
         stream_copy.Write(note);
       }
-      stream_copy.WritesDone();
+      stream_copy.CloseWriting();  // Send Close().
     });
 
     RouteNote server_note;
@@ -182,7 +186,8 @@ class RouteGuideClient {
                 << server_note.location().longitude() << std::endl;
     }
     writer.join();
-    Status status = stream.Finish();
+    // Todo: Finish() should auto close writing.
+    Status status = stream.BlockingFinish();  // Recv status.
     if (!status.ok()) {
       std::cout << "RouteChat rpc failed." << std::endl;
     }

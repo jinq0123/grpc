@@ -8,7 +8,7 @@
 
 #include <grpc_cb/impl/call.h>             // for StartBatch()
 #include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
-#include <grpc_cb/impl/call_op_data.h>     // for CodRecvMsg
+#include <grpc_cb/impl/call_op_data.h>     // for CodSendMsg
 #include <grpc_cb/impl/call_operations.h>  // for CallOperations
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 
@@ -27,8 +27,7 @@ class ClientWriterWriteCqTag GRPC_FINAL : public CallCqTag {
 Status ClientWriterWriteCqTag::Start(
     const ::google::protobuf::Message& message) {
   CallOperations ops;
-  ops.SendMsg(cod_recv_msg_);
-  ops.ClientRecvStatus(cod_client_recv_status_);
+  ops.SendMsg(message, cod_send_msg_);
   return GetCallSptr()->StartBatch(ops, this);
 }
 

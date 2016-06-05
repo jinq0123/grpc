@@ -9,7 +9,7 @@ namespace grpc_cb {
 template <class Request, class Response>
 class ClientReaderWriter {
  public:
-  void Write(const Request& request) {
+  void BlockingWriteOne(const Request& request) {
     // XXX
   }
 
