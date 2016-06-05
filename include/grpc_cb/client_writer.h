@@ -12,6 +12,7 @@
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/client/client_writer_finish_cqtag.h>  // for ClientWriterFinishCqTag
 #include <grpc_cb/impl/client/client_writer_init_cqtag.h>  // for ClientWriterInitCqTag
+#include <grpc_cb/impl/client/client_writer_write_cqtag.h>  // for ClientWriterWriteCqTag
 #include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
 #include <grpc_cb/status.h>                 // for Status
 

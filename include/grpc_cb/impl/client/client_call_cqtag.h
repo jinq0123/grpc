@@ -6,7 +6,7 @@
 
 #include <grpc/support/port_platform.h>  // for GRPC_MUST_USE_RESULT
 
-#include <grpc_cb/impl/call.h>             // for GetMaxMessageSize()
+#include <grpc_cb/impl/call.h>             // for GetMaxMsgSize()
 #include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
 #include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
 #include <grpc_cb/impl/call_operations.h>  // for CallOperations
@@ -32,27 +32,27 @@ public:
     // Todo: Get trailing metadata.
     if (!cod_client_recv_status_.IsStatusOk())
       return cod_client_recv_status_.GetStatus();
-    return cod_recv_message_.GetResultMessage(message,
-                                        GetCallSptr()->GetMaxMessageSize());
+    return cod_recv_msg_.GetResultMsg(message,
+                                        GetCallSptr()->GetMaxMsgSize());
   }
 
  private:
   CodSendInitMd cod_send_init_md_;  // Todo: set init metadata
-  CodSendMessage cod_send_message_;
+  CodSendMsg cod_send_msg_;
   CodRecvInitMd cod_recv_init_md_;
-  CodRecvMessage cod_recv_message_;
+  CodRecvMsg cod_recv_msg_;
   CodClientRecvStatus cod_client_recv_status_;
 };  // class ClientCallCqTag
 
 Status ClientCallCqTag::Start(const ::google::protobuf::Message& request) {
   CallOperations ops;
-  Status status = ops.SendMessage(request, cod_send_message_);
+  Status status = ops.SendMsg(request, cod_send_msg_);
   if (!status.ok()) return status;
 
   // Todo: Fill send_init_md_array_ -> FillMetadataVector()
   ops.SendInitMd(cod_send_init_md_);
   ops.RecvInitMd(cod_recv_init_md_);
-  ops.RecvMessage(cod_recv_message_);
+  ops.RecvMsg(cod_recv_msg_);
   ops.ClientSendClose();
   ops.ClientRecvStatus(cod_client_recv_status_);
   return GetCallSptr()->StartBatch(ops, this);

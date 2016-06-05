@@ -189,18 +189,18 @@ Status SerializeProto(const ::google::protobuf::Message& msg,
   }
 }
 
-// max_message_size <= 0 means no limit.
+// max_msg_size <= 0 means no limit.
 Status DeserializeProto(grpc_byte_buffer* buffer,
                         ::google::protobuf::Message* msg,
-                        int max_message_size) {
+                        int max_msg_size) {
   // GPR_TIMER_SCOPE("DeserializeProto", 0);
   if (!buffer) {
     return Status::InternalError("No payload");
   }
   GrpcBufferReader reader(buffer);
   ::google::protobuf::io::CodedInputStream decoder(&reader);
-  if (max_message_size > 0) {
-    decoder.SetTotalBytesLimit(max_message_size, max_message_size);
+  if (max_msg_size > 0) {
+    decoder.SetTotalBytesLimit(max_msg_size, max_msg_size);
   }
   if (!msg->ParseFromCodedStream(&decoder)) {
     return Status::InternalError(msg->InitializationErrorString());

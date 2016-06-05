@@ -50,7 +50,7 @@ Status SerializeProto(const ::google::protobuf::Message& msg,
 
 // The caller keeps ownership of buffer and msg.
 Status DeserializeProto(grpc_byte_buffer* buffer,
-                        ::google::protobuf::Message* msg, int max_message_size);
+                        ::google::protobuf::Message* msg, int max_msg_size);
 
 }  // namespace grpc_cb
 

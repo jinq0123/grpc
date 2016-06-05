@@ -8,7 +8,7 @@
 
 #include <grpc_cb/impl/call.h>             // for StartBatch()
 #include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
-#include <grpc_cb/impl/call_op_data.h>     // for CodRecvMessage
+#include <grpc_cb/impl/call_op_data.h>     // for CodRecvMsg
 #include <grpc_cb/impl/call_operations.h>  // for CallOperations
 #include <grpc_cb/support/config.h>        // for GRPC_FINAL
 
@@ -31,7 +31,7 @@ class ClientWriterFinishCqTag GRPC_FINAL : public CallCqTag {
 
  private:
   CodRecvInitMd cod_recv_init_md_;
-  CodRecvMessage cod_recv_message_;
+  CodRecvMsg cod_recv_msg_;
   CodClientRecvStatus cod_client_recv_status_;
 };  // class ClientWriterFinishCqTag
 
@@ -39,15 +39,15 @@ Status ClientWriterFinishCqTag::Start() {
   CallOperations ops;
   ops.ClientSendClose();
   ops.RecvInitMd(cod_recv_init_md_);
-  ops.RecvMessage(cod_recv_message_);
+  ops.RecvMsg(cod_recv_msg_);
   ops.ClientRecvStatus(cod_client_recv_status_);
   return GetCallSptr()->StartBatch(ops, this);
 }
 
 Status ClientWriterFinishCqTag::GetResponse(
     ::google::protobuf::Message& response) {
-  return cod_recv_message_.GetResultMessage(
-        response, GetCallSptr()->GetMaxMessageSize());
+  return cod_recv_msg_.GetResultMsg(
+        response, GetCallSptr()->GetMaxMsgSize());
 }
 
 void ClientWriterFinishCqTag::DoComplete(bool success) {

@@ -8,7 +8,7 @@
 
 #include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
 #include <grpc_cb/support/config.h>   // for GRPC_FINAL
-#include <grpc_cb/impl/call_op_data.h>  // for CodRecvMessage
+#include <grpc_cb/impl/call_op_data.h>  // for CodRecvMsg
 
 namespace grpc_cb {
 
@@ -19,22 +19,22 @@ class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
                                         const Callback& cb = Callback())
       : CallCqTag(call_sptr), cb_(cb) {}
   inline Status Start();
-  inline Status GetResultMessage(::google::protobuf::Message& message)
+  inline Status GetResultMsg(::google::protobuf::Message& message)
       GRPC_MUST_USE_RESULT {
-    return cod_recv_message_.GetResultMessage(
-        message, GetCallSptr()->GetMaxMessageSize());
+    return cod_recv_msg_.GetResultMsg(
+        message, GetCallSptr()->GetMaxMsgSize());
   }
   inline void DoComplete(bool success) GRPC_OVERRIDE;
 
  private:
-  CodRecvMessage cod_recv_message_;
+  CodRecvMsg cod_recv_msg_;
   // Callback will be triggered on completion in DoComplet().
   Callback cb_;
 };  // class ClientReaderReadCqTag
 
 Status ClientReaderReadCqTag::Start() {
   CallOperations ops;
-  ops.RecvMessage(cod_recv_message_);
+  ops.RecvMsg(cod_recv_msg_);
   return GetCallSptr()->StartBatch(ops, this);
 }
 

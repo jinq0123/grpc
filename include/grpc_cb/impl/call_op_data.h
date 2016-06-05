@@ -23,17 +23,17 @@ namespace grpc_cb {
 /*
 CallOperations object has 7 operations, and need 6 Cod:
   SendInitMd(MetadataVector&)
-  SendMessage(const Message&, CodSendMessage&)
+  SendMsg(const Message&, CodSendMsg&)
   RecvInitMd(CodRecvInitMd&)
-  RecvMessage(CodRecvMessage&)
+  RecvMsg(CodRecvMsg&)
   ClientSendClose() (do not need Cod)
   ClientRecvStatus(CodClientRecvStatus&)
   ServerSendStatus(CodServerSendStatus&)
 */
 class CodSendInitMd;
-class CodSendMessage;
+class CodSendMsg;
 class CodRecvInitMd;
-class CodRecvMessage;
+class CodRecvMsg;
 class CodClientRecvStatus;
 class CodServerSendStatus;
 
@@ -52,13 +52,13 @@ class CodSendInitMd GRPC_FINAL {
 };  // class CodSendInitMd
 
 // Cod to send message.
-class CodSendMessage GRPC_FINAL : noncopyable {
+class CodSendMsg GRPC_FINAL : noncopyable {
  public:
-  ~CodSendMessage() {
+  ~CodSendMsg() {
     grpc_byte_buffer_destroy(send_buf_);
   }
 
-  Status SerializeMessage(const ::google::protobuf::Message& message)
+  Status SerializeMsg(const ::google::protobuf::Message& message)
       GRPC_MUST_USE_RESULT {
     // send_buf_ is created here and destroyed in dtr().
     return SerializeProto(message, &send_buf_);
@@ -67,11 +67,11 @@ class CodSendMessage GRPC_FINAL : noncopyable {
   grpc_byte_buffer* GetSendBuf() { return send_buf_; }
 
  private:
-  // send_buf_ is created in SerializeMessage() and destroyed in dtr().
+  // send_buf_ is created in SerializeMsg() and destroyed in dtr().
   grpc_byte_buffer* send_buf_ = nullptr;  // owned
   // Todo: WriteOptions write_options_;
-  //   or outside in CallOperations::SendMessage()?
-};  // class CodSendMessage
+  //   or outside in CallOperations::SendMsg()?
+};  // class CodSendMsg
 
 // Cod to receive initial metadata.
 class CodRecvInitMd GRPC_FINAL : noncopyable {
@@ -92,20 +92,20 @@ class CodRecvInitMd GRPC_FINAL : noncopyable {
 };  // class CodRecvInitMd
 
 // Cod to receive message.
-class CodRecvMessage GRPC_FINAL : noncopyable {
+class CodRecvMsg GRPC_FINAL : noncopyable {
  public:
-  ~CodRecvMessage() {
+  ~CodRecvMsg() {
     grpc_byte_buffer_destroy(recv_buf_);
   }
   grpc_byte_buffer** GetRecvBufPtr() { return &recv_buf_; }
 
-  Status GetResultMessage(::google::protobuf::Message& message, int max_message_size) {
-    return DeserializeProto(recv_buf_, &message, max_message_size);
+  Status GetResultMsg(::google::protobuf::Message& message, int max_msg_size) {
+    return DeserializeProto(recv_buf_, &message, max_msg_size);
   }
 
  private:
   grpc_byte_buffer* recv_buf_ = nullptr;  // owned
-};  // class CodRecvMessage
+};  // class CodRecvMsg
 
 // No Cod for ClientSendClose
 
@@ -149,7 +149,7 @@ class CodServerSendStatus GRPC_FINAL {
     assert(GRPC_STATUS_OK == send_status_code_);
     assert(send_status_details_.empty());
     send_status_code_ = status.error_code();
-    send_status_details_ = status.error_message();
+    send_status_details_ = status.error_msg();
   }
 
   // Todo: set trailing metadata.

@@ -12,12 +12,12 @@
 
 namespace grpc_cb {
 
-int Call::default_max_message_size_ = -1;
+int Call::default_max_msg_size_ = -1;
 
 // Owns c_call.
 Call::Call(grpc_call* c_call) :
     c_call_uptr_(c_call, grpc_call_destroy),
-    max_message_size_(default_max_message_size_) {
+    max_msg_size_(default_max_msg_size_) {
   assert(c_call);
 }
 
@@ -37,7 +37,7 @@ Status Call::StartBatch(const CallOperations& ops, void* tag) {
 //Status Call::GetResponse(::google::protobuf::Message* response) const {
 //  assert(response);
 //  // TODO: check status first...
-//  return DeserializeProto(recv_buf_, response, max_message_size_);
+//  return DeserializeProto(recv_buf_, response, max_msg_size_);
 //}
 
 // Todo: Inline these.

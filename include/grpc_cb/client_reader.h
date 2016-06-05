@@ -83,7 +83,7 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
 
   // tag.Start() has queued the tag. Wait for completion.
   data_sptr_->cq_sptr->Pluck(&tag);
-  status = tag.GetResultMessage(*response);
+  status = tag.GetResultMsg(*response);
   return status.ok();
 }
 
@@ -115,7 +115,7 @@ void ClientReader<Response>::OnReadEach(ClientReaderReadCqTag& tag) const {
   Status& status = data_sptr_->status;
   assert(status.ok());
   Response resp;
-  status = tag.GetResultMessage(resp);
+  status = tag.GetResultMsg(resp);
   if (!status.ok()) return;
 
   ReadCallback& readCb = data_sptr_->readCb;

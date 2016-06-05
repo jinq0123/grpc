@@ -20,14 +20,14 @@ class ClientReaderInitCqTag GRPC_FINAL : public CallCqTag {
   inline Status Start(const ::google::protobuf::Message& request) GRPC_MUST_USE_RESULT;
 
  private:
-  CodSendMessage cod_send_message_;
+  CodSendMsg cod_send_msg_;
   CodSendInitMd cod_send_init_md_;
   CodRecvInitMd cod_recv_init_md_;
 };  // class ClientReaderInitCqTag
 
 Status ClientReaderInitCqTag::Start(const ::google::protobuf::Message& request) {
   CallOperations ops;
-  Status status = ops.SendMessage(request, cod_send_message_);
+  Status status = ops.SendMsg(request, cod_send_msg_);
   if (!status.ok()) return status;
 
   // Todo: Fill send_init_md_array_ -> FillMetadataVector()

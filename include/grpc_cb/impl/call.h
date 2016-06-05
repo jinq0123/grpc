@@ -29,9 +29,9 @@ class Call GRPC_FINAL {
  public:
   Status StartBatch(const CallOperations& ops, void* tag) GRPC_MUST_USE_RESULT;
 
-  inline int GetMaxMessageSize() const { return max_message_size_; }
-  inline void SetMaxMessageSize(int size) { max_message_size_ = size; }
-  static void SetDefaultMaxMessageSize(int size) { default_max_message_size_ = size; }
+  inline int GetMaxMsgSize() const { return max_msg_size_; }
+  inline void SetMaxMsgSize(int size) { max_msg_size_ = size; }
+  static void SetDefaultMaxMsgSize(int size) { default_max_msg_size_ = size; }
 
  public:
      // Todo: return reference? None-null?
@@ -41,10 +41,10 @@ class Call GRPC_FINAL {
   std::unique_ptr<grpc_call, void (*)(grpc_call*)> c_call_uptr_;  // owned
 
  private:
-  int max_message_size_;  // XXX necessary? Move to Channel?
+  int max_msg_size_;  // XXX necessary? Move to Channel?
 
  private:
-  static int default_max_message_size_;  // for all call
+  static int default_max_msg_size_;  // for all call
 };
 
 }  // namespace grpc_cb

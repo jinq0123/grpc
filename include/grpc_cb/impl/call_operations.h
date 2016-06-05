@@ -34,8 +34,8 @@ class CallOperations GRPC_FINAL {
       SendInitMd(cod_send_init_md.GetMdVec());
   }
   inline void SendInitMd(MetadataVector& init_metadata);
-  inline Status SendMessage(const ::google::protobuf::Message& message,
-                            CodSendMessage& cod_send_message)
+  inline Status SendMsg(const ::google::protobuf::Message& message,
+                            CodSendMsg& cod_send_msg)
       GRPC_MUST_USE_RESULT;
 
   // Receive initial metadata.
@@ -43,10 +43,10 @@ class CallOperations GRPC_FINAL {
       RecvInitMd(cod_recv_init_md.GetRecvInitMdArrPtr());
   }
   inline void RecvInitMd(grpc_metadata_array* init_metadata = nullptr);
-  inline void RecvMessage(CodRecvMessage& cod_recv_message) {
-      RecvMessage(cod_recv_message.GetRecvBufPtr());
+  inline void RecvMsg(CodRecvMsg& cod_recv_message) {
+      RecvMsg(cod_recv_message.GetRecvBufPtr());
   }
-  inline void RecvMessage(grpc_byte_buffer** recv_buf);
+  inline void RecvMsg(grpc_byte_buffer** recv_buf);
 
   inline void ClientSendClose();
   inline void ClientRecvStatus(CodClientRecvStatus& cod_client_recv_status);
@@ -74,18 +74,18 @@ static inline void InitOp(grpc_op& op, grpc_op_type type, uint32_t flags = 0) {
 }
 
 // Todo: Set write options.
-Status CallOperations::SendMessage(
+Status CallOperations::SendMsg(
     const ::google::protobuf::Message& message,
-    CodSendMessage& cod_send_message) {
-  Status status = cod_send_message.SerializeMessage(message);
+    CodSendMsg& cod_send_msg) {
+  Status status = cod_send_msg.SerializeMsg(message);
   if (!status.ok()) return status;
-  if (nullptr == cod_send_message.GetSendBuf())
+  if (nullptr == cod_send_msg.GetSendBuf())
       return status;
 
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_SEND_MESSAGE);
-  op.data.send_message = cod_send_message.GetSendBuf();
+  op.data.send_message = cod_send_msg.GetSendBuf();
   // Todo: op->flags = write_options_.flags();
   return status;
 }
@@ -106,7 +106,7 @@ void CallOperations::RecvInitMd(grpc_metadata_array* init_metadata) {
   op.data.recv_initial_metadata = init_metadata;
 }
 
-void CallOperations::RecvMessage(grpc_byte_buffer** recv_buf) {
+void CallOperations::RecvMsg(grpc_byte_buffer** recv_buf) {
   assert(nops_ < MAX_OPS);
   grpc_op& op = ops_[nops_++];
   InitOp(op, GRPC_OP_RECV_MESSAGE);

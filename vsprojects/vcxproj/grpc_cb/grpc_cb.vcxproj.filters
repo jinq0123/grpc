@@ -171,6 +171,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_writer_finish_cqtag.h">
       <Filter>include\grp_cb\impl\client</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_writer_write_cqtag.h">
+      <Filter>include\grp_cb\impl\client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

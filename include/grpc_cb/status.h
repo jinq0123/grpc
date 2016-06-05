@@ -49,7 +49,7 @@ class Status {
   Status() : code_(GRPC_STATUS_OK) {}
 
   /// Construct an instance with associated \a code and \a details (also
-  // referred to as "error_message").
+  // referred to as "error_msg").
   Status(grpc_status_code code, const std::string& details)
       : code_(code), details_(details) {}
 
@@ -68,7 +68,7 @@ class Status {
   /// Return the instance's error code.
   grpc_status_code error_code() const { return code_; }
   /// Return the instance's error message.
-  std::string error_message() const { return details_; }
+  std::string error_msg() const { return details_; }
 
   /// Is the status OK?
   bool ok() const { return code_ == GRPC_STATUS_OK; }
