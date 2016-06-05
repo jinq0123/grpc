@@ -70,7 +70,13 @@ Status ClientWriter<Request>::BlockingFinish(
   if (!status.ok()) return status;
 
   data_sptr_->cq_sptr->Pluck(&tag);
-  status = tag.GetResponse(*response);
+
+  // Todo: Get trailing metadata.
+  if (tag.IsStatusOk())
+    status = tag.GetResponse(*response);
+  else
+    status = tag.GetStatus();
+
   return status;
 }
 

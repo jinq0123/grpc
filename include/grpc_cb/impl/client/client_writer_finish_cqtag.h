@@ -19,6 +19,12 @@ class ClientWriterFinishCqTag GRPC_FINAL : public CallCqTag {
   inline explicit ClientWriterFinishCqTag(const CallSptr& call_sptr)
       : CallCqTag(call_sptr) {}
   inline Status Start() GRPC_MUST_USE_RESULT;
+  inline bool IsStatusOk() const {
+    return cod_client_recv_status_.IsStatusOk();
+  }
+  inline Status GetStatus() const {
+    return cod_client_recv_status_.GetStatus();
+  }
   inline Status GetResponse(::google::protobuf::Message& response) GRPC_MUST_USE_RESULT;
 
   inline void DoComplete(bool success) GRPC_OVERRIDE;
