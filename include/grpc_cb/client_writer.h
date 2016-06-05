@@ -25,17 +25,12 @@ class ClientWriter {
   inline ClientWriter(const ChannelSptr& channel, const std::string& method,
                       const CompletionQueueSptr& cq_sptr);
 
- public:
-  inline Status BlockingGetResponse(::google::protobuf::Message* response) const;
-
   bool BlockingWriteOne(const Request& request) const {
     // XXX
     return false;
   }
-  ::grpc_cb::Status Finish() {
-    // XXX
-    return ::grpc_cb::Status::OK;
-  }
+  inline ::grpc_cb::Status BlockingFinish(
+      ::google::protobuf::Message* response) const;
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
@@ -60,6 +55,16 @@ ClientWriter<Request>::ClientWriter(const ChannelSptr& channel,
   Status& status = data_sptr_->status;
   status = tag->Start();
   if (!status.ok()) delete tag;
+}
+
+template <class Request>
+Status ClientWriter<Request>::BlockingFinish(
+    ::google::protobuf::Message* response) const {
+  assert(data_sptr_);
+  assert(data_sptr_->call_sptr);
+  ClientWriterFinishCqTag* tag = new ClientWriterFinishCqTag(data_sptr_->call_sptr);
+  Status& status = 
+  return Status::OK;
 }
 
 }  // namespace grpc_cb

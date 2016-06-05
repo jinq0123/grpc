@@ -130,12 +130,6 @@ class RouteGuideClient {
         500, 1500);
 
     ClientWriter<Point> writer(stub_->RecordRoute());
-    RouteSummary stats;
-    Status status = writer.BlockingGetResponse(&stats);  // Todo: timeout
-    if (!status.ok()) {
-      std::cout << "RecordRoute rpc failed to get response." << std::endl;
-      return;
-    }
     for (int i = 0; i < kPoints; i++) {
       const Feature& f = feature_list_[feature_distribution(generator)];
       std::cout << "Visiting point "
@@ -148,7 +142,8 @@ class RouteGuideClient {
       std::this_thread::sleep_for(std::chrono::milliseconds(
           delay_distribution(generator)));
     }
-    status = writer.Finish();
+    RouteSummary stats;
+    Status status = writer.BlockingFinish(&stats);  // Todo: timeout
     if (status.ok()) {
       std::cout << "Finished trip with " << stats.point_count() << " points\n"
                 << "Passed " << stats.feature_count() << " features\n"
