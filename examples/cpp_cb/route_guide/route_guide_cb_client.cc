@@ -176,7 +176,7 @@ class RouteGuideClient {
                   << note.location().longitude() << std::endl;
         stream_copy.Write(note);
       }
-      stream_copy.CloseWriting();  // Send Close().
+      stream_copy.WritesDone();  // Optional colse writing.
     });
 
     RouteNote server_note;
