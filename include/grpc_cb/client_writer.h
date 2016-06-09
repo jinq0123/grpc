@@ -27,7 +27,7 @@ class ClientWriter {
   inline ClientWriter(const ChannelSptr& channel, const std::string& method,
                       const CompletionQueueSptr& cq_sptr);
 
-  bool BlockingWriteOne(const Request& request) const;
+  bool Write(const Request& request) const;
   inline Status BlockingFinish(
       ::google::protobuf::Message* response) const;
   // Todo: AsyncFinish
@@ -58,7 +58,7 @@ ClientWriter<Request>::ClientWriter(const ChannelSptr& channel,
 }
 
 template <class Request>
-bool ClientWriter<Request>::BlockingWriteOne(const Request& request) const {
+bool ClientWriter<Request>::Write(const Request& request) const {
   assert(data_sptr_);
   assert(data_sptr_->call_sptr);
   Status& status = data_sptr_->status;
@@ -66,10 +66,7 @@ bool ClientWriter<Request>::BlockingWriteOne(const Request& request) const {
 
   ClientWriteCqTag tag(data_sptr_->call_sptr);
   status = tag.Start(request);
-  if (!status.ok()) return false;
-
-  data_sptr_->cq_sptr->Pluck(&tag);
-  return true;
+  return status.ok();
 }
 
 template <class Request>

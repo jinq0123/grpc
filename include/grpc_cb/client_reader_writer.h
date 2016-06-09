@@ -16,7 +16,7 @@ class ClientReaderWriter {
                             const CompletionQueueSptr& cq_sptr);
 
  public:
-  inline void Write(const Request& request) const;
+  inline bool Write(const Request& request) const;
   inline void WritesDone() const;
   inline bool BlockingReadOne(Response* response) const;
   using ReadCallback = std::function<void(const Response&)>;
@@ -51,8 +51,15 @@ ClientReaderWriter<Request, Response>::ClientReaderWriter(
 }
 
 template <class Request, class Response>
-void ClientReaderWriter<Request, Response>::Write(const Request& request) const {
-  // XXX
+bool ClientReaderWriter<Request, Response>::Write(const Request& request) const {
+  assert(data_sptr_);
+  assert(data_sptr_->call_sptr);
+  Status& status = data_sptr_->status;
+  if (!status.ok()) return false;
+
+  ClientWriteCqTag tag(data_sptr_->call_sptr);
+  status = tag.Start(request);
+  return status.ok();
 }
 
 template <class Request, class Response>

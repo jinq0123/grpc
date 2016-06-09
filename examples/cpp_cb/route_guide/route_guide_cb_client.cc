@@ -135,7 +135,7 @@ class RouteGuideClient {
       std::cout << "Visiting point "
                 << f.location().latitude()/kCoordFactor_ << ", "
                 << f.location().longitude()/kCoordFactor_ << std::endl;
-      if (!writer.BlockingWriteOne(f.location())) {
+      if (!writer.Write(f.location())) {
         // Broken stream.
         break;
       }
