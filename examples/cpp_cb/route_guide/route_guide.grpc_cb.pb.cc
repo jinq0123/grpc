@@ -109,7 +109,8 @@ Stub::RecordRoute() {
 Stub::RouteChat() {
   return ::grpc_cb::ClientReaderWriter<
     ::routeguide::RouteNote,
-    ::routeguide::RouteNote>();
+    ::routeguide::RouteNote>(
+        GetChannelSptr(), method_names[3], GetCqSptr());
 }
 
 Service::Service() {}

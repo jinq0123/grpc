@@ -11,7 +11,10 @@ namespace grpc_cb {
 template <class Request, class Response>
 class ClientReaderWriter {
  public:
-  inline ClientReaderWriter();
+  inline ClientReaderWriter(const ChannelSptr& channel,
+                            const std::string& method,
+                            const CompletionQueueSptr& cq_sptr);
+
  public:
   inline void Write(const Request& request) const;
   inline void WritesDone() const;
@@ -33,8 +36,18 @@ class ClientReaderWriter {
 };  // class ClientReaderWriter<>
 
 template <class Request, class Response>
-ClientReaderWriter<Request, Response>::ClientReaderWriter() {
-    // XXX
+ClientReaderWriter<Request, Response>::ClientReaderWriter(
+    const ChannelSptr& channel, const std::string& method,
+    const CompletionQueueSptr& cq_sptr)
+    // Todo: same as ClientReader?
+    : data_sptr_(new Data{cq_sptr, channel->MakeSharedCall(method, *cq_sptr)}) {
+  assert(cq_sptr);
+  assert(channel);
+  assert(data_sptr_->call_sptr);
+  ClientInitMdCqTag* tag = new ClientInitMdCqTag(data_sptr_->call_sptr);
+  Status& status = data_sptr_->status;
+  status = tag->Start();
+  if (!status.ok()) delete tag;
 }
 
 template <class Request, class Response>
