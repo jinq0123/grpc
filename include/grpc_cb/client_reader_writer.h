@@ -4,6 +4,8 @@
 #ifndef GRPC_CB_CLIENT_CLIENT_READER_WRITER_H
 #define GRPC_CB_CLIENT_CLIENT_READER_WRITER_H
 
+#include <grpc_cb/impl/client/client_send_close_cqtag.h>  // for ClientSendCloseCqTag
+
 namespace grpc_cb {
 
 // Todo: Add base class?
@@ -17,6 +19,7 @@ class ClientReaderWriter {
 
  public:
   inline bool Write(const Request& request) const;
+  // WritesDone() is optional. Writes are auto done when finish.
   inline void WritesDone() const;
   inline bool BlockingReadOne(Response* response) const;
   using ReadCallback = std::function<void(const Response&)>;
@@ -57,14 +60,17 @@ bool ClientReaderWriter<Request, Response>::Write(const Request& request) const 
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
 
-  ClientWriteCqTag tag(data_sptr_->call_sptr);
-  status = tag.Start(request);
+  ClientWriteCqTag* tag = new ClientWriteCqTag(data_sptr_->call_sptr);
+  status = tag->Start(request);
   return status.ok();
 }
 
 template <class Request, class Response>
 void ClientReaderWriter<Request, Response>::WritesDone() const {
-  // XXX
+  Status& status = data_sptr_->status;
+  if (!status.ok()) return;
+  ClientSendCloseCqTag* tag = new ClientSendCloseCqTag(data_sptr_->call_sptr);
+  status = tag->Start();
 }
 
 template <class Request, class Response>

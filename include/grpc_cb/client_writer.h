@@ -64,8 +64,8 @@ bool ClientWriter<Request>::Write(const Request& request) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
 
-  ClientWriteCqTag tag(data_sptr_->call_sptr);
-  status = tag.Start(request);
+  ClientWriteCqTag* tag = new ClientWriteCqTag(data_sptr_->call_sptr);
+  status = tag->Start(request);
   return status.ok();
 }
 
