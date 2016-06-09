@@ -30,7 +30,6 @@ class ClientWriterFinishCqTag GRPC_FINAL : public CallCqTag {
   inline void DoComplete(bool success) GRPC_OVERRIDE;
 
  private:
-  CodRecvInitMd cod_recv_init_md_;
   CodRecvMsg cod_recv_msg_;
   CodClientRecvStatus cod_client_recv_status_;
 };  // class ClientWriterFinishCqTag
@@ -38,7 +37,6 @@ class ClientWriterFinishCqTag GRPC_FINAL : public CallCqTag {
 Status ClientWriterFinishCqTag::Start() {
   CallOperations ops;
   ops.ClientSendClose();
-  ops.RecvInitMd(cod_recv_init_md_);
   ops.RecvMsg(cod_recv_msg_);
   ops.ClientRecvStatus(cod_client_recv_status_);
   return GetCallSptr()->StartBatch(ops, this);

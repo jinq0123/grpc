@@ -11,7 +11,7 @@
 #include <grpc_cb/impl/call.h>       // for StartBatch()
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/client/client_writer_finish_cqtag.h>  // for ClientWriterFinishCqTag
-#include <grpc_cb/impl/client/client_writer_init_cqtag.h>  // for ClientWriterInitCqTag
+#include <grpc_cb/impl/client/client_init_md_cqtag.h>  // for ClientInitMdCqTag
 #include <grpc_cb/impl/client/client_writer_write_cqtag.h>  // for ClientWriterWriteCqTag
 #include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
 #include <grpc_cb/status.h>                 // for Status
@@ -30,6 +30,7 @@ class ClientWriter {
   bool BlockingWriteOne(const Request& request) const;
   inline Status BlockingFinish(
       ::google::protobuf::Message* response) const;
+  // Todo: AsyncFinish
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
@@ -50,7 +51,7 @@ ClientWriter<Request>::ClientWriter(const ChannelSptr& channel,
   assert(cq_sptr);
   assert(channel);
   assert(data_sptr_->call_sptr);
-  ClientWriterInitCqTag* tag = new ClientWriterInitCqTag(data_sptr_->call_sptr);
+  ClientInitMdCqTag* tag = new ClientInitMdCqTag(data_sptr_->call_sptr);
   Status& status = data_sptr_->status;
   status = tag->Start();
   if (!status.ok()) delete tag;

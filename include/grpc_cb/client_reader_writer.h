@@ -19,6 +19,7 @@ class ClientReaderWriter {
   using ReadCallback = std::function<void(const Response&)>;
   inline void AsyncReadEach(const ReadCallback& readCallback) const;
   inline Status BlockingFinish() const;
+  // XXX AsyncFinish()
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
