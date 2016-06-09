@@ -27,6 +27,7 @@ class ClientWriter {
   inline ClientWriter(const ChannelSptr& channel, const std::string& method,
                       const CompletionQueueSptr& cq_sptr);
 
+  // Todo: BlockingGetInitMd();
   bool Write(const Request& request) const;
   inline Status BlockingFinish(
       ::google::protobuf::Message* response) const;

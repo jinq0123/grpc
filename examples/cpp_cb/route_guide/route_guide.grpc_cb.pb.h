@@ -72,13 +72,18 @@ class Service : public ::grpc_cb::Service {
   void GetFeature(
       grpc_byte_buffer& request_buffer,
       const ::grpc_cb::ServerReplier<::routeguide::Feature>& replier);
+  // Todo: virtual void GetFeature(const std::string& request_buffer, replier);
   virtual void GetFeature(
       const ::routeguide::Point& request,
       ::grpc_cb::ServerReplier<::routeguide::Feature> replier_copy);
 
+  using ListFeaturesWriter =
+      ::grpc_cb::ServerWriter<::routeguide::Feature>;
+  void ListFeatures(grpc_byte_buffer& request_buffer,
+      const ListFeaturesWriter& writer);
   virtual ::grpc_cb::Status ListFeatures(
       const ::routeguide::Rectangle& request,
-      ::grpc_cb::ServerWriter<::routeguide::Feature> writer);
+      const ::grpc_cb::ServerWriter<::routeguide::Feature>& writer);
 
   virtual ::grpc_cb::Status RecordRoute(
       ::grpc_cb::ServerReader<::routeguide::Point> reader,

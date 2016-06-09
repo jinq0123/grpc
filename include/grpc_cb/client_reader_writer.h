@@ -38,6 +38,8 @@ class ClientReaderWriter {
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientReaderWriter<>
 
+// Todo: BlockingGetInitMd();
+
 template <class Request, class Response>
 ClientReaderWriter<Request, Response>::ClientReaderWriter(
     const ChannelSptr& channel, const std::string& method,

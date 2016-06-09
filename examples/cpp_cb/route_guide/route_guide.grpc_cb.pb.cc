@@ -132,9 +132,8 @@ void Service::CallMethod(
           ::grpc_cb::ServerReplier<::routeguide::Feature>(call_sptr));
       return;
     case 1:
-      // XXX
-      //ListFeatures(request_buffer,
-      //    ::grpc_cb::ServerReplier<::routeguide::Feature>(msg_replier));
+      ListFeatures(request_buffer,
+          ::grpc_cb::ServerWriter<::routeguide::Feature>(call_sptr));
       return;
     case 2:
       //RecordRoute(request_buffer,
@@ -171,9 +170,23 @@ void Service::GetFeature(
   replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
+void Service::ListFeatures(grpc_byte_buffer& request_buffer,
+    const ListFeaturesWriter& writer) {
+  using Request = ::routeguide::Rectangle;
+  Request request;
+  ::grpc_cb::Status status =
+      ::grpc_cb::DeserializeProto(
+          &request_buffer, &request, 0 /* TODO: max_message_size*/);
+  if (status.ok()) {
+    ListFeatures(request, writer);
+    return;
+  }
+  writer.Close(status);
+}
+
 ::grpc_cb::Status Service::ListFeatures(
     const ::routeguide::Rectangle& request,
-    ::grpc_cb::ServerWriter<::routeguide::Feature> writer) {
+    const ListFeaturesWriter& writer) {
   (void)request;
   (void)writer;
   return ::grpc_cb::Status::UNIMPLEMENTED;

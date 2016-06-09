@@ -106,7 +106,8 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
   }
 
   Status ListFeatures(const routeguide::Rectangle& rectangle,
-                      ServerWriter<Feature> writer) override {
+      const ::grpc_cb::ServerWriter<
+          ::routeguide::Feature>& writer) override {
     auto lo = rectangle.lo();
     auto hi = rectangle.hi();
     long left = (std::min)(lo.longitude(), hi.longitude());
@@ -118,7 +119,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
           f.location().longitude() <= right &&
           f.location().latitude() >= bottom &&
           f.location().latitude() <= top) {
-        // XXX writer.Write(f);
+        writer.Write(f);  // XXX check return?
       }
     }
     return Status::OK;

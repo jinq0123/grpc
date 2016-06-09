@@ -189,6 +189,8 @@ Status SerializeProto(const ::google::protobuf::Message& msg,
   }
 }
 
+// Todo: Convert grpc_byte_buffer to string, which is needed by lua.
+
 // max_msg_size <= 0 means no limit.
 Status DeserializeProto(grpc_byte_buffer* buffer,
                         ::google::protobuf::Message* msg,
