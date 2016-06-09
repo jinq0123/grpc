@@ -1,8 +1,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#ifndef GRPC_CB_CLIENT_CLIENT_WRITER_WRITE_CQTAG_H
-#define GRPC_CB_CLIENT_CLIENT_WRITER_WRITE_CQTAG_H
+#ifndef GRPC_CB_CLIENT_CLIENT_WRITE_CQTAG_H
+#define GRPC_CB_CLIENT_CLIENT_WRITE_CQTAG_H
 
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
 
@@ -14,17 +14,17 @@
 
 namespace grpc_cb {
 
-class ClientWriterWriteCqTag GRPC_FINAL : public CallCqTag {
+class ClientWriteCqTag GRPC_FINAL : public CallCqTag {
  public:
-  inline explicit ClientWriterWriteCqTag(const CallSptr& call_sptr)
+  inline explicit ClientWriteCqTag(const CallSptr& call_sptr)
       : CallCqTag(call_sptr) {}
   inline Status Start(const ::google::protobuf::Message& message) GRPC_MUST_USE_RESULT;
 
  private:
   CodSendMsg cod_send_msg_;
-};  // class ClientWriterWriteCqTag
+};  // class ClientWriteCqTag
 
-Status ClientWriterWriteCqTag::Start(
+Status ClientWriteCqTag::Start(
     const ::google::protobuf::Message& message) {
   CallOperations ops;
   ops.SendMsg(message, cod_send_msg_);
@@ -33,4 +33,4 @@ Status ClientWriterWriteCqTag::Start(
 
 };  // namespace grpc_cb
 
-#endif  // GRPC_CB_CLIENT_CLIENT_WRITER_WRITE_CQTAG_H
+#endif  // GRPC_CB_CLIENT_CLIENT_WRITE_CQTAG_H

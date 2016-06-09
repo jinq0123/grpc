@@ -12,7 +12,7 @@
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/client/client_writer_finish_cqtag.h>  // for ClientWriterFinishCqTag
 #include <grpc_cb/impl/client/client_init_md_cqtag.h>  // for ClientInitMdCqTag
-#include <grpc_cb/impl/client/client_writer_write_cqtag.h>  // for ClientWriterWriteCqTag
+#include <grpc_cb/impl/client/client_write_cqtag.h>  // for ClientWriteCqTag
 #include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
 #include <grpc_cb/status.h>                 // for Status
 
@@ -64,7 +64,7 @@ bool ClientWriter<Request>::BlockingWriteOne(const Request& request) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
 
-  ClientWriterWriteCqTag tag(data_sptr_->call_sptr);
+  ClientWriteCqTag tag(data_sptr_->call_sptr);
   status = tag.Start(request);
   if (!status.ok()) return false;
 
