@@ -6,28 +6,19 @@
 
 namespace grpc_cb {
 
+// Todo: Add base class?
+
 template <class Request, class Response>
 class ClientReaderWriter {
  public:
-  void Write(const Request& request) const {
-    // XXX
-  }
-
-  bool BlockingReadOne(const Response* response) const {
-    assert(response);
-    // XXX
-    return false;
-  }
-
-  void WritesDone() const {}
-
-  ::grpc_cb::Status BlockingFinish() const {
-    return ::grpc_cb::Status::OK;
-  }
-
+  inline ClientReaderWriter();
+ public:
+  inline void Write(const Request& request) const;
+  inline void WritesDone() const;
   inline bool BlockingReadOne(Response* response) const;
   using ReadCallback = std::function<void(const Response&)>;
   inline void AsyncReadEach(const ReadCallback& readCallback) const;
+  inline Status BlockingFinish() const;
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
@@ -39,6 +30,38 @@ class ClientReaderWriter {
   };
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientReaderWriter<>
+
+template <class Request, class Response>
+ClientReaderWriter<Request, Response>::ClientReaderWriter() {
+    // XXX
+}
+
+template <class Request, class Response>
+void ClientReaderWriter<Request, Response>::Write(const Request& request) const {
+  // XXX
+}
+
+template <class Request, class Response>
+void ClientReaderWriter<Request, Response>::WritesDone() const {
+  // XXX
+}
+
+template <class Request, class Response>
+bool ClientReaderWriter<Request, Response>::BlockingReadOne(Response* response) const {
+  // XXX
+  return false;
+}
+
+template <class Request, class Response>
+void ClientReaderWriter<Request, Response>::AsyncReadEach(const ReadCallback& readCallback) const {
+  // XXX
+}
+
+template <class Request, class Response>
+Status ClientReaderWriter<Request, Response>::BlockingFinish() const {
+  // XXX
+  return Status::OK;
+}
 
 }  // namespace grpc_cb
 

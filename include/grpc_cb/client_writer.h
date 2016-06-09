@@ -28,7 +28,7 @@ class ClientWriter {
                       const CompletionQueueSptr& cq_sptr);
 
   bool BlockingWriteOne(const Request& request) const;
-  inline ::grpc_cb::Status BlockingFinish(
+  inline Status BlockingFinish(
       ::google::protobuf::Message* response) const;
 
  private:
