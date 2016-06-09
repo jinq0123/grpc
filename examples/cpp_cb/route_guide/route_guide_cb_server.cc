@@ -126,8 +126,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
   }
 
   Status RecordRoute(
-      ServerReader<Point> reader,
-      ::grpc_cb::ServerReplier<RouteSummary> replier_copy) override {
+      const ::grpc_cb::ServerReader<Point>& reader) override {
     Point point;
     int point_count = 0;
     int feature_count = 0;
@@ -157,7 +156,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     return Status::OK;
   }
 
-  Status RouteChat(ServerReaderWriter<RouteNote, RouteNote> stream) override {
+  Status RouteChat(const ::grpc_cb::ServerReaderWriter<RouteNote, RouteNote>& stream) override {
     std::vector<RouteNote> received_notes;
     RouteNote note;
     while (stream.BlockingReadOne(&note)) {

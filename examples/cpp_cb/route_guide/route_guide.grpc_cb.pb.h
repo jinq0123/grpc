@@ -85,14 +85,16 @@ class Service : public ::grpc_cb::Service {
       const ::routeguide::Rectangle& request,
       const ::grpc_cb::ServerWriter<::routeguide::Feature>& writer);
 
+  using RecordRouteReader =
+      ::grpc_cb::ServerReader<::routeguide::Point>;
   virtual ::grpc_cb::Status RecordRoute(
-      ::grpc_cb::ServerReader<::routeguide::Point> reader,
-      ::grpc_cb::ServerReplier<::routeguide::RouteSummary> replier_copy);
+       const RecordRouteReader& reader);
 
-  virtual ::grpc_cb::Status RouteChat(
+  using RouteChatStream =
       ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,
-                                    ::routeguide::RouteNote>
-          stream);
+                                    ::routeguide::RouteNote>;
+  virtual ::grpc_cb::Status RouteChat(
+      const RouteChatStream& stream);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

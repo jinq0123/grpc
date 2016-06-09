@@ -11,7 +11,11 @@ namespace grpc_cb {
 template <class Request>
 class ServerReader {
  public:
-  bool BlockingReadOne(Request* request) {
+  inline ServerReader(const CallSptr& call_sptr) {};  // XXX
+
+ public:
+     // XXX no blocking
+  bool BlockingReadOne(Request* request) const {
     assert(request);
     // XXX
     return false;

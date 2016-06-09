@@ -132,17 +132,13 @@ void Service::CallMethod(
           ::grpc_cb::ServerReplier<::routeguide::Feature>(call_sptr));
       return;
     case 1:
-      ListFeatures(request_buffer,
-          ::grpc_cb::ServerWriter<::routeguide::Feature>(call_sptr));
+      ListFeatures(request_buffer, ListFeaturesWriter(call_sptr));
       return;
     case 2:
-      //RecordRoute(request_buffer,
-      //    ::grpc_cb::ServerReplier<::routeguide::RouteSummary>(msg_replier));
+      RecordRoute(RecordRouteReader(call_sptr));
       return;
     case 3:
-      //RouteChat(
-      //    request_buffer,
-      //    ::grpc_cb::ServerReplier<::routeguide::RouteNote>(msg_replier));
+      RouteChat(RouteChatStream(call_sptr));
       return;
   }  // switch
   assert(false);
@@ -193,16 +189,14 @@ void Service::ListFeatures(grpc_byte_buffer& request_buffer,
 }
 
 ::grpc_cb::Status Service::RecordRoute(
-    ::grpc_cb::ServerReader<::routeguide::Point> reader,
-    ::grpc_cb::ServerReplier<::routeguide::RouteSummary> replier_copy) {
+    const RecordRouteReader& reader) {
   (void)reader;
-  (void)replier_copy;
   return ::grpc_cb::Status::UNIMPLEMENTED;
 }
 
 ::grpc_cb::Status Service::RouteChat(
-    ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,
-                                  ::routeguide::RouteNote>
+    const ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,
+                                        ::routeguide::RouteNote>&
         stream) {
   (void)stream;
   return ::grpc_cb::Status::UNIMPLEMENTED;
