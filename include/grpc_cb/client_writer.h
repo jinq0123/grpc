@@ -67,7 +67,9 @@ bool ClientWriter<Request>::Write(const Request& request) const {
 
   SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
   status = tag->Start(request);
-  return status.ok();
+  if (status.ok()) return true;
+  delete tag;
+  return false;
 }
 
 template <class Request>

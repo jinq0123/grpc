@@ -36,15 +36,17 @@ ServerWriter<Response>::ServerWriter(const CallSptr& call_sptr)
   // Todo: Set init md
   Status& status = data_sptr_->status;
   status = tag->Start();
-  if (!status.ok())
-      delete tag;
+  if (!status.ok()) delete tag;
 }
 
 template <class Response>
 bool ServerWriter<Response>::Write(const Response& response) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
-  // XXX
+  SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
+  status = tag->Start(response);
+  if (status.ok()) return true;
+  delete tag;
   return false;
 }
 

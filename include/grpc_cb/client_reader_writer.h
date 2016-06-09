@@ -65,7 +65,9 @@ bool ClientReaderWriter<Request, Response>::Write(const Request& request) const 
 
   SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
   status = tag->Start(request);
-  return status.ok();
+  if (status.ok()) return true;
+  delete tag;
+  return false;
 }
 
 template <class Request, class Response>
@@ -74,6 +76,7 @@ void ClientReaderWriter<Request, Response>::WritesDone() const {
   if (!status.ok()) return;
   ClientSendCloseCqTag* tag = new ClientSendCloseCqTag(data_sptr_->call_sptr);
   status = tag->Start();
+  if (!status.ok()) delete tag;
 }
 
 template <class Request, class Response>

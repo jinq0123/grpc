@@ -108,6 +108,7 @@ void ClientReader<Response>::AsyncReadNext() const {
       call_sptr,
       [this_copy](ReadCqTag& tag) { this_copy.OnReadEach(tag); });
   status = tag->Start();
+  if (!status.ok()) delete tag;
 }
 
 template <class Response>
