@@ -4,6 +4,8 @@
 #ifndef GRPC_CB_SERVER_SERVER_WRITER_H
 #define GRPC_CB_SERVER_SERVER_WRITER_H
 
+#include <grpc_cb/impl/server/server_writer_init_cqtag.h>  // for ServerWriterInitCqTag
+
 namespace grpc_cb {
 
 template <class Response>
@@ -30,8 +32,12 @@ template <class Response>
 ServerWriter<Response>::ServerWriter(const CallSptr& call_sptr)
     : data_sptr_(new Data{call_sptr}) {
   assert(call_sptr);
-  // XXX init md
+  ServerWriterInitCqTag* tag = new ServerWriterInitCqTag(call_sptr);
+  // Todo: Set init md
   Status& status = data_sptr_->status;
+  status = tag->Start();
+  if (!status.ok())
+      delete tag;
 }
 
 template <class Response>

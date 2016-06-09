@@ -279,6 +279,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_cqtag.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_writer_init_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server_reader.h" />
