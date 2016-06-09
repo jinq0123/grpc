@@ -5,6 +5,7 @@
 #define GRPC_CB_CLIENT_CLIENT_READER_WRITER_H
 
 #include <grpc_cb/impl/client/client_send_close_cqtag.h>  // for ClientSendCloseCqTag
+// Todo: include?
 
 namespace grpc_cb {
 
@@ -62,7 +63,7 @@ bool ClientReaderWriter<Request, Response>::Write(const Request& request) const 
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
 
-  ClientWriteCqTag* tag = new ClientWriteCqTag(data_sptr_->call_sptr);
+  SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
   status = tag->Start(request);
   return status.ok();
 }

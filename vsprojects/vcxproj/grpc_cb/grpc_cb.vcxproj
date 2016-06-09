@@ -271,13 +271,13 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_reader_read_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_send_close_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_writer_finish_cqtag.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_write_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_sptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_tag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_uptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\send_msg_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_writer_init_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />

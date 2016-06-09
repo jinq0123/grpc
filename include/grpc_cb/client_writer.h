@@ -7,13 +7,13 @@
 #include <cassert>     // for assert()
 #include <functional>  // for std::function
 
-#include <grpc_cb/channel.h>         // for MakeSharedCall()
-#include <grpc_cb/impl/call.h>       // for StartBatch()
-#include <grpc_cb/impl/call_sptr.h>  // for CallSptr
-#include <grpc_cb/impl/client/client_writer_finish_cqtag.h>  // for ClientWriterFinishCqTag
+#include <grpc_cb/channel.h>                           // for MakeSharedCall()
+#include <grpc_cb/impl/call.h>                         // for StartBatch()
+#include <grpc_cb/impl/call_sptr.h>                    // for CallSptr
 #include <grpc_cb/impl/client/client_init_md_cqtag.h>  // for ClientInitMdCqTag
-#include <grpc_cb/impl/client/client_write_cqtag.h>  // for ClientWriteCqTag
+#include <grpc_cb/impl/client/client_writer_finish_cqtag.h>  // for ClientWriterFinishCqTag
 #include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
+#include <grpc_cb/impl/send_msg_cqtag.h>    // for SendMsgCqTag
 #include <grpc_cb/status.h>                 // for Status
 
 namespace grpc_cb {
@@ -65,7 +65,7 @@ bool ClientWriter<Request>::Write(const Request& request) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
 
-  ClientWriteCqTag* tag = new ClientWriteCqTag(data_sptr_->call_sptr);
+  SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
   status = tag->Start(request);
   return status.ok();
 }
