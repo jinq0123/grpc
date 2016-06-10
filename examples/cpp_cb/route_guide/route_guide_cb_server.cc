@@ -131,39 +131,40 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     t.detach();
   }
 
-  void RecordRoute(
+  void RecordRoute_OnStart(
       const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
-    const std::vector<Feature>& feature_list = feature_list_;
-    std::thread t([reader, &feature_list]() {
-      Point point;
-      int point_count = 0;
-      int feature_count = 0;
-      float distance = 0.0;
-      Point previous;
+      record_route_result_.reset(new RecordRouteResult);
+  }
 
-      system_clock::time_point start_time = system_clock::now();
-      while (reader.BlockingReadOne(&point)) {
-        point_count++;
-        if (!GetFeatureName(point, feature_list).empty()) {
-          feature_count++;
-        }
-        if (point_count != 1) {
-          distance += GetDistance(previous, point);
-        }
-        previous = point;
-      }
-      system_clock::time_point end_time = system_clock::now();
-      RouteSummary summary;
-      summary.set_point_count(point_count);
-      summary.set_feature_count(feature_count);
-      summary.set_distance(static_cast<long>(distance));
-      auto secs = std::chrono::duration_cast<std::chrono::seconds>(end_time -
-                                                                   start_time);
-      summary.set_elapsed_time(secs.count());
+  void RecordRoute_OnMsg(const Point& point,
+      const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
+    assert(record_route_result_);
+    RecordRouteResult& r = *record_route_result_;
+    r.point_count++;
+    if (!GetFeatureName(point, feature_list_).empty()) {
+      r.feature_count++;
+    }
+    if (r.point_count != 1) {
+      r.distance += GetDistance(r.previous, point);
+    }
+    r.previous = point;
+  }
 
-      reader.Reply(summary);
-    });  // thread t
-    t.detach();
+  void RecordRoute_OnEnd(
+      const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
+    assert(record_route_result_);
+    RecordRouteResult& r = *record_route_result_;
+    system_clock::time_point end_time = system_clock::now();
+    RouteSummary summary;
+    summary.set_point_count(r.point_count);
+    summary.set_feature_count(r.feature_count);
+    summary.set_distance(static_cast<long>(r.distance));
+    auto secs = std::chrono::duration_cast<std::chrono::seconds>(
+        end_time - r.start_time);
+    summary.set_elapsed_time(secs.count());
+
+    reader.Reply(summary);
+    record_route_result_.reset();
   }
 
   void RouteChat(const ::grpc_cb::ServerReaderWriter<RouteNote, RouteNote>& stream) override {
@@ -186,8 +187,15 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
   }
 
  private:
-
   std::vector<Feature> feature_list_;
+  struct RecordRouteResult {
+      int point_count = 0;
+      int feature_count = 0;
+      float distance = 0.0;
+      Point previous;
+      system_clock::time_point start_time = system_clock::now();
+  };
+  std::unique_ptr<RecordRouteResult> record_route_result_;
 };
 
 void RunServer(const std::string& db_path) {

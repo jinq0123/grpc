@@ -15,11 +15,7 @@ class ServerReader {
 
  public:
   // BlockingReadOne() is intended to use in thread other than server run thread.
-  inline bool BlockingReadOne(Request* request) const {
-    assert(request);
-    // XXX
-    return false;
-  }
+  inline bool BlockingReadOne(Request* request) const;
   // Todo: ReadCallback, ReadErrorCb, DoneCallback
   inline bool AsyncReadEach() const {}  // Todo: async read each callback
   inline bool AsyncReadOne() const {}  // XXX
@@ -48,6 +44,13 @@ ServerReader<Request, Response>::ServerReader(const CallSptr& call_sptr)
 }
 
 // Todo: much like ServerWriter?
+
+template <class Request, class Response>
+bool ServerReader<Request, Response>::BlockingReadOne(Request* request) const {
+    assert(request);
+    // XXX
+    return false;
+}
 
 }  // namespace grpc_cb
 
