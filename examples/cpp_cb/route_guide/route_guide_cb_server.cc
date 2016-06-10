@@ -37,6 +37,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include <grpc/grpc.h>
 #include <grpc_cb/server.h>
@@ -105,71 +106,83 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     replier_copy.Reply(feature);
   }
 
-  void ListFeatures(const routeguide::Rectangle& rectangle,
-      const ::grpc_cb::ServerWriter<
-          ::routeguide::Feature>& writer) override {
-    auto lo = rectangle.lo();
-    auto hi = rectangle.hi();
-    long left = (std::min)(lo.longitude(), hi.longitude());
-    long right = (std::max)(lo.longitude(), hi.longitude());
-    long top = (std::max)(lo.latitude(), hi.latitude());
-    long bottom = (std::min)(lo.latitude(), hi.latitude());
-    for (const Feature& f : feature_list_) {
-      if (f.location().longitude() >= left &&
-          f.location().longitude() <= right &&
-          f.location().latitude() >= bottom &&
-          f.location().latitude() <= top) {
-        writer.Write(f);  // XXX check return?
+  void ListFeatures(
+      const routeguide::Rectangle& rectangle,
+      const ::grpc_cb::ServerWriter< ::routeguide::Feature>& writer) override {
+    const std::vector<Feature>& feature_list = feature_list_;
+    std::thread t([&rectangle, writer, &feature_list]() {
+      auto lo = rectangle.lo();
+      auto hi = rectangle.hi();
+      long left = (std::min)(lo.longitude(), hi.longitude());
+      long right = (std::max)(lo.longitude(), hi.longitude());
+      long top = (std::max)(lo.latitude(), hi.latitude());
+      long bottom = (std::min)(lo.latitude(), hi.latitude());
+      for (const Feature& f : feature_list) {
+        if (f.location().longitude() >= left &&
+            f.location().longitude() <= right &&
+            f.location().latitude() >= bottom &&
+            f.location().latitude() <= top) {
+          writer.Write(f);  // XXX check return?
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
       }
-    }
-    // Todo: auto writer.Finish(Status::OK);
+      // Todo: auto writer.Finish(Status::OK);
+    });  // thread t
+    t.detach();
   }
 
   void RecordRoute(
       const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
-    Point point;
-    int point_count = 0;
-    int feature_count = 0;
-    float distance = 0.0;
-    Point previous;
+    const std::vector<Feature>& feature_list = feature_list_;
+    std::thread t([reader, &feature_list]() {
+      Point point;
+      int point_count = 0;
+      int feature_count = 0;
+      float distance = 0.0;
+      Point previous;
 
-    system_clock::time_point start_time = system_clock::now();
-    while (reader.BlockingReadOne(&point)) {
-      point_count++;
-      if (!GetFeatureName(point, feature_list_).empty()) {
-        feature_count++;
+      system_clock::time_point start_time = system_clock::now();
+      while (reader.BlockingReadOne(&point)) {
+        point_count++;
+        if (!GetFeatureName(point, feature_list).empty()) {
+          feature_count++;
+        }
+        if (point_count != 1) {
+          distance += GetDistance(previous, point);
+        }
+        previous = point;
       }
-      if (point_count != 1) {
-        distance += GetDistance(previous, point);
-      }
-      previous = point;
-    }
-    system_clock::time_point end_time = system_clock::now();
-    RouteSummary summary;
-    summary.set_point_count(point_count);
-    summary.set_feature_count(feature_count);
-    summary.set_distance(static_cast<long>(distance));
-    auto secs = std::chrono::duration_cast<std::chrono::seconds>(
-        end_time - start_time);
-    summary.set_elapsed_time(secs.count());
+      system_clock::time_point end_time = system_clock::now();
+      RouteSummary summary;
+      summary.set_point_count(point_count);
+      summary.set_feature_count(feature_count);
+      summary.set_distance(static_cast<long>(distance));
+      auto secs = std::chrono::duration_cast<std::chrono::seconds>(end_time -
+                                                                   start_time);
+      summary.set_elapsed_time(secs.count());
 
-    reader.Reply(summary);
+      reader.Reply(summary);
+    });  // thread t
+    t.detach();
   }
 
   void RouteChat(const ::grpc_cb::ServerReaderWriter<RouteNote, RouteNote>& stream) override {
-    std::vector<RouteNote> received_notes;
-    RouteNote note;
-    while (stream.BlockingReadOne(&note)) {
-      for (const RouteNote& n : received_notes) {
-        if (n.location().latitude() == note.location().latitude() &&
-            n.location().longitude() == note.location().longitude()) {
-          stream.Write(n);
+    std::thread t([stream]() {
+      std::vector<RouteNote> received_notes;
+      RouteNote note;
+      while (stream.BlockingReadOne(&note)) {
+        for (const RouteNote& n : received_notes) {
+          if (n.location().latitude() == note.location().latitude() &&
+              n.location().longitude() == note.location().longitude()) {
+            stream.Write(n);
+          }
         }
-      }
-      received_notes.push_back(note);
-    }
+        received_notes.push_back(note);
+      }  // while
 
-    // Todo: auto stream.Finish(Status::OK);
+      // Todo: auto stream.Finish(Status::OK);
+    });  // thread t
+    t.detach();
   }
 
  private:
