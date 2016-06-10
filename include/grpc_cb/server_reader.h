@@ -11,7 +11,7 @@ namespace grpc_cb {
 template <class Request>
 class ServerReader {
  public:
-  inline ServerReader(const CallSptr& call_sptr) {};  // XXX
+  inline ServerReader(const CallSptr& call_sptr);
 
  public:
      // XXX no blocking
@@ -19,9 +19,29 @@ class ServerReader {
     assert(request);
     // XXX
     return false;
+  }
+
+ private:
+  // Wrap all data in shared struct pointer to make copy quick.
+  struct Data {
+    CallSptr call_sptr;
+    Status status;
+  };
+  std::shared_ptr<Data> data_sptr_;  // Easy to copy.
+};  // class ServerReader<>
+
+template <class Request>
+ServerReader<Request>::ServerReader(const CallSptr& call_sptr)
+    : data_sptr_(new Data{call_sptr}) {
+  assert(call_sptr);
+  ServerInitMdCqTag* tag = new ServerInitMdCqTag(call_sptr);
+  // Todo: Set init md
+  Status& status = data_sptr_->status;
+  status = tag->Start();
+  if (!status.ok()) delete tag;
 }
 
-};  // class ServerReader<>
+// Todo: much like ServerWriter?
 
 }  // namespace grpc_cb
 

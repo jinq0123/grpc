@@ -174,11 +174,11 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_send_close_cqtag.h">
       <Filter>include\grp_cb\impl\client</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_writer_init_cqtag.h">
-      <Filter>include\grp_cb\impl\server</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\send_msg_cqtag.h">
       <Filter>include\grp_cb\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_init_md_cqtag.h">
+      <Filter>include\grp_cb\impl\server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
