@@ -105,7 +105,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     replier_copy.Reply(feature);
   }
 
-  Status ListFeatures(const routeguide::Rectangle& rectangle,
+  void ListFeatures(const routeguide::Rectangle& rectangle,
       const ::grpc_cb::ServerWriter<
           ::routeguide::Feature>& writer) override {
     auto lo = rectangle.lo();
@@ -122,11 +122,11 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
         writer.Write(f);  // XXX check return?
       }
     }
-    return Status::OK;
+    // Todo: auto writer.Finish(Status::OK);
   }
 
-  Status RecordRoute(
-      const ::grpc_cb::ServerReader<Point>& reader) override {
+  void RecordRoute(
+      const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
     Point point;
     int point_count = 0;
     int feature_count = 0;
@@ -153,10 +153,10 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
         end_time - start_time);
     summary.set_elapsed_time(secs.count());
 
-    return Status::OK;
+    reader.Reply(summary);
   }
 
-  Status RouteChat(const ::grpc_cb::ServerReaderWriter<RouteNote, RouteNote>& stream) override {
+  void RouteChat(const ::grpc_cb::ServerReaderWriter<RouteNote, RouteNote>& stream) override {
     std::vector<RouteNote> received_notes;
     RouteNote note;
     while (stream.BlockingReadOne(&note)) {
@@ -169,7 +169,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
       received_notes.push_back(note);
     }
 
-    return Status::OK;
+    // Todo: auto stream.Finish(Status::OK);
   }
 
  private:

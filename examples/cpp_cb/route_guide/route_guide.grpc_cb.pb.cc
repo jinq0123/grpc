@@ -180,26 +180,24 @@ void Service::ListFeatures(grpc_byte_buffer& request_buffer,
   writer.Close(status);
 }
 
-::grpc_cb::Status Service::ListFeatures(
+void Service::ListFeatures(
     const ::routeguide::Rectangle& request,
     const ListFeaturesWriter& writer) {
   (void)request;
-  (void)writer;
-  return ::grpc_cb::Status::UNIMPLEMENTED;
+  writer.Close(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
-::grpc_cb::Status Service::RecordRoute(
+void Service::RecordRoute(
     const RecordRouteReader& reader) {
-  (void)reader;
-  return ::grpc_cb::Status::UNIMPLEMENTED;
+  reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
-::grpc_cb::Status Service::RouteChat(
-    const ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,
-                                        ::routeguide::RouteNote>&
+void Service::RouteChat(
+    const ::grpc_cb::ServerReaderWriter<
+        ::routeguide::RouteNote,
+        ::routeguide::RouteNote>&
         stream) {
-  (void)stream;
-  return ::grpc_cb::Status::UNIMPLEMENTED;
+  stream.Close(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 }  // namespace RouteGuide

@@ -8,18 +8,24 @@
 
 namespace grpc_cb {
 
-template <class Request>
+template <class Request, class Response>
 class ServerReader {
  public:
   inline ServerReader(const CallSptr& call_sptr);
 
  public:
-     // XXX no blocking
-  bool BlockingReadOne(Request* request) const {
+  // BlockingReadOne() is intended to use in thread other than server run thread.
+  inline bool BlockingReadOne(Request* request) const {
     assert(request);
     // XXX
     return false;
   }
+  // Todo: ReadCallback, ReadErrorCb, DoneCallback
+  inline bool AsyncReadEach() const {}  // Todo: async read each callback
+  inline bool AsyncReadOne() const {}  // XXX
+
+  inline void ReplyError(const Status& error_status) const {}  // XXX
+  inline void Reply(const Response& response) const {}  // XXX
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
@@ -30,8 +36,8 @@ class ServerReader {
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ServerReader<>
 
-template <class Request>
-ServerReader<Request>::ServerReader(const CallSptr& call_sptr)
+template <class Request, class Response>
+ServerReader<Request, Response>::ServerReader(const CallSptr& call_sptr)
     : data_sptr_(new Data{call_sptr}) {
   assert(call_sptr);
   ServerInitMdCqTag* tag = new ServerInitMdCqTag(call_sptr);

@@ -11,19 +11,21 @@ namespace grpc_cb {
 template <class Request, class Response>
 class ServerReaderWriter {
  public:
-  ServerReaderWriter(const CallSptr& call_sptr) {}  // XXX
+  inline ServerReaderWriter(const CallSptr& call_sptr) {}  // XXX
 
  public:
      // XXX no blocking
-  bool BlockingReadOne(Request* request) const {
+  inline bool BlockingReadOne(Request* request) const {
     assert(request);
     // XXX
     return false;
   }
 
-  void Write(const Response& response) const {
+  inline void Write(const Response& response) const {
     // XXX
   }
+
+  inline void Close(const Status& status) const {}  // XXX
 };  // class ServerReaderWriter<>
 
 }  // namespace grpc_cb
