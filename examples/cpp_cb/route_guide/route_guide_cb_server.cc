@@ -150,21 +150,28 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     r.previous = point;
   }
 
+  // Todo: Use Replier instead of Reader.
   void RecordRoute_OnEnd(
       const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
     assert(record_route_result_);
-    RecordRouteResult& r = *record_route_result_;
-    system_clock::time_point end_time = system_clock::now();
-    RouteSummary summary;
-    summary.set_point_count(r.point_count);
-    summary.set_feature_count(r.feature_count);
-    summary.set_distance(static_cast<long>(r.distance));
-    auto secs = std::chrono::duration_cast<std::chrono::seconds>(
-        end_time - r.start_time);
-    summary.set_elapsed_time(secs.count());
-
-    reader.Reply(summary);
+    const RecordRouteResult r = *record_route_result_;
     record_route_result_.reset();
+
+    std::thread t([r, reader]() {
+      system_clock::time_point end_time = system_clock::now();
+      RouteSummary summary;
+      summary.set_point_count(r.point_count);
+      summary.set_feature_count(r.feature_count);
+      summary.set_distance(static_cast<long>(r.distance));
+      auto secs = std::chrono::duration_cast<std::chrono::seconds>(
+          end_time - r.start_time);
+      summary.set_elapsed_time(secs.count());
+
+      // Delayed reply.
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      reader.Reply(summary);
+    });
+    t.detach();
   }
 
   void RouteChat(const ::grpc_cb::ServerReaderWriter<RouteNote, RouteNote>& stream) override {
