@@ -187,16 +187,24 @@ void Service::ListFeatures(
   writer.Close(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
-void Service::RecordRoute(
+void Service::RecordRoute_OnStart(
+    const RecordRoute_Reader& reader) {
+  reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+}
+
+void Service::RecordRoute_OnMsg(
+    const ::routeguide::Point& point,
+    const RecordRoute_Reader& reader) {
+  reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+}
+
+void Service::RecordRoute_OnEnd(
     const RecordRoute_Reader& reader) {
   reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 void Service::RouteChat(
-    const ::grpc_cb::ServerReaderWriter<
-        ::routeguide::RouteNote,
-        ::routeguide::RouteNote>&
-        stream) {
+    const RouteChat_Stream& stream) {
   stream.Close(::grpc_cb::Status::UNIMPLEMENTED);
 }
 

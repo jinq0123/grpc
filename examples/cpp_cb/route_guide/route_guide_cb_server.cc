@@ -108,7 +108,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   void ListFeatures(
       const routeguide::Rectangle& rectangle,
-      const ::grpc_cb::ServerWriter< ::routeguide::Feature>& writer) override {
+      const ListFeatures_Writer& writer) override {
     const std::vector<Feature>& feature_list = feature_list_;
     std::thread t([&rectangle, writer, &feature_list]() {
       auto lo = rectangle.lo();
@@ -133,12 +133,12 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   // Todo: Need session id.
   void RecordRoute_OnStart(
-      const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
+      const RecordRoute_Reader& reader) override {
       record_route_result_.reset(new RecordRouteResult);
   }
 
   void RecordRoute_OnMsg(const Point& point,
-      const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
+      const RecordRoute_Reader& reader) override {
     assert(record_route_result_);
     RecordRouteResult& r = *record_route_result_;
     r.point_count++;
@@ -153,7 +153,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   // Todo: Use Replier instead of Reader.
   void RecordRoute_OnEnd(
-      const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
+      const RecordRoute_Reader& reader) override {
     assert(record_route_result_);
     const RecordRouteResult r = *record_route_result_;
     record_route_result_.reset();
@@ -175,7 +175,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     t.detach();
   }
 
-  void RouteChat(const ::grpc_cb::ServerReaderWriter<RouteNote, RouteNote>& stream) override {
+  void RouteChat(const RouteChat_Stream& stream) override {
     std::thread t([stream]() {
       std::vector<RouteNote> received_notes;
       RouteNote note;
