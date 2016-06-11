@@ -4,6 +4,9 @@
 #ifndef GRPC_CB_IMPL_SERVER_SERVER_READER_CQTAG_H
 #define GRPC_CB_IMPL_SERVER_SERVER_READER_CQTAG_H
 
+#include <functional>
+#include <memory>  // for shared_ptr<>
+
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
 
 #include <grpc_cb/impl/call.h>             // for StartBatch()

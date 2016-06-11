@@ -4,6 +4,8 @@
 #ifndef GRPC_CB_IMPL_SERVER_SERVER_READER_INIT_CQTAG_H
 #define GRPC_CB_IMPL_SERVER_SERVER_READER_INIT_CQTAG_H
 
+#include <memory>  // for shared_ptr<>
+
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
 
 #include <grpc_cb/impl/call.h>                        // for StartBatch()
@@ -18,14 +20,12 @@ namespace grpc_cb {
 template <class Request, class Response>
 class ServerReaderInitCqTag GRPC_FINAL : public CallCqTag {
  public:
+  using ReaderCqTag = ServerReaderCqTag<Request, Response>;
   using Replier = ServerReplier<Response>;
-  using MsgCallback = std::function<void (const Request&, const Replier&)>;
-  using EndCallback = std::function<void (const Replier&)>;
-  struct Callbacks {
-      MsgCallback on_msg;
-      EndCallback on_end;
-  };
-  using CallbacksSptr = std::shared_ptr<Callbacks>;
+  using MsgCallback = ReaderCqTag::MsgCallback;
+  using EndCallback = ReaderCqTag::EndCallback;
+  using Callbacks = ReaderCqTag::Callbacks;
+  using CallbacksSptr = ReaderCqTag::CallbacksSptr;
 
  public:
   inline ServerReaderInitCqTag(const CallSptr& call_sptr,
@@ -64,7 +64,6 @@ template <class Request, class Response>
 void ServerReaderInitCqTag<Request, Response>::DoComplete(bool success) {
   assert(success);
   const CallSptr& call_sptr = GetCallSptr();
-  using ReaderCqTag = ServerReaderCqTag<Request, Response>;
   auto* tag = new ReaderCqTag(call_sptr, cbs_sptr_);
   ::grpc_cb::Status status = tag->Start();
   if (status.ok()) return;
