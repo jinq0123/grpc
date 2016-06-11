@@ -4,6 +4,8 @@
 #ifndef GRPC_CB_SERVER_REPLIER_H
 #define GRPC_CB_SERVER_REPLIER_H
 
+#include <memory>
+
 #include <grpc_cb/impl/call_sptr.h>                   // for CallSptr
 #include <grpc_cb/impl/server/server_replier_cqtag.h>  // for ServerReplierCqTag
 
@@ -19,7 +21,6 @@ class Status;
 template <class ResponseType>
 class ServerReplier {
  public:
-  // Copy msg_replier.
   explicit ServerReplier(const CallSptr& call_sptr)
       : data_sptr_(new Data{call_sptr}) {
     assert(call_sptr);
@@ -49,10 +50,11 @@ class ServerReplier {
 
 private:
   struct Data {
-    CallSptr call_sptr;
-    bool replied = false;
+    const CallSptr call_sptr;
+    bool replied{false};
+    explicit Data(const CallSptr& call_sp) : call_sptr(call_sp) {}
   };
-  std::shared_ptr<Data> data_sptr_;  // copyable
+  const std::shared_ptr<Data> data_sptr_;  // copyable
 };  // class ServerReplier
 
 }  // namespace grpc_cb
