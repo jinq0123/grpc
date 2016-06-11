@@ -131,6 +131,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     t.detach();
   }
 
+  // Todo: Need session id.
   void RecordRoute_OnStart(
       const ::grpc_cb::ServerReader<Point, RouteSummary>& reader) override {
       record_route_result_.reset(new RecordRouteResult);
@@ -195,6 +196,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
  private:
   std::vector<Feature> feature_list_;
+
   struct RecordRouteResult {
       int point_count = 0;
       int feature_count = 0;
@@ -202,6 +204,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
       Point previous;
       system_clock::time_point start_time = system_clock::now();
   };
+  // Todo: Need separate sessions.
   std::unique_ptr<RecordRouteResult> record_route_result_;
 };
 

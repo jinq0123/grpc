@@ -129,16 +129,16 @@ void Service::CallMethod(
   switch (method_index) {
     case 0:
       GetFeature(request_buffer,
-          ::grpc_cb::ServerReplier<::routeguide::Feature>(call_sptr));
+          GetFeature_Replier(call_sptr));
       return;
     case 1:
-      ListFeatures(request_buffer, ListFeaturesWriter(call_sptr));
+      ListFeatures(request_buffer, ListFeatures_Writer(call_sptr));
       return;
     case 2:
-      RecordRoute(RecordRouteReader(call_sptr));
+      RecordRoute(RecordRoute_Reader(call_sptr));
       return;
     case 3:
-      RouteChat(RouteChatStream(call_sptr));
+      RouteChat(RouteChat_Stream(call_sptr));
       return;
   }  // switch
   assert(false);
@@ -146,7 +146,7 @@ void Service::CallMethod(
 
 void Service::GetFeature(
     grpc_byte_buffer& request_buffer,
-    const ::grpc_cb::ServerReplier<::routeguide::Feature>& replier) {
+    const GetFeature_Replier& replier) {
   using Request = ::routeguide::Point;
   Request request;
   ::grpc_cb::Status status =
@@ -156,18 +156,18 @@ void Service::GetFeature(
     GetFeature(request, replier);
     return;
   }
-  ::grpc_cb::ServerReplier<::routeguide::Feature>(
+  GetFeature_Replier(
       replier).ReplyError(status);
 }
 void Service::GetFeature(
     const ::routeguide::Point& request,
-    ::grpc_cb::ServerReplier<::routeguide::Feature> replier_copy) {
+    GetFeature_Replier replier_copy) {
   (void)request;
   replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 void Service::ListFeatures(grpc_byte_buffer& request_buffer,
-    const ListFeaturesWriter& writer) {
+    const ListFeatures_Writer& writer) {
   using Request = ::routeguide::Rectangle;
   Request request;
   ::grpc_cb::Status status =
@@ -182,13 +182,13 @@ void Service::ListFeatures(grpc_byte_buffer& request_buffer,
 
 void Service::ListFeatures(
     const ::routeguide::Rectangle& request,
-    const ListFeaturesWriter& writer) {
+    const ListFeatures_Writer& writer) {
   (void)request;
   writer.Close(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 void Service::RecordRoute(
-    const RecordRouteReader& reader) {
+    const RecordRoute_Reader& reader) {
   reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
