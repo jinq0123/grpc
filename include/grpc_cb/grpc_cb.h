@@ -12,7 +12,6 @@
 #include <grpc_cb/service_stub.h>    // for ServiceStub
 #include <grpc_cb/status.h>          // for Status
 
-#include <grpc_cb/server_reader.h>
 #include <grpc_cb/server_writer.h>
 #include <grpc_cb/server_reader_writer.h>
 

@@ -46,7 +46,6 @@
 #include "route_guide.grpc_cb.pb.h"
 
 using grpc_cb::Server;
-using grpc_cb::ServerReader;
 using grpc_cb::ServerReaderWriter;
 using grpc_cb::ServerWriter;
 using grpc_cb::Status;
