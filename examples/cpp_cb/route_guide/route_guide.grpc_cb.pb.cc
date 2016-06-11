@@ -70,8 +70,8 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call_sptr(GetChannel().MakeSharedCall(method_names[0], cq));
   ::grpc_cb::ClientCallCqTag tag(call_sptr);
-  ::grpc_cb::Status status = tag.Start(request);
-  if (!status.ok()) return status;
+  if (!tag.Start(request))
+    return ::grpc_cb::Status::InternalError("Failed to request.");
   cq.Pluck(&tag);
   return tag.GetResponse(*response);
 }
@@ -85,11 +85,10 @@ void Stub::AsyncGetFeature(
       GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::routeguide::Feature>;
   CqTag* tag = new CqTag(call_sptr, cb, err_cb);
-  ::grpc_cb::Status status = tag->Start(request);
-  if (!status.ok()) {
-    delete tag;
-    err_cb(status);
-  }
+  if (tag->Start(request)) return;
+  delete tag;
+  // Todo: Extract CallInternalErrorCb("Error to do...");
+  err_cb(::grpc_cb::Status::InternalError("Failed to async request."));
 }
 
 ::grpc_cb::ClientReader<::routeguide::Feature>
@@ -200,14 +199,14 @@ void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
       [this](const RecordRoute_Replier& replier) {
         RecordRoute_OnEnd(replier);
       });
-  ::grpc_cb::Status status = tag->Start();
   RecordRoute_Replier replier(call_sptr);
-  if (status.ok()) {
+  if (tag->Start()) {
     RecordRoute_OnStart(replier);
     return;
   }
   delete tag;
-  replier.ReplyError(status);
+  replier.ReplyError(::grpc_cb::Status::InternalError(
+      "Failed to init server reader."));
 }
 
 void Service::RecordRoute_OnStart(

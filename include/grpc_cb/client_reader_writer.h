@@ -51,9 +51,9 @@ ClientReaderWriter<Request, Response>::ClientReaderWriter(
   assert(channel);
   assert(data_sptr_->call_sptr);
   ClientInitMdCqTag* tag = new ClientInitMdCqTag(data_sptr_->call_sptr);
-  Status& status = data_sptr_->status;
-  status = tag->Start();
-  if (!status.ok()) delete tag;
+  if (tag->Start()) return;
+  delete tag;
+  data_sptr_->status.SetInternalError("Failed to init stream.");
 }
 
 template <class Request, class Response>
@@ -64,9 +64,10 @@ bool ClientReaderWriter<Request, Response>::Write(const Request& request) const 
   if (!status.ok()) return false;
 
   SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
-  status = tag->Start(request);
-  if (status.ok()) return true;
+  if (tag->Start(request)) return true;
+
   delete tag;
+  status.SetInternalError("Failed to write stream.");
   return false;
 }
 
@@ -75,8 +76,10 @@ void ClientReaderWriter<Request, Response>::WritesDone() const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return;
   ClientSendCloseCqTag* tag = new ClientSendCloseCqTag(data_sptr_->call_sptr);
-  status = tag->Start();
-  if (!status.ok()) delete tag;
+  if (tag->Start()) return;
+
+  delete tag;
+  status.SetInternalError("Failed to set stream writes done.");
 }
 
 template <class Request, class Response>

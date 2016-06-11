@@ -17,14 +17,14 @@ namespace grpc_cb {
 class ServerInitMdCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline explicit ServerInitMdCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
-  inline Status Start() GRPC_MUST_USE_RESULT;
+  inline bool Start() GRPC_MUST_USE_RESULT;
 
  private:
   CodSendInitMd cod_send_init_md_;
   // Already got init_md and request, so no CodRecvInitMd.
 };  // class ServerInitMdCqTag
 
-Status ServerInitMdCqTag::Start() {
+bool ServerInitMdCqTag::Start() {
   CallOperations ops;
   // Todo: Fill send_init_md_array_ -> FillMetadataVector()
   ops.SendInitMd(cod_send_init_md_);

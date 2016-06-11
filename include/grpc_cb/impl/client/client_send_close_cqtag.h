@@ -16,10 +16,10 @@ namespace grpc_cb {
 class ClientSendCloseCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline explicit ClientSendCloseCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
-  inline Status Start() GRPC_MUST_USE_RESULT;
+  inline bool Start() GRPC_MUST_USE_RESULT;
 };  // class ClientInitMdCqTag
 
-Status ClientSendCloseCqTag::Start() {
+bool ClientSendCloseCqTag::Start() {
   CallOperations ops;
   ops.ClientSendClose();
   return GetCallSptr()->StartBatch(ops, this);

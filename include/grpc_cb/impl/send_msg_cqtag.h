@@ -18,13 +18,13 @@ class SendMsgCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline explicit SendMsgCqTag(const CallSptr& call_sptr)
       : CallCqTag(call_sptr) {}
-  inline Status Start(const ::google::protobuf::Message& message) GRPC_MUST_USE_RESULT;
+  inline bool Start(const ::google::protobuf::Message& message) GRPC_MUST_USE_RESULT;
 
  private:
   CodSendMsg cod_send_msg_;
 };  // class SendMsgCqTag
 
-Status SendMsgCqTag::Start(
+bool SendMsgCqTag::Start(
     const ::google::protobuf::Message& message) {
   CallOperations ops;
   ops.SendMsg(message, cod_send_msg_);

@@ -25,7 +25,7 @@ class ClientCallCqTag : public CallCqTag {
   virtual ~ClientCallCqTag() {}
 
  public:
-  inline Status Start(const ::google::protobuf::Message& request) GRPC_MUST_USE_RESULT;
+  inline bool Start(const ::google::protobuf::Message& request) GRPC_MUST_USE_RESULT;
 
 public:
   Status GetResponse(::google::protobuf::Message& message) {
@@ -44,10 +44,10 @@ public:
   CodClientRecvStatus cod_client_recv_status_;
 };  // class ClientCallCqTag
 
-Status ClientCallCqTag::Start(const ::google::protobuf::Message& request) {
+bool ClientCallCqTag::Start(const ::google::protobuf::Message& request) {
   CallOperations ops;
   Status status = ops.SendMsg(request, cod_send_msg_);
-  if (!status.ok()) return status;
+  if (!status.ok()) return false;
 
   // Todo: Fill send_init_md_array_ -> FillMetadataVector()
   ops.SendInitMd(cod_send_init_md_);

@@ -13,4 +13,9 @@ Status Status::InternalError(const std::string& details) {
   return Status(GRPC_STATUS_INTERNAL, details);
 }
 
+void Status::SetInternalError(const std::string& error_msg) {
+  code_ = GRPC_STATUS_INTERNAL;
+  details_ = error_msg;
+}
+
 }  // namespace grpc_cb

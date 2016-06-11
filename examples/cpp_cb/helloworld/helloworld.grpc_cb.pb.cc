@@ -67,8 +67,8 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
   ::grpc_cb::CompletionQueue cq;
   ::grpc_cb::CallSptr call_sptr(GetChannel().MakeSharedCall(method_names[0], cq));
   ::grpc_cb::ClientCallCqTag tag(call_sptr);
-  ::grpc_cb::Status status = tag.Start(request);
-  if (!status.ok()) return status;
+  bool ok = tag.Start(request);
+  if (!ok) return ::grpc_cb::Status::InternalError("Failed to request.");
   cq.Pluck(&tag);  // Todo: Make sure tag was not queued if StartBatch() failed.
   return tag.GetResponse(*response);
 }
@@ -82,10 +82,9 @@ void Stub::AsyncSayHello(
       GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::helloworld::HelloReply>;
   CqTag* tag = new CqTag(call_sptr, cb, err_cb);
-  ::grpc_cb::Status status = tag->Start(request);
-  if (!status.ok()) {
+  if (!tag->Start(request)) {
     delete tag;
-    err_cb(status);
+    err_cb(::grpc_cb::Status::InternalError("Failed to async request."));
   }
 }
 

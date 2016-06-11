@@ -73,6 +73,9 @@ class Status {
   /// Is the status OK?
   bool ok() const { return code_ == GRPC_STATUS_OK; }
 
+ public:
+  void SetInternalError(const std::string& error_msg);
+
  private:
   grpc_status_code code_;
   std::string details_;

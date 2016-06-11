@@ -18,7 +18,7 @@ class ClientWriterFinishCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline explicit ClientWriterFinishCqTag(const CallSptr& call_sptr)
       : CallCqTag(call_sptr) {}
-  inline Status Start() GRPC_MUST_USE_RESULT;
+  inline bool Start() GRPC_MUST_USE_RESULT;
   inline bool IsStatusOk() const {
     return cod_client_recv_status_.IsStatusOk();
   }
@@ -34,7 +34,7 @@ class ClientWriterFinishCqTag GRPC_FINAL : public CallCqTag {
   CodClientRecvStatus cod_client_recv_status_;
 };  // class ClientWriterFinishCqTag
 
-Status ClientWriterFinishCqTag::Start() {
+bool ClientWriterFinishCqTag::Start() {
   CallOperations ops;
   ops.ClientSendClose();
   ops.RecvMsg(cod_recv_msg_);

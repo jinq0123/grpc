@@ -34,9 +34,10 @@ ServerWriter<Response>::ServerWriter(const CallSptr& call_sptr)
   assert(call_sptr);
   ServerInitMdCqTag* tag = new ServerInitMdCqTag(call_sptr);
   // Todo: Set init md
-  Status& status = data_sptr_->status;
-  status = tag->Start();
-  if (!status.ok()) delete tag;
+  if (tag->Start()) return;
+
+  delete tag;
+  data_sptr_->status.SetInternalError("Failed to init server stream.");
 }
 
 template <class Response>
@@ -44,9 +45,10 @@ bool ServerWriter<Response>::Write(const Response& response) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
   SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
-  status = tag->Start(response);
-  if (status.ok()) return true;
+  if (tag->Start(response)) return true;
+
   delete tag;
+  status.SetInternalError("Failed to write server stream.");
   return false;
 }
 

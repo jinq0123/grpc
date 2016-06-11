@@ -35,8 +35,7 @@ class ServerReplier {
     if (replied) return;
     replied = true;
     auto* tag = new ServerReplierCqTag(data_sptr_->call_sptr);  // delete in Run()
-    Status status = tag->StartReply(response);
-    if (!status.ok()) delete tag;
+    if (!tag->StartReply(response)) delete tag;
   }
 
   void ReplyError(const Status& status) const {
@@ -44,8 +43,7 @@ class ServerReplier {
     if (replied) return;
     replied = true;
     auto* tag = new ServerReplierCqTag(data_sptr_->call_sptr);  // delete in Run()
-    Status status2 = tag->StartReplyError(status);
-    if (!status2.ok()) delete tag;
+    if (!tag->StartReplyError(status)) delete tag;
   }
 
 private:

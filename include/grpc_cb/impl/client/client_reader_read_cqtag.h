@@ -18,7 +18,7 @@ class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
   inline explicit ClientReaderReadCqTag(const CallSptr& call_sptr,
                                         const Callback& cb = Callback())
       : CallCqTag(call_sptr), cb_(cb) {}
-  inline Status Start();
+  inline bool Start() GRPC_MUST_USE_RESULT;
   inline Status GetResultMsg(::google::protobuf::Message& message)
       GRPC_MUST_USE_RESULT {
     return cod_recv_msg_.GetResultMsg(
@@ -32,7 +32,7 @@ class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
   Callback cb_;
 };  // class ClientReaderReadCqTag
 
-Status ClientReaderReadCqTag::Start() {
+bool ClientReaderReadCqTag::Start() {
   CallOperations ops;
   ops.RecvMsg(cod_recv_msg_);
   return GetCallSptr()->StartBatch(ops, this);

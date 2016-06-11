@@ -32,7 +32,7 @@ class ServerReaderCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline ServerReaderCqTag(const CallSptr& call_sptr,
       const CallbacksSptr& cbs_sptr);
-  inline Status Start() GRPC_MUST_USE_RESULT;
+  inline bool Start() GRPC_MUST_USE_RESULT;
 
  public:
   inline void DoComplete(bool success) GRPC_OVERRIDE;
@@ -53,7 +53,7 @@ ServerReaderCqTag<Request, Response>::ServerReaderCqTag(
 }
 
 template <class Request, class Response>
-Status ServerReaderCqTag<Request, Response>::Start() {
+bool ServerReaderCqTag<Request, Response>::Start() {
   CallOperations ops;
   ops.RecvMsg(cod_recv_msg_);
   return GetCallSptr()->StartBatch(ops, this);
@@ -80,10 +80,10 @@ void ServerReaderCqTag<Request, Response>::DoComplete(bool success) {
   cbs_sptr_->on_msg(request, replier);
 
   auto* tag = new ServerReaderCqTag(call_sptr, cbs_sptr_);
-  status = tag->Start();
-  if (status.ok()) return;
+  if (tag->Start()) return;
+
   delete tag;
-  replier.ReplyError(status);
+  replier.ReplyError(Status::InternalError("Failed to read client stream."));
 }
 
 };  // namespace grpc_cb

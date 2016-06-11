@@ -65,9 +65,10 @@ ClientReader<Response>::ClientReader(
   assert(channel);
   assert(data_sptr_->call_sptr);
   ClientReaderInitCqTag* tag = new ClientReaderInitCqTag(data_sptr_->call_sptr);
-  Status& status = data_sptr_->status;
-  status = tag->Start(request);
-  if (!status.ok()) delete tag;
+  if (tag->Start(request)) return;
+  delete tag;
+  data_sptr_->status.SetInternalError(
+      "Failed to start client reader stream.");
 }
 
 template <class Response>
@@ -78,8 +79,10 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
 
   CallSptr& call_sptr = data_sptr_->call_sptr;
   ReadCqTag tag(call_sptr);
-  status = tag.Start();
-  if (!status.ok()) return false;
+  if (!tag.Start()) {
+    status.SetInternalError("End of server stream.");  // Todo: use EndOfStream instead of status.
+    return false;
+  }
 
   // tag.Start() has queued the tag. Wait for completion.
   data_sptr_->cq_sptr->Pluck(&tag);
@@ -107,8 +110,10 @@ void ClientReader<Response>::AsyncReadNext() const {
   ReadCqTag* tag = new ReadCqTag(
       call_sptr,
       [this_copy](ReadCqTag& tag) { this_copy.OnReadEach(tag); });
-  status = tag->Start();
-  if (!status.ok()) delete tag;
+  if (tag->Start()) return;
+
+  delete tag;
+  status.SetInternalError("Failed to async read server stream.");
 }
 
 template <class Response>

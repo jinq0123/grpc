@@ -30,7 +30,7 @@ class ServerReaderInitCqTag GRPC_FINAL : public CallCqTag {
  public:
   inline ServerReaderInitCqTag(const CallSptr& call_sptr,
       const MsgCallback& on_msg, const EndCallback& on_end);
-  inline Status Start() GRPC_MUST_USE_RESULT;
+  inline bool Start() GRPC_MUST_USE_RESULT;
 
  public:
   inline void DoComplete(bool success) GRPC_OVERRIDE;
@@ -53,7 +53,7 @@ ServerReaderInitCqTag<Request, Response>::ServerReaderInitCqTag(
 }
 
 template <class Request, class Response>
-Status ServerReaderInitCqTag<Request, Response>::Start() {
+bool ServerReaderInitCqTag<Request, Response>::Start() {
   CallOperations ops;
   // Todo: Fill send_init_md_array_ -> FillMetadataVector()
   ops.SendInitMd(cod_send_init_md_);
@@ -65,10 +65,11 @@ void ServerReaderInitCqTag<Request, Response>::DoComplete(bool success) {
   assert(success);
   const CallSptr& call_sptr = GetCallSptr();
   auto* tag = new ReaderCqTag(call_sptr, cbs_sptr_);
-  ::grpc_cb::Status status = tag->Start();
-  if (status.ok()) return;
+  if (tag->Start()) return;
+
   delete tag;
-  Replier(call_sptr).ReplyError(status);
+  Replier(call_sptr).ReplyError(
+      Status::InternalError("Failed to init client stream."));
 }
 
 };  // namespace grpc_cb
