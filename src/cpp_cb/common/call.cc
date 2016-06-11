@@ -24,6 +24,7 @@ Call::Call(grpc_call* c_call) :
 Call::~Call() {
 }
 
+// Todo: return bool...
 Status Call::StartBatch(const CallOperations& ops, void* tag) {
   grpc_call_error result = grpc_call_start_batch(
     c_call(), ops.GetOps(), ops.GetOpsNum(), tag, nullptr);

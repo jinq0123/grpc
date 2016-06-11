@@ -11,7 +11,7 @@ namespace grpc_cb {
 
 class Status;
 
-// ServerReplier is for unary rpc call.
+// ServerReplier is for unary rpc call and client stream rpc.
 // ServerWriter is for server stream rpc.
 
 // Copyable.
@@ -21,24 +21,38 @@ class ServerReplier {
  public:
   // Copy msg_replier.
   explicit ServerReplier(const CallSptr& call_sptr)
-      : call_sptr_(call_sptr) {
+      : data_sptr_(new Data{call_sptr}) {
     assert(call_sptr);
+    assert(!data_sptr_->replied);
   };
   virtual ~ServerReplier() {};
 
  public:
   // Todo: Add BlockingReply(response), AsyncReply(response), AsyncReply(response, cb)
   void Reply(const ResponseType& response) const {
-    auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
-    tag->StartReply(response); 
+    bool& replied = data_sptr_->replied;
+    if (replied) return;
+    replied = true;
+    auto* tag = new ServerReplierCqTag(data_sptr_->call_sptr);  // delete in Run()
+    Status status = tag->StartReply(response);
+    if (!status.ok()) delete tag;
   }
+
   void ReplyError(const Status& status) const {
-    auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
-    tag->StartReplyError(status);
+    bool& replied = data_sptr_->replied;
+    if (replied) return;
+    replied = true;
+    auto* tag = new ServerReplierCqTag(data_sptr_->call_sptr);  // delete in Run()
+    Status status2 = tag->StartReplyError(status);
+    if (!status2.ok()) delete tag;
   }
 
 private:
-  CallSptr call_sptr_;  // copyable
+  struct Data {
+    CallSptr call_sptr;
+    bool replied = false;
+  };
+  std::shared_ptr<Data> data_sptr_;  // copyable
 };  // class ServerReplier
 
 }  // namespace grpc_cb

@@ -73,7 +73,7 @@ void ServerReaderCqTag<Request, Response>::DoComplete(bool success) {
   Status status = cod_recv_msg_.GetResultMsg(
       request, call_sptr->GetMaxMsgSize());
   if (!status.ok()) {
-      replier.ReplyError(status);  // Todo: reply only once
+      replier.ReplyError(status);
       return;
   }
 

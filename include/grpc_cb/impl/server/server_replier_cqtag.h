@@ -19,8 +19,8 @@ class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
   explicit ServerReplierCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
   virtual ~ServerReplierCqTag() {}
 
-  inline void StartReply(const ::google::protobuf::Message& msg);
-  inline void StartReplyError(const Status& status);
+  inline Status StartReply(const ::google::protobuf::Message& msg) GRPC_MUST_USE_RESULT;
+  inline Status StartReplyError(const Status& status) GRPC_MUST_USE_RESULT;
 
  private:
   CodSendInitMd cod_send_init_md_;
@@ -28,19 +28,19 @@ class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
   CodServerSendStatus cod_server_send_status_;
 };
 
-void ServerReplierCqTag::StartReply(const ::google::protobuf::Message& msg) {
+Status ServerReplierCqTag::StartReply(const ::google::protobuf::Message& msg) {
   CallOperations ops;
   ops.SendInitMd(cod_send_init_md_);  // Todo: init metadata
   Status status = ops.SendMsg(msg, cod_send_msg_);
   ops.ServerSendStatus(status, cod_server_send_status_);
-  GetCallSptr()->StartBatch(ops, this);
+  return GetCallSptr()->StartBatch(ops, this);
 }
 
-void ServerReplierCqTag::StartReplyError(const Status& status) {
+Status ServerReplierCqTag::StartReplyError(const Status& status) {
   CallOperations ops;
   ops.SendInitMd(cod_send_init_md_);
   ops.ServerSendStatus(status, cod_server_send_status_);
-  GetCallSptr()->StartBatch(ops, this);
+  return GetCallSptr()->StartBatch(ops, this);
 }
 
 }  // namespace grpc_cb
