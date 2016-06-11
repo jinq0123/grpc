@@ -87,6 +87,7 @@ class Service : public ::grpc_cb::Service {
       const ::routeguide::Rectangle& request,
       const ListFeatures_Writer& writer);
 
+  void RecordRoute(const ::grpc_cb::CallSptr& call_sptr);
   using RecordRoute_Reader =
       ::grpc_cb::ServerReader<::routeguide::Point, ::routeguide::RouteSummary>;
   virtual void RecordRoute_OnStart(

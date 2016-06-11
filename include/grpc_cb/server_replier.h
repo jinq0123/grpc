@@ -1,8 +1,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#ifndef GRPC_CB_SERVER_ASYNC_REPLIER_H
-#define GRPC_CB_SERVER_ASYNC_REPLIER_H
+#ifndef GRPC_CB_SERVER_REPLIER_H
+#define GRPC_CB_SERVER_REPLIER_H
 
 #include <grpc_cb/impl/call_sptr.h>                   // for CallSptr
 #include <grpc_cb/impl/server/server_replier_cqtag.h>  // for ServerReplierCqTag
@@ -18,11 +18,11 @@ class Status;
 // Safe to delete before completion.
 template <class ResponseType>
 class ServerReplier {
-public:
+ public:
   // Copy msg_replier.
   explicit ServerReplier(const CallSptr& call_sptr)
-     : call_sptr_(call_sptr) {
-   assert(call_sptr);
+      : call_sptr_(call_sptr) {
+    assert(call_sptr);
   };
   virtual ~ServerReplier() {};
 
@@ -43,4 +43,4 @@ private:
 
 }  // namespace grpc_cb
 
-#endif  // GRPC_CB_SERVER_ASYNC_REPLIER_H
+#endif  // GRPC_CB_SERVER_REPLIER_H

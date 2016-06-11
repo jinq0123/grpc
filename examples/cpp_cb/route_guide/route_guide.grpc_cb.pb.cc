@@ -187,6 +187,18 @@ void Service::ListFeatures(
   writer.Close(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
+void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
+  assert(call_sptr);
+  auto* tag = new ServerReaderCqTag(call_sptr);
+  Status status = tag->Start();
+  if (status.ok) {
+    RecordRoute_OnStart();
+    return;
+  }
+  delete tag;
+  ServerReplier<::routeguide::RouteSummary>().ReplyError(status);
+}
+
 void Service::RecordRoute_OnStart(
     const RecordRoute_Reader& reader) {
   reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
