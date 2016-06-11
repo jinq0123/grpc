@@ -49,142 +49,142 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\channel.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\grpc_cb.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\service_stub.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h">
-      <Filter>include\grp_cb\support</Filter>
+      <Filter>include\grpc_cb\support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\error_callback.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h">
-      <Filter>include\grp_cb\support</Filter>
+      <Filter>include\grpc_cb\support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h">
-      <Filter>include\grp_cb\security</Filter>
+      <Filter>include\grpc_cb\security</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\service.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_tag.h">
       <Filter>src\cpp_cb\server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h">
-      <Filter>include\grp_cb\support</Filter>
+      <Filter>include\grpc_cb\support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_sptr.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h">
-      <Filter>include\grp_cb\support</Filter>
+      <Filter>include\grpc_cb\support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_operations.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server_replier.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\channel_sptr.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_tag.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\client_reader.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\client_reader_writer.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\client_writer.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server_reader.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server_reader_writer.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server_writer.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\status.h">
-      <Filter>include\grp_cb</Filter>
+      <Filter>include\grpc_cb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_async_call_cqtag.h">
-      <Filter>include\grp_cb\impl\client</Filter>
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_call_cqtag.h">
-      <Filter>include\grp_cb\impl\client</Filter>
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_reader_init_cqtag.h">
-      <Filter>include\grp_cb\impl\client</Filter>
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_cqtag.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_uptr.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_op_data.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_cqtag.h">
-      <Filter>include\grp_cb\impl\server</Filter>
+      <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_sptr.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_reader_read_cqtag.h">
-      <Filter>include\grp_cb\impl\client</Filter>
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\support\noncopyable.h">
-      <Filter>include\grp_cb\support</Filter>
+      <Filter>include\grpc_cb\support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_writer_finish_cqtag.h">
-      <Filter>include\grp_cb\impl\client</Filter>
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_init_md_cqtag.h">
-      <Filter>include\grp_cb\impl\client</Filter>
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_send_close_cqtag.h">
-      <Filter>include\grp_cb\impl\client</Filter>
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\send_msg_cqtag.h">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_init_md_cqtag.h">
-      <Filter>include\grp_cb\impl\server</Filter>
+      <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_init_cqtag.h">
-      <Filter>include\grp_cb\impl\server</Filter>
+      <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_cqtag.h">
-      <Filter>include\grp_cb\impl\server</Filter>
+      <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -200,15 +200,6 @@
     <Filter Include="src\cpp_cb\client">
       <UniqueIdentifier>{7febf32a-d7a6-76fa-9e17-f189f591c062}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\grp_cb">
-      <UniqueIdentifier>{784a0281-f547-aeb0-9f55-b26b7de9c769}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\grp_cb\impl">
-      <UniqueIdentifier>{0da8cd95-314f-da1b-5ce7-7791a5be1f1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\grp_cb\support">
-      <UniqueIdentifier>{a8a760c0-baae-4f34-b283-72468be46b91}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\cpp_cb\util">
       <UniqueIdentifier>{f00d139c-307a-41b1-aa4f-682dae2698a5}</UniqueIdentifier>
     </Filter>
@@ -221,19 +212,28 @@
     <Filter Include="src\cpp_cb\server">
       <UniqueIdentifier>{b1d610b0-7a34-4323-b843-c59e246ff079}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\grp_cb\security">
-      <UniqueIdentifier>{36156f41-23a2-4c61-b9bf-d6c1f02b1058}</UniqueIdentifier>
+    <Filter Include="include\grpc_cb">
+      <UniqueIdentifier>{784a0281-f547-aeb0-9f55-b26b7de9c769}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\grp_cb\impl\client">
+    <Filter Include="include\grpc_cb\impl">
+      <UniqueIdentifier>{0da8cd95-314f-da1b-5ce7-7791a5be1f1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\grpc_cb\impl\client">
       <UniqueIdentifier>{49d5ec60-ee8a-40a4-b8b5-586b1c79dedc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\grp_cb\impl\server">
+    <Filter Include="include\grpc_cb\impl\server">
       <UniqueIdentifier>{5b9f9d62-4174-4c2d-b797-519b3cf0b74a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\grpc_cb\support">
+      <UniqueIdentifier>{a8a760c0-baae-4f34-b283-72468be46b91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\grpc_cb\security">
+      <UniqueIdentifier>{36156f41-23a2-4c61-b9bf-d6c1f02b1058}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\include\grpc_cb\impl\README.md">
-      <Filter>include\grp_cb\impl</Filter>
+      <Filter>include\grpc_cb\impl</Filter>
     </None>
   </ItemGroup>
 </Project>

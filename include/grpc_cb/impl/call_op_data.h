@@ -100,6 +100,7 @@ class CodRecvMsg GRPC_FINAL : noncopyable {
   grpc_byte_buffer** GetRecvBufPtr() { return &recv_buf_; }
 
   Status GetResultMsg(::google::protobuf::Message& message, int max_msg_size) {
+    // XXX if (!recv_buf_)... end of stream
     return DeserializeProto(recv_buf_, &message, max_msg_size);
   }
 

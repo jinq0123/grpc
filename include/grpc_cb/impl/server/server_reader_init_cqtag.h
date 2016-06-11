@@ -6,11 +6,12 @@
 
 #include <grpc/support/port_platform.h>    // for GRPC_MUST_USE_RESULT
 
-#include <grpc_cb/impl/call.h>             // for StartBatch()
-#include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
-#include <grpc_cb/impl/call_op_data.h>     // for CodSendInitMd
-#include <grpc_cb/impl/call_operations.h>  // for CallOperations
-#include <grpc_cb/support/config.h>        // for GRPC_FINAL
+#include <grpc_cb/impl/call.h>                        // for StartBatch()
+#include <grpc_cb/impl/call_cqtag.h>                  // for CallCqTag
+#include <grpc_cb/impl/call_op_data.h>                // for CodSendInitMd
+#include <grpc_cb/impl/call_operations.h>             // for CallOperations
+#include <grpc_cb/impl/server/server_reader_cqtag.h>  // for ServerReaderCqTag
+#include <grpc_cb/support/config.h>                   // for GRPC_FINAL
 
 namespace grpc_cb {
 
@@ -63,7 +64,8 @@ template <class Request, class Response>
 void ServerReaderInitCqTag<Request, Response>::DoComplete(bool success) {
   assert(success);
   const CallSptr& call_sptr = GetCallSptr();
-  auto* tag = new ServerReaderCqTag(call_sptr, cbs_sptr_);
+  using ReaderCqTag = ServerReaderCqTag<Request, Response>;
+  auto* tag = new ReaderCqTag(call_sptr, cbs_sptr_);
   ::grpc_cb::Status status = tag->Start();
   if (status.ok()) return;
   delete tag;

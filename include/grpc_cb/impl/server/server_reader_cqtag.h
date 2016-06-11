@@ -41,7 +41,7 @@ class ServerReaderCqTag GRPC_FINAL : public CallCqTag {
 
 template <class Request, class Response>
 ServerReaderCqTag<Request, Response>::ServerReaderCqTag(
-    const CallSptr& call_sptr, const CallbacksSptr cbs_sptr)
+    const CallSptr& call_sptr, const CallbacksSptr& cbs_sptr)
     : CallCqTag(call_sptr), cbs_sptr_(cbs_sptr) {
   assert(call_sptr);
   assert(cbs_sptr);
@@ -60,15 +60,19 @@ template <class Request, class Response>
 void ServerReaderCqTag<Request, Response>::DoComplete(bool success) {
   assert(success);
   const CallSptr& call_sptr = GetCallSptr();
+  Replier replier(call_sptr);
+  if (!cod_recv_msg_.HasGotMsg()) {
+    cbs_sptr->on_end(replier);
+    return;
+  }
+
   Response response;
   Status status = cod_recv_msg_.GetResultMsg(
       response, call_sptr->GetMaxMsgSize());
-  Replier replier(call_sptr);
   if (!status.ok()) {
       replier.ReplyError(status);  // Todo: reply only once
       return;
   }
-  // XXX reading close?
 
   cbs_sptr->on_msg(replier);
 
