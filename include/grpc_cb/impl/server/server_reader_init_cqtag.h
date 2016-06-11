@@ -22,10 +22,10 @@ class ServerReaderInitCqTag GRPC_FINAL : public CallCqTag {
  public:
   using ReaderCqTag = ServerReaderCqTag<Request, Response>;
   using Replier = ServerReplier<Response>;
-  using MsgCallback = ReaderCqTag::MsgCallback;
-  using EndCallback = ReaderCqTag::EndCallback;
-  using Callbacks = ReaderCqTag::Callbacks;
-  using CallbacksSptr = ReaderCqTag::CallbacksSptr;
+  using MsgCallback = typename ReaderCqTag::MsgCallback;
+  using EndCallback = typename ReaderCqTag::EndCallback;
+  using Callbacks = typename ReaderCqTag::Callbacks;
+  using CallbacksSptr = typename ReaderCqTag::CallbacksSptr;
 
  public:
   inline ServerReaderInitCqTag(const CallSptr& call_sptr,

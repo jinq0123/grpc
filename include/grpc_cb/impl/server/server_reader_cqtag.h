@@ -65,19 +65,19 @@ void ServerReaderCqTag<Request, Response>::DoComplete(bool success) {
   const CallSptr& call_sptr = GetCallSptr();
   Replier replier(call_sptr);
   if (!cod_recv_msg_.HasGotMsg()) {
-    cbs_sptr->on_end(replier);
+    cbs_sptr_->on_end(replier);
     return;
   }
 
-  Response response;
+  Request request;
   Status status = cod_recv_msg_.GetResultMsg(
-      response, call_sptr->GetMaxMsgSize());
+      request, call_sptr->GetMaxMsgSize());
   if (!status.ok()) {
       replier.ReplyError(status);  // Todo: reply only once
       return;
   }
 
-  cbs_sptr->on_msg(replier);
+  cbs_sptr_->on_msg(request, replier);
 
   auto* tag = new ServerReaderCqTag(call_sptr, cbs_sptr_);
   status = tag->Start();
