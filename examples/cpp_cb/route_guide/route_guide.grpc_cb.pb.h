@@ -88,15 +88,15 @@ class Service : public ::grpc_cb::Service {
       const ListFeatures_Writer& writer);
 
   void RecordRoute(const ::grpc_cb::CallSptr& call_sptr);
-  using RecordRoute_Reader =
-      ::grpc_cb::ServerReader<::routeguide::Point, ::routeguide::RouteSummary>;
+  using RecordRoute_Replier = ::grpc_cb::ServerReplier<
+      ::routeguide::RouteSummary>;
   virtual void RecordRoute_OnStart(
-      const RecordRoute_Reader& reader);
+      const RecordRoute_Replier& replier);
   virtual void RecordRoute_OnMsg(
       const ::routeguide::Point& point,
-      const RecordRoute_Reader& reader);
+      const RecordRoute_Replier& replier);
   virtual void RecordRoute_OnEnd(
-      const RecordRoute_Reader& reader);
+      const RecordRoute_Replier& replier);
 
   using RouteChat_Stream =
       ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,

@@ -279,6 +279,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\send_msg_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_init_md_cqtag.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_init_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />

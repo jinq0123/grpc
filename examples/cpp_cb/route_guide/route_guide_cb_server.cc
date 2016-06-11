@@ -133,12 +133,12 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   // Todo: Need session id.
   void RecordRoute_OnStart(
-      const RecordRoute_Reader& reader) override {
-      record_route_result_.reset(new RecordRouteResult);
+      const RecordRoute_Replier& replier) override {
+    record_route_result_.reset(new RecordRouteResult);
   }
 
   void RecordRoute_OnMsg(const Point& point,
-      const RecordRoute_Reader& reader) override {
+      const RecordRoute_Replier& replier) override {
     assert(record_route_result_);
     RecordRouteResult& r = *record_route_result_;
     r.point_count++;
@@ -153,12 +153,12 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   // Todo: Use Replier instead of Reader.
   void RecordRoute_OnEnd(
-      const RecordRoute_Reader& reader) override {
+      const RecordRoute_Replier& replier) override {
     assert(record_route_result_);
     const RecordRouteResult r = *record_route_result_;
     record_route_result_.reset();
 
-    std::thread t([r, reader]() {
+    std::thread t([r, replier]() {
       system_clock::time_point end_time = system_clock::now();
       RouteSummary summary;
       summary.set_point_count(r.point_count);
@@ -170,7 +170,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
       // Delayed reply.
       std::this_thread::sleep_for(std::chrono::seconds(1));
-      reader.Reply(summary);
+      replier.Reply(summary);
     });
     t.detach();
   }

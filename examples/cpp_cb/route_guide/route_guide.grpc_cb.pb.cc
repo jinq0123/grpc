@@ -12,6 +12,7 @@
 #include <grpc_cb/impl/client/client_call_cqtag.h>  // for ClientCallCqTag
 #include <grpc_cb/impl/completion_queue.h>          // for CompletionQueue
 #include <grpc_cb/impl/proto_utils.h>               // for DeserializeProto()
+#include <grpc_cb/impl/server/server_reader_init_cqtag.h>  // for ServerReaderInitCqTag
 
 // package routeguide
 namespace routeguide {
@@ -135,7 +136,7 @@ void Service::CallMethod(
       ListFeatures(request_buffer, ListFeatures_Writer(call_sptr));
       return;
     case 2:
-      RecordRoute(RecordRoute_Reader(call_sptr));
+      RecordRoute(call_sptr);
       return;
     case 3:
       RouteChat(RouteChat_Stream(call_sptr));
@@ -189,30 +190,40 @@ void Service::ListFeatures(
 
 void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
-  auto* tag = new ServerReaderCqTag(call_sptr);
-  Status status = tag->Start();
-  if (status.ok) {
-    RecordRoute_OnStart();
+  using CqTag = ::grpc_cb::ServerReaderInitCqTag<
+      ::routeguide::Point, ::routeguide::RouteSummary>;
+  CqTag* tag = new CqTag(call_sptr,
+      [this](const ::routeguide::Point& point,
+             const RecordRoute_Replier& replier) {
+        RecordRoute_OnMsg(point, replier);
+      },
+      [this](const RecordRoute_Replier& replier) {
+        RecordRoute_OnEnd(replier);
+      });
+  ::grpc_cb::Status status = tag->Start();
+  RecordRoute_Replier replier(call_sptr);
+  if (status.ok()) {
+    RecordRoute_OnStart(replier);
     return;
   }
   delete tag;
-  ServerReplier<::routeguide::RouteSummary>().ReplyError(status);
+  replier.ReplyError(status);
 }
 
 void Service::RecordRoute_OnStart(
-    const RecordRoute_Reader& reader) {
-  reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+    const RecordRoute_Replier& replier) {
+  (void)replier;
 }
 
 void Service::RecordRoute_OnMsg(
     const ::routeguide::Point& point,
-    const RecordRoute_Reader& reader) {
-  reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+    const RecordRoute_Replier& replier) {
+  replier.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 void Service::RecordRoute_OnEnd(
-    const RecordRoute_Reader& reader) {
-  reader.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+    const RecordRoute_Replier& replier) {
+  replier.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 void Service::RouteChat(

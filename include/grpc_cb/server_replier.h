@@ -28,11 +28,11 @@ class ServerReplier {
 
  public:
   // Todo: Add BlockingReply(response), AsyncReply(response), AsyncReply(response, cb)
-  void Reply(const ResponseType& response) {
+  void Reply(const ResponseType& response) const {
     auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
     tag->StartReply(response); 
   }
-  void ReplyError(const Status& status) {
+  void ReplyError(const Status& status) const {
     auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
     tag->StartReplyError(status);
   }
