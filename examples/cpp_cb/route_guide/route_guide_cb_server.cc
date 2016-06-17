@@ -150,9 +150,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     r.previous = point;
   }
 
-  // Todo: Use Replier instead of Reader.
-  void RecordRoute_OnEnd(
-      const RecordRoute_Replier& replier) override {
+  void RecordRoute_OnEnd(const RecordRoute_Replier& replier) override {
     assert(record_route_result_);
     const RecordRouteResult r = *record_route_result_;
     record_route_result_.reset();
@@ -174,22 +172,26 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
     t.detach();
   }
 
-  void RouteChat(const RouteChat_Stream& stream) override {
-    std::thread t([stream]() {
-      std::vector<RouteNote> received_notes;
-      RouteNote note;
-      while (stream.BlockingReadOne(&note)) {
-        for (const RouteNote& n : received_notes) {
-          if (n.location().latitude() == note.location().latitude() &&
-              n.location().longitude() == note.location().longitude()) {
-            stream.Write(n);
-          }
-        }
-        received_notes.push_back(note);
-      }  // while
+  void RouteChat_OnStart(const RouteChat_Writer& writer) override {
+    std::cout << "RouteChat_OnStart()" << std::endl;
+  }
 
-      // Todo: auto stream.Finish(Status::OK);
-    });  // thread t
+  void RouteChat_OnMsg(const RouteNote& msg,
+      const RouteChat_Writer& writer) override {
+    for (const RouteNote& n : received_notes_) {
+      if (n.location().latitude() == msg.location().latitude() &&
+          n.location().longitude() == msg.location().longitude()) {
+        writer.Write(n);
+      }  // if
+    }  // for
+    received_notes_.push_back(msg);
+  }
+
+  void RouteChat_OnEnd(const RouteChat_Writer& writer) override {
+    std::thread t([writer]() {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      writer.write(RouteNote());
+    });
     t.detach();
   }
 
@@ -205,6 +207,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
   };
   // Todo: Need separate sessions.
   std::unique_ptr<RecordRouteResult> record_route_result_;
+  std::vector<RouteNote> received_notes_;
 };
 
 void RunServer(const std::string& db_path) {

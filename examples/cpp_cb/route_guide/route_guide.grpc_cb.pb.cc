@@ -138,7 +138,7 @@ void Service::CallMethod(
       RecordRoute(call_sptr);
       return;
     case 3:
-      RouteChat(RouteChat_Stream(call_sptr));
+      RouteChat(call_sptr);
       return;
   }  // switch
   assert(false);
@@ -189,6 +189,7 @@ void Service::ListFeatures(
 
 void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
+  // XXX Is RouteSummary necessary?
   using CqTag = ::grpc_cb::ServerReaderInitCqTag<
       ::routeguide::Point, ::routeguide::RouteSummary>;
   CqTag* tag = new CqTag(call_sptr,
@@ -215,7 +216,7 @@ void Service::RecordRoute_OnStart(
 }
 
 void Service::RecordRoute_OnMsg(
-    const ::routeguide::Point& point,
+    const ::routeguide::Point& msg,
     const RecordRoute_Replier& replier) {
   replier.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
@@ -225,9 +226,42 @@ void Service::RecordRoute_OnEnd(
   replier.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
-void Service::RouteChat(
-    const RouteChat_Stream& stream) {
-  stream.Close(::grpc_cb::Status::UNIMPLEMENTED);
+void Service::RouteChat(const ::grpc_cb::CallSptr& call_sptr) {
+  assert(call_sptr);
+  using CqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
+      ::routeguide::RouteNote>;
+  CqTag* tag = new CqTag(call_sptr,
+      [this](const ::routeguide::RouteNote& msg,
+             const RouteChat_Writer& writer) {
+        RecordRoute_OnMsg(msg, writer);
+      },
+      [this](const RouteChat_Writer& writer) {
+        RecordRoute_OnEnd(writer);
+      });
+  RouteChat_Writer writer(call_sptr);
+  if (tag->Start()) {
+    RecordRoute_OnStart(writer);
+    return;
+  }
+  delete tag;
+  writer.ReplyError(::grpc_cb::Status::InternalError(
+      "Failed to init server stream."));
+}
+
+void Service::RouteChat_OnStart(
+    const RouteChat_Writer& writer) {
+  (void)writer;
+}
+
+void Service::RouteChat_OnMsg(
+    const ::routeguide::RouteNote& msg,
+    const RouteChat_Writer& writer) {
+  writer.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+}
+
+void Service::RouteChat_OnEnd(
+    const RouteChat_Writer& writer) {
+  (void)writer;
 }
 
 }  // namespace RouteGuide

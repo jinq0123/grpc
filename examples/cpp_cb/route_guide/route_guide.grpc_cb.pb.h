@@ -79,8 +79,8 @@ class Service : public ::grpc_cb::Service {
       const ::routeguide::Point& request,
       GetFeature_Replier replier_copy);
 
-  using ListFeatures_Writer =
-      ::grpc_cb::ServerWriter<::routeguide::Feature>;
+  using ListFeatures_Writer = ::grpc_cb::ServerWriter<
+      ::routeguide::Feature>;
   void ListFeatures(grpc_byte_buffer& request_buffer,
       const ListFeatures_Writer& writer);
   virtual void ListFeatures(
@@ -98,11 +98,16 @@ class Service : public ::grpc_cb::Service {
   virtual void RecordRoute_OnEnd(
       const RecordRoute_Replier& replier);
 
-  using RouteChat_Stream =
-      ::grpc_cb::ServerReaderWriter<::routeguide::RouteNote,
-                                    ::routeguide::RouteNote>;
-  virtual void RouteChat(
-      const RouteChat_Stream& stream);
+  void RouteChat(const ::grpc_cb::CallSptr& call_sptr);
+  using RouteChat_Writer = ::grpc_cb::ServerWriter<
+      ::routeguide::RouteNote>;
+  virtual void RouteChat_OnStart(
+      const RouteChat_Writer& writer);
+  virtual void RouteChat_OnMsg(
+      const ::routeguide::RouteNote& msg,
+      const RouteChat_Writer& writer);
+  virtual void RouteChat_OnEnd(
+      const RouteChat_Writer& writer);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()
