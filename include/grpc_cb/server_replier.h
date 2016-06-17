@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include <grpc_cb/impl/call_sptr.h>                   // for CallSptr
-#include <grpc_cb/impl/server/server_replier_cqtag.h>  // for ServerReplierCqTag
+#include <grpc_cb/impl/call_sptr.h>       // for CallSptr
+#include <grpc_cb/impl/server/server_replier_impl.h>  // for ServerReplierImpl
 
 namespace grpc_cb {
 
@@ -22,37 +22,22 @@ template <class ResponseType>
 class ServerReplier {
  public:
   explicit ServerReplier(const CallSptr& call_sptr)
-      : data_sptr_(new Data{call_sptr}) {
+      : impl_sptr_(new ServerReplierImpl(call_sptr)) {
     assert(call_sptr);
-    assert(!data_sptr_->replied);
   };
   virtual ~ServerReplier() {};
 
  public:
-  // Todo: Add BlockingReply(response), AsyncReply(response), AsyncReply(response, cb)
   void Reply(const ResponseType& response) const {
-    bool& replied = data_sptr_->replied;
-    if (replied) return;
-    replied = true;
-    auto* tag = new ServerReplierCqTag(data_sptr_->call_sptr);  // delete in Run()
-    if (!tag->StartReply(response)) delete tag;
+    impl_sptr_->Reply(response);
   }
 
   void ReplyError(const Status& status) const {
-    bool& replied = data_sptr_->replied;
-    if (replied) return;
-    replied = true;
-    auto* tag = new ServerReplierCqTag(data_sptr_->call_sptr);  // delete in Run()
-    if (!tag->StartReplyError(status)) delete tag;
+    impl_sptr_->ReplyError(status);
   }
 
 private:
-  struct Data {
-    const CallSptr call_sptr;
-    bool replied{false};
-    explicit Data(const CallSptr& call_sp) : call_sptr(call_sp) {}
-  };
-  const std::shared_ptr<Data> data_sptr_;  // copyable
+  const std::shared_ptr<ServerReplierImpl> impl_sptr_;  // copyable
 };  // class ServerReplier
 
 }  // namespace grpc_cb
