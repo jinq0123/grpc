@@ -13,7 +13,6 @@
 #include <grpc_cb/status.h>          // for Status
 
 #include <grpc_cb/server_writer.h>
-#include <grpc_cb/server_reader_writer.h>
 
 #include <grpc_cb/client_reader.h>
 #include <grpc_cb/client_writer.h>

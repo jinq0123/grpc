@@ -123,9 +123,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\client_writer.h">
       <Filter>include\grpc_cb</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server_reader_writer.h">
-      <Filter>include\grpc_cb</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server_writer.h">
       <Filter>include\grpc_cb</Filter>
     </ClInclude>

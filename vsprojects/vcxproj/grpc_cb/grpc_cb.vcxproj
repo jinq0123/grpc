@@ -287,7 +287,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_impl.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\server_reader_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server_replier.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\service.h" />
