@@ -76,15 +76,15 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
 void Stub::AsyncSayHello(
     const ::helloworld::HelloRequest& request,
     const SayHelloCallback& cb,
-    const ::grpc_cb::ErrorCallback& err_cb) {
-  assert(cb && err_cb);
+    const ::grpc_cb::ErrorCallback& ecb) {
+  assert(cb && ecb);
   ::grpc_cb::CallSptr call_sptr(
       GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::helloworld::HelloReply>;
-  CqTag* tag = new CqTag(call_sptr, cb, err_cb);
+  CqTag* tag = new CqTag(call_sptr, cb, ecb);
   if (!tag->Start(request)) {
     delete tag;
-    err_cb(::grpc_cb::Status::InternalError("Failed to async request."));
+    ecb(::grpc_cb::Status::InternalError("Failed to async request."));
   }
 }
 

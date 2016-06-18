@@ -180,7 +180,7 @@ void PrintHeaderClientMethodPublic(
           "void Async$Method$(\n"
           "    const $Request$& request,\n"
           "    const $Method$Callback& cb,\n"
-          "    const ::grpc_cb::ErrorCallback& err_cb);\n\n");
+          "    const ::grpc_cb::ErrorCallback& ecb);\n\n");
   } else if (ClientOnlyStreaming(method)) {
       printer->Print(
           *vars,
@@ -673,17 +673,17 @@ void PrintSourceClientMethod(grpc::protobuf::io::Printer *printer,
         "void Stub::Async$Method$(\n"
         "    const $Request$& request,\n"
         "    const $Method$Callback& cb,\n"
-        "    const ::grpc_cb::ErrorCallback& err_cb) {\n"
-        "  assert(cb && err_cb && cq_);\n"
+        "    const ::grpc_cb::ErrorCallback& ecb) {\n"
+        "  assert(cb && ecb && cq_);\n"
         "  ::grpc_cb::CallSptr call_sptr(\n"
         "      channel_->CreateCall(method_names[$Idx$], cq_->cq()));\n"
         "  ::grpc_cb::Call* call = call_sptr.get();\n"
         "  ::grpc_cb::CompletionQueueTag* tag =\n"
-        "      NewCompletionQueueTag(call_sptr, cb, err_cb);\n"
+        "      NewCompletionQueueTag(call_sptr, cb, ecb);\n"
         "  grpc_cb::Status status = call->StartBatch(request, tag);\n"
         "  if (!status.ok()) {\n"
         "    DeleteCompletionQueueTag(tag);\n"
-        "    err_cb(status);\n"
+        "    ecb(status);\n"
         "  }\n"
         "}\n"
         "\n");

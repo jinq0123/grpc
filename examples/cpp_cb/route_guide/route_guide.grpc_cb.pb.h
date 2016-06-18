@@ -42,7 +42,7 @@ class Stub : public ::grpc_cb::ServiceStub {
   void AsyncGetFeature(
       const ::routeguide::Point& request,
       const GetFeatureCallback& cb,
-      const ::grpc_cb::ErrorCallback& err_cb);
+      const ::grpc_cb::ErrorCallback& ecb);
 
   ::grpc_cb::ClientReader<::routeguide::Feature>
   ListFeatures(const ::routeguide::Rectangle& request);

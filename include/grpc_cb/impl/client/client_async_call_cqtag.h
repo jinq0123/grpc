@@ -10,7 +10,7 @@
 namespace grpc_cb {
 
 // Completion queue tag (CqTag) for client async call.
-// Derived from ClientCallCqTag, adding cb, err_cb.
+// Derived from ClientCallCqTag, adding cb, ecb.
 template <class ResponseType>
 class ClientAsyncCallCqTag : public ClientCallCqTag {
  public:

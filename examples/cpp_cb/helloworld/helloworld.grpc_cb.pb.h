@@ -41,7 +41,7 @@ class Stub : public ::grpc_cb::ServiceStub {
   void AsyncSayHello(
       const ::helloworld::HelloRequest& request,
       const SayHelloCallback& cb,
-      const ::grpc_cb::ErrorCallback& err_cb);
+      const ::grpc_cb::ErrorCallback& ecb);
 
  private:
   // const ::grpc_cb::RpcMethod rpcmethod_SayHello_;

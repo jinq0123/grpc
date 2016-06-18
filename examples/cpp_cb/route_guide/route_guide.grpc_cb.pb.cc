@@ -80,16 +80,16 @@ Stub::Stub(const ::grpc_cb::ChannelSptr& channel)
 void Stub::AsyncGetFeature(
     const ::routeguide::Point& request,
     const GetFeatureCallback& cb,
-    const ::grpc_cb::ErrorCallback& err_cb) {  // XXX rename to ecb
-  assert(cb && err_cb);
+    const ::grpc_cb::ErrorCallback& ecb) {
+  assert(cb && ecb);
   ::grpc_cb::CallSptr call_sptr(
       GetChannel().MakeSharedCall(method_names[0], GetCq()));
   using CqTag = ::grpc_cb::ClientAsyncCallCqTag<::routeguide::Feature>;
-  CqTag* tag = new CqTag(call_sptr, cb, err_cb);
+  CqTag* tag = new CqTag(call_sptr, cb, ecb);
   if (tag->Start(request)) return;
   delete tag;
   // Todo: Extract CallInternalErrorCb("Error to do...");
-  err_cb(::grpc_cb::Status::InternalError("Failed to async request."));
+  ecb(::grpc_cb::Status::InternalError("Failed to async request."));
 }
 
 ::grpc_cb::ClientReader<::routeguide::Feature>
