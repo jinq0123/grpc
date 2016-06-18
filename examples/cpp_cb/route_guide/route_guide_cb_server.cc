@@ -120,7 +120,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
             f.location().longitude() <= right &&
             f.location().latitude() >= bottom &&
             f.location().latitude() <= top) {
-          writer.Write(f);  // XXX check return?
+          if (!writer.Write(f)) break;
           std::this_thread::sleep_for(std::chrono::seconds(1));
         }
       }

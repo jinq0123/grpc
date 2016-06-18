@@ -17,7 +17,6 @@ namespace grpc_cb {
 class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
  public:
   explicit ServerReplierCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
-  virtual ~ServerReplierCqTag() {}
 
   inline bool StartReply(const ::google::protobuf::Message& msg) GRPC_MUST_USE_RESULT;
   inline bool StartReplyError(const Status& status) GRPC_MUST_USE_RESULT;
