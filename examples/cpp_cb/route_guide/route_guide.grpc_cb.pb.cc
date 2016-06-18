@@ -191,7 +191,7 @@ void Service::ListFeatures(
 void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
   // XXX Is RouteSummary necessary?
-  using CqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
+  using CqTag = ::grpc_cb::ServerReaderInitCqTag<
       ::routeguide::Point, ::routeguide::RouteSummary>;
   CqTag* tag = new CqTag(call_sptr,
       [this](const ::routeguide::Point& point,
@@ -229,9 +229,9 @@ void Service::RecordRoute_OnEnd(
 
 void Service::RouteChat(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
-  using CqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
+  using RwCqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
       ::routeguide::RouteNote, ::routeguide::RouteNote>;
-  CqTag* tag = new CqTag(call_sptr,
+  RwCqTag* tag = new RwCqTag(call_sptr,
       [this](const ::routeguide::RouteNote& msg,
              const RouteChat_Writer& writer) {
         RouteChat_OnMsg(msg, writer);

@@ -64,9 +64,9 @@ template <class Request, class Response>
 void ServerReaderWriterCqTag<Request, Response>::DoComplete(bool success) {
   assert(success);
   const CallSptr& call_sptr = GetCallSptr();
-  Replier replier(call_sptr);
+  Writer writer(call_sptr);
   if (!cod_recv_msg_.HasGotMsg()) {
-    cbs_sptr_->on_end(replier);
+    cbs_sptr_->on_end(writer);
     return;
   }
 
@@ -74,17 +74,17 @@ void ServerReaderWriterCqTag<Request, Response>::DoComplete(bool success) {
   Status status = cod_recv_msg_.GetResultMsg(
       request, call_sptr->GetMaxMsgSize());
   if (!status.ok()) {
-      replier.ReplyError(status);
+      writer.Close(status);
       return;
   }
 
-  cbs_sptr_->on_msg(request, replier);
+  cbs_sptr_->on_msg(request, writer);
 
   auto* tag = new ServerReaderWriterCqTag(call_sptr, cbs_sptr_);
   if (tag->Start()) return;
 
   delete tag;
-  replier.ReplyError(Status::InternalError("Failed to read client stream."));
+  writer.Close(Status::InternalError("Failed to read client stream."));
 }
 
 };  // namespace grpc_cb

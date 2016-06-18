@@ -12,7 +12,7 @@
 #include <grpc_cb/impl/call_cqtag.h>                  // for CallCqTag
 #include <grpc_cb/impl/call_op_data.h>                // for CodSendInitMd
 #include <grpc_cb/impl/call_operations.h>             // for CallOperations
-#include <grpc_cb/impl/server/server_reader_cqtag.h>  // for ServerReaderCqTag
+#include <grpc_cb/impl/server/server_reader_writer_cqtag.h>  // for ServerReaderWriterCqTag
 #include <grpc_cb/support/config.h>                   // for GRPC_FINAL
 
 namespace grpc_cb {
