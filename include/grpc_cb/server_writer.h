@@ -9,7 +9,7 @@
 namespace grpc_cb {
 
 template <class Response>
-class ServerWriter {
+class ServerWriter GRPC_FINAL {
  public:
   inline ServerWriter(const CallSptr& call_sptr);
 

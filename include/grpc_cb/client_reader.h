@@ -19,7 +19,7 @@ namespace grpc_cb {
 
 // Copyable.
 template <class Response>
-class ClientReader {
+class ClientReader GRPC_FINAL {
  public:
   // Todo: Also need to template request?
   inline ClientReader(const ChannelSptr& channel, const std::string& method,

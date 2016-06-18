@@ -12,7 +12,7 @@ namespace grpc_cb {
 // Todo: Add base class?
 
 template <class Request, class Response>
-class ClientReaderWriter {
+class ClientReaderWriter GRPC_FINAL {
  public:
   inline ClientReaderWriter(const ChannelSptr& channel,
                             const std::string& method,

@@ -1,8 +1,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#ifndef GRPC_CB_IMPL_SERVER_SERVER_STREAM_INIT_CQTAG_H
-#define GRPC_CB_IMPL_SERVER_SERVER_STREAM_INIT_CQTAG_H
+#ifndef GRPC_CB_IMPL_SERVER_SERVER_READER_WRITER_INIT_CQTAG_H
+#define GRPC_CB_IMPL_SERVER_SERVER_READER_WRITER_INIT_CQTAG_H
 
 #include <memory>  // for shared_ptr<>
 
@@ -18,17 +18,17 @@
 namespace grpc_cb {
 
 template <class Request, class Response>
-class ServerStreamInitCqTag GRPC_FINAL : public CallCqTag {
+class ServerReaderWriterInitCqTag GRPC_FINAL : public CallCqTag {
  public:
-  using StreamCqTag = ServerStreamCqTag<Request, Response>;
+  using RwCqTag = ServerReaderWriterCqTag<Request, Response>;
   using Replier = ServerReplier<Response>;
-  using MsgCallback = typename StreamCqTag::MsgCallback;
-  using EndCallback = typename StreamCqTag::EndCallback;
-  using Callbacks = typename StreamCqTag::Callbacks;
-  using CallbacksSptr = typename StreamCqTag::CallbacksSptr;
+  using MsgCallback = typename RwCqTag::MsgCallback;
+  using EndCallback = typename RwCqTag::EndCallback;
+  using Callbacks = typename RwCqTag::Callbacks;
+  using CallbacksSptr = typename RwCqTag::CallbacksSptr;
 
  public:
-  inline ServerStreamInitCqTag(const CallSptr& call_sptr,
+  inline ServerReaderWriterInitCqTag(const CallSptr& call_sptr,
       const MsgCallback& on_msg, const EndCallback& on_end);
   inline bool Start() GRPC_MUST_USE_RESULT;
 
@@ -39,10 +39,10 @@ class ServerStreamInitCqTag GRPC_FINAL : public CallCqTag {
   CodSendInitMd cod_send_init_md_;
   // Already got init_md and request, so no CodRecvInitMd.
   CallbacksSptr cbs_sptr_;
-};  // class ServerStreamInitCqTag
+};  // class ServerReaderWriterInitCqTag
 
 template <class Request, class Response>
-ServerStreamInitCqTag<Request, Response>::ServerStreamInitCqTag(
+ServerReaderWriterInitCqTag<Request, Response>::ServerReaderWriterInitCqTag(
     const CallSptr& call_sptr,
     const MsgCallback& on_msg,
     const EndCallback& on_end)
@@ -53,7 +53,7 @@ ServerStreamInitCqTag<Request, Response>::ServerStreamInitCqTag(
 }
 
 template <class Request, class Response>
-bool ServerStreamInitCqTag<Request, Response>::Start() {
+bool ServerReaderWriterInitCqTag<Request, Response>::Start() {
   CallOperations ops;
   // Todo: Fill send_init_md_array_ -> FillMetadataVector()
   ops.SendInitMd(cod_send_init_md_);
@@ -61,10 +61,10 @@ bool ServerStreamInitCqTag<Request, Response>::Start() {
 }
 
 template <class Request, class Response>
-void ServerStreamInitCqTag<Request, Response>::DoComplete(bool success) {
+void ServerReaderWriterInitCqTag<Request, Response>::DoComplete(bool success) {
   assert(success);
   const CallSptr& call_sptr = GetCallSptr();
-  auto* tag = new StreamCqTag(call_sptr, cbs_sptr_);
+  auto* tag = new RwCqTag(call_sptr, cbs_sptr_);
   if (tag->Start()) return;
 
   delete tag;
@@ -74,4 +74,4 @@ void ServerStreamInitCqTag<Request, Response>::DoComplete(bool success) {
 
 };  // namespace grpc_cb
 
-#endif  // GRPC_CB_IMPL_SERVER_SERVER_STREAM_INIT_CQTAG_H
+#endif  // GRPC_CB_IMPL_SERVER_SERVER_READER_WRITER_INIT_CQTAG_H

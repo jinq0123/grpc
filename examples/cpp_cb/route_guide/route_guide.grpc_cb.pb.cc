@@ -13,7 +13,7 @@
 #include <grpc_cb/impl/completion_queue.h>          // for CompletionQueue
 #include <grpc_cb/impl/proto_utils.h>               // for DeserializeProto()
 #include <grpc_cb/impl/server/server_reader_init_cqtag.h>  // for ServerReaderInitCqTag
-#include <grpc_cb/impl/server/server_stream_init_cqtag.h>  // for ServerStreamInitCqTag
+#include <grpc_cb/impl/server/server_reader_writer_init_cqtag.h>  // for ServerReaderWriterInitCqTag
 
 // package routeguide
 namespace routeguide {
@@ -191,7 +191,7 @@ void Service::ListFeatures(
 void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
   // XXX Is RouteSummary necessary?
-  using CqTag = ::grpc_cb::ServerStreamInitCqTag<
+  using CqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
       ::routeguide::Point, ::routeguide::RouteSummary>;
   CqTag* tag = new CqTag(call_sptr,
       [this](const ::routeguide::Point& point,
@@ -229,7 +229,7 @@ void Service::RecordRoute_OnEnd(
 
 void Service::RouteChat(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
-  using CqTag = ::grpc_cb::ServerStreamInitCqTag<
+  using CqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
       ::routeguide::RouteNote, ::routeguide::RouteNote>;
   CqTag* tag = new CqTag(call_sptr,
       [this](const ::routeguide::RouteNote& msg,

@@ -1,8 +1,8 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#ifndef GRPC_CB_IMPL_SERVER_SERVER_STREAM_CQTAG_H
-#define GRPC_CB_IMPL_SERVER_SERVER_STREAM_CQTAG_H
+#ifndef GRPC_CB_IMPL_SERVER_SERVER_READER_WRITER_CQTAG_H
+#define GRPC_CB_IMPL_SERVER_SERVER_READER_WRITER_CQTAG_H
 
 #include <functional>
 #include <memory>  // for shared_ptr<>
@@ -18,7 +18,7 @@
 namespace grpc_cb {
 
 template <class Request, class Response>
-class ServerStreamCqTag GRPC_FINAL : public CallCqTag {
+class ServerReaderWriterCqTag GRPC_FINAL : public CallCqTag {
  public:
   // Like ServerReaderCqTag but use Writer instead of Replier.
   using Writer = ServerWriter<Response>;
@@ -31,7 +31,7 @@ class ServerStreamCqTag GRPC_FINAL : public CallCqTag {
   using CallbacksSptr = std::shared_ptr<Callbacks>;
 
  public:
-  inline ServerStreamCqTag(const CallSptr& call_sptr,
+  inline ServerReaderWriterCqTag(const CallSptr& call_sptr,
       const CallbacksSptr& cbs_sptr);
   inline bool Start() GRPC_MUST_USE_RESULT;
 
@@ -41,10 +41,10 @@ class ServerStreamCqTag GRPC_FINAL : public CallCqTag {
  private:
   CodRecvMsg cod_recv_msg_;
   CallbacksSptr cbs_sptr_;
-};  // class ServerStreamCqTag
+};  // class ServerReaderWriterCqTag
 
 template <class Request, class Response>
-ServerStreamCqTag<Request, Response>::ServerStreamCqTag(
+ServerReaderWriterCqTag<Request, Response>::ServerReaderWriterCqTag(
     const CallSptr& call_sptr, const CallbacksSptr& cbs_sptr)
     : CallCqTag(call_sptr), cbs_sptr_(cbs_sptr) {
   assert(call_sptr);
@@ -54,14 +54,14 @@ ServerStreamCqTag<Request, Response>::ServerStreamCqTag(
 }
 
 template <class Request, class Response>
-bool ServerStreamCqTag<Request, Response>::Start() {
+bool ServerReaderWriterCqTag<Request, Response>::Start() {
   CallOperations ops;
   ops.RecvMsg(cod_recv_msg_);
   return GetCallSptr()->StartBatch(ops, this);
 }
 
 template <class Request, class Response>
-void ServerStreamCqTag<Request, Response>::DoComplete(bool success) {
+void ServerReaderWriterCqTag<Request, Response>::DoComplete(bool success) {
   assert(success);
   const CallSptr& call_sptr = GetCallSptr();
   Replier replier(call_sptr);
@@ -78,10 +78,9 @@ void ServerStreamCqTag<Request, Response>::DoComplete(bool success) {
       return;
   }
 
-  // Todo: Need the same writer copy...
   cbs_sptr_->on_msg(request, replier);
 
-  auto* tag = new ServerStreamCqTag(call_sptr, cbs_sptr_);
+  auto* tag = new ServerReaderWriterCqTag(call_sptr, cbs_sptr_);
   if (tag->Start()) return;
 
   delete tag;
@@ -90,4 +89,4 @@ void ServerStreamCqTag<Request, Response>::DoComplete(bool success) {
 
 };  // namespace grpc_cb
 
-#endif  // GRPC_CB_IMPL_SERVER_SERVER_STREAM_CQTAG_H
+#endif  // GRPC_CB_IMPL_SERVER_SERVER_READER_WRITER_CQTAG_H

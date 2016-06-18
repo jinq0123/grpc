@@ -22,7 +22,7 @@ namespace grpc_cb {
 //    to ensure client input the correct request type.
 // Todo: Use non_template class as the implement.
 template <class Request>
-class ClientWriter {
+class ClientWriter GRPC_FINAL {
  public:
   inline ClientWriter(const ChannelSptr& channel, const std::string& method,
                       const CompletionQueueSptr& cq_sptr);

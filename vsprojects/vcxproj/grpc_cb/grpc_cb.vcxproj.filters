@@ -123,9 +123,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\client_writer.h">
       <Filter>include\grpc_cb</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\server_reader.h">
-      <Filter>include\grpc_cb</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\server_reader_writer.h">
       <Filter>include\grpc_cb</Filter>
     </ClInclude>
@@ -189,10 +186,10 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_impl.h">
       <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_stream_init_cqtag.h">
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_writer_cqtag.h">
       <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_stream_cqtag.h">
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_writer_init_cqtag.h">
       <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
   </ItemGroup>
