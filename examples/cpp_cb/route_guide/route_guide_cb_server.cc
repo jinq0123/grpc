@@ -190,7 +190,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
   void RouteChat_OnEnd(const RouteChat_Writer& writer) override {
     std::thread t([writer]() {
       std::this_thread::sleep_for(std::chrono::seconds(1));
-      writer.write(RouteNote());
+      writer.Write(RouteNote());
     });
     t.detach();
   }

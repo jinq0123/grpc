@@ -13,6 +13,7 @@
 #include <grpc_cb/impl/completion_queue.h>          // for CompletionQueue
 #include <grpc_cb/impl/proto_utils.h>               // for DeserializeProto()
 #include <grpc_cb/impl/server/server_reader_init_cqtag.h>  // for ServerReaderInitCqTag
+#include <grpc_cb/impl/server/server_stream_init_cqtag.h>  // for ServerStreamInitCqTag
 
 // package routeguide
 namespace routeguide {
@@ -190,7 +191,7 @@ void Service::ListFeatures(
 void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
   // XXX Is RouteSummary necessary?
-  using CqTag = ::grpc_cb::ServerReaderInitCqTag<
+  using CqTag = ::grpc_cb::ServerStreamInitCqTag<
       ::routeguide::Point, ::routeguide::RouteSummary>;
   CqTag* tag = new CqTag(call_sptr,
       [this](const ::routeguide::Point& point,
@@ -228,23 +229,23 @@ void Service::RecordRoute_OnEnd(
 
 void Service::RouteChat(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
-  using CqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
-      ::routeguide::RouteNote>;
+  using CqTag = ::grpc_cb::ServerStreamInitCqTag<
+      ::routeguide::RouteNote, ::routeguide::RouteNote>;
   CqTag* tag = new CqTag(call_sptr,
       [this](const ::routeguide::RouteNote& msg,
              const RouteChat_Writer& writer) {
-        RecordRoute_OnMsg(msg, writer);
+        RouteChat_OnMsg(msg, writer);
       },
       [this](const RouteChat_Writer& writer) {
-        RecordRoute_OnEnd(writer);
+        RouteChat_OnEnd(writer);
       });
   RouteChat_Writer writer(call_sptr);
   if (tag->Start()) {
-    RecordRoute_OnStart(writer);
+    RouteChat_OnStart(writer);
     return;
   }
   delete tag;
-  writer.ReplyError(::grpc_cb::Status::InternalError(
+  writer.Close(::grpc_cb::Status::InternalError(
       "Failed to init server stream."));
 }
 
@@ -256,7 +257,7 @@ void Service::RouteChat_OnStart(
 void Service::RouteChat_OnMsg(
     const ::routeguide::RouteNote& msg,
     const RouteChat_Writer& writer) {
-  writer.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+  writer.Close(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 void Service::RouteChat_OnEnd(

@@ -15,9 +15,11 @@ class Status;
 
 // ServerReplier is for unary rpc call and client stream rpc.
 // ServerWriter is for server stream rpc.
+// No ServerReader. Reading is done asynchronously and internally.
 
 // Copyable.
 // Safe to delete before completion.
+// Only accept the 1st reply and ignore other replies.
 template <class ResponseType>
 class ServerReplier {
  public:
