@@ -190,7 +190,6 @@ void Service::ListFeatures(
 
 void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
-  // XXX Is RouteSummary necessary?
   using CqTag = ::grpc_cb::ServerReaderInitCqTag<
       ::routeguide::Point, ::routeguide::RouteSummary>;
   CqTag* tag = new CqTag(call_sptr,

@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef GRPC_CB_SUPPORT_STATUS_H
-#define GRPC_CB_SUPPORT_STATUS_H
+#ifndef GRPC_CB_STATUS_H
+#define GRPC_CB_STATUS_H
 
 #include <string>
 
@@ -83,4 +83,4 @@ class Status {
 
 }  // namespace grpc_cb
 
-#endif  // GRPC_CB_SUPPORT_STATUS_H
+#endif  // GRPC_CB_STATUS_H

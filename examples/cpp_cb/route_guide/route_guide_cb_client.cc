@@ -82,13 +82,13 @@ class RouteGuideClient {
     routeguide::ParseDb(db, &feature_list_);
   }
 
-  void GetFeature() {
+  void BlockingGetFeature() {
     Point point;
     Feature feature;
     point = MakePoint(409146138, -746188906);
-    GetOneFeature(point, &feature);
+    BlockingGetOneFeature(point, &feature);
     point = MakePoint(0, 0);
-    GetOneFeature(point, &feature);
+    BlockingGetOneFeature(point, &feature);
   }
 
   void ListFeatures() {
@@ -195,7 +195,7 @@ class RouteGuideClient {
 
  private:
 
-  bool GetOneFeature(const Point& point, Feature* feature) {
+  bool BlockingGetOneFeature(const Point& point, Feature* feature) {
     Status status = stub_->BlockingGetFeature(point, feature);
     if (!status.ok()) {
       std::cout << "GetFeature rpc failed." << std::endl;
@@ -229,7 +229,7 @@ int main(int argc, char** argv) {
   RouteGuideClient guide(channel, db);
 
   std::cout << "-------------- GetFeature --------------" << std::endl;
-  guide.GetFeature();
+  guide.BlockingGetFeature();
   std::cout << "-------------- ListFeatures --------------" << std::endl;
   guide.ListFeatures();
   std::cout << "-------------- RecordRoute --------------" << std::endl;
@@ -240,9 +240,15 @@ int main(int argc, char** argv) {
   routeguide::RouteGuide::Stub stub(channel);
   routeguide::Rectangle rect;
   ClientReader<Feature> reader(stub.ListFeatures(rect));
-  reader.AsyncReadEach([](const Feature& feature){
-    std::cout << "Got feature." << std::endl;
-  });
+  reader.AsyncReadEach(
+    [](const Feature& feature){
+      std::cout << "Got feature." << std::endl;
+    },
+    [](const ::grpc_cb::Status& status){
+      std::cout << "End status: (" << status.error_code() << ")"
+          << status.error_msg() << std::endl;
+    });
+
   stub.BlockingRun();
   return 0;
 }

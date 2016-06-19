@@ -28,14 +28,13 @@ class ClientReader GRPC_FINAL {
 
  public:
   inline bool BlockingReadOne(Response* response) const;
+  inline Status BlockingRecvStatus() const;
 
-  inline Status BlockingRecvStatus() const {
-      // XXX BlockingRecvStatus()
-    return Status::OK;
-  }
-
-  using ReadCallback = std::function<void(const Response&)>;
-  inline void AsyncReadEach(const ReadCallback& readCallback) const;
+  using MsgCallback = std::function<void(const Response&)>;
+  using EndCallback = std::function<void(const Status&)>;
+  inline void AsyncReadEach(
+      const MsgCallback& msgCallback,
+      const EndCallback& endCallback = EndCallback()) const;
 
  private:
   using ReadCqTag = ClientReaderReadCqTag;
@@ -50,7 +49,8 @@ class ClientReader GRPC_FINAL {
     CompletionQueueSptr cq_sptr;
     CallSptr call_sptr;
     Status status;
-    ReadCallback readCb;
+    MsgCallback msgCb;
+    EndCallback endCb;
   };
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientReader<>
@@ -91,10 +91,19 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
 }
 
 template <class Response>
-void ClientReader<Response>::AsyncReadEach(const ReadCallback& readCallback) const {
+Status ClientReader<Response>::BlockingRecvStatus() const {
+      // XXX BlockingRecvStatus()
+    return Status::OK;
+}
+
+template <class Response>
+void ClientReader<Response>::AsyncReadEach(
+    const MsgCallback& msgCallback,
+    const EndCallback& endCallback) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return;
-  data_sptr_->readCb = readCallback;
+  data_sptr_->msgCb = msgCallback;
+  data_sptr_->endCb = endCallback;
   AsyncReadNext();
 }
 
@@ -104,7 +113,6 @@ void ClientReader<Response>::AsyncReadNext() const {
   assert(status.ok());
 
   CallSptr& call_sptr = data_sptr_->call_sptr;
-  using std::placeholders::_1;
   // This ClientReader is copied in callback.
   ClientReader<Response> this_copy = *this;
   ReadCqTag* tag = new ReadCqTag(
@@ -124,9 +132,9 @@ void ClientReader<Response>::OnReadEach(ClientReaderReadCqTag& tag) const {
   status = tag.GetResultMsg(resp);
   if (!status.ok()) return;
 
-  ReadCallback& readCb = data_sptr_->readCb;
-  if (!readCb) return;
-  readCb(resp);
+  MsgCallback& msgCb = data_sptr_->msgCb;
+  if (!msgCb) return;
+  msgCb(resp);
 
   AsyncReadNext();
   // Old tag will be deleted after return in BlockingRun().
