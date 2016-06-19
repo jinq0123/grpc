@@ -5,6 +5,7 @@
 #define GRPC_CB_SERVER_SERVER_WRITER_H
 
 #include <grpc_cb/impl/server/server_init_md_cqtag.h>  // for ServerInitMdCqTag
+#include <grpc_cb/impl/server/server_send_status_cqtag.h>  // for ServerSendStatusCqTag
 
 namespace grpc_cb {
 
@@ -25,14 +26,14 @@ class ServerWriter GRPC_FINAL {
   // Wrap all data in shared struct pointer to make copy quick.
   struct Data {
     CallSptr call_sptr;
-    bool closed = false;
+    bool closed;
   };
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ServerWriter<>
 
 template <class Response>
 ServerWriter<Response>::ServerWriter(const CallSptr& call_sptr)
-    : data_sptr_(new Data{call_sptr}) {
+    : data_sptr_(new Data{call_sptr, false}) {
   assert(call_sptr);
   assert(!data_sptr_->closed);
   ServerInitMdCqTag* tag = new ServerInitMdCqTag(call_sptr);
@@ -58,10 +59,14 @@ bool ServerWriter<Response>::Write(const Response& response) const {
 template <class Response>
 void ServerWriter<Response>::Close(const Status& status) const {
   bool& closed = data_sptr_->closed;
-  if (closed) return false;
+  if (closed) return;
   closed = true;
 
-  // XXX
+  using CqTag = ServerSendStatusCqTag;
+  CqTag* tag = new CqTag(data_sptr_->call_sptr);
+  if (tag->StartSend(status))
+    return;
+  delete tag;
 }
 
 }  // namespace grpc_cb
