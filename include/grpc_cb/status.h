@@ -40,16 +40,13 @@
 
 namespace grpc_cb {
 
-/// Did it work? If it didn't, why?
-///
-/// See \a grpc_cb::StatusCode for details on the available code and their meaning.
 class Status {
  public:
   /// Construct an OK instance.
   Status() : code_(GRPC_STATUS_OK) {}
 
   /// Construct an instance with associated \a code and \a details (also
-  // referred to as "error_msg").
+  /// referred to as "error_message").
   Status(grpc_status_code code, const std::string& details)
       : code_(code), details_(details) {}
 
@@ -66,9 +63,9 @@ class Status {
 
  public:
   /// Return the instance's error code.
-  grpc_status_code error_code() const { return code_; }
+  grpc_status_code GetCode() const { return code_; }
   /// Return the instance's error message.
-  std::string error_msg() const { return details_; }
+  std::string GetDetails() const { return details_; }
 
   /// Is the status OK?
   bool ok() const { return code_ == GRPC_STATUS_OK; }

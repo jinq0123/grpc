@@ -150,8 +150,8 @@ class CodServerSendStatus GRPC_FINAL {
     // Should set only once.
     assert(GRPC_STATUS_OK == send_status_code_);
     assert(send_status_details_.empty());
-    send_status_code_ = status.error_code();
-    send_status_details_ = status.error_msg();
+    send_status_code_ = status.GetCode();
+    send_status_details_ = status.GetDetails();
   }
 
   // Todo: set trailing metadata.

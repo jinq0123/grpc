@@ -245,8 +245,8 @@ int main(int argc, char** argv) {
       std::cout << "Got feature." << std::endl;
     },
     [](const ::grpc_cb::Status& status){
-      std::cout << "End status: (" << status.error_code() << ")"
-          << status.error_msg() << std::endl;
+      std::cout << "End status: (" << status.GetCode() << ")"
+          << status.GetDetails() << std::endl;
     });
 
   stub.BlockingRun();

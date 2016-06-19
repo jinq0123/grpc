@@ -96,6 +96,8 @@ Status ClientReader<Response>::BlockingRecvStatus() const {
     return Status::OK;
 }
 
+// XXX Async recv status and call endCb.
+
 template <class Response>
 void ClientReader<Response>::AsyncReadEach(
     const MsgCallback& msgCallback,
