@@ -12,6 +12,7 @@
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
 #include <grpc_cb/impl/client/client_reader_read_cqtag.h>  // for ClientReaderReadCqTag
+#include <grpc_cb/impl/client/client_reader_recv_status_cqtag.h>  // for ClientReaderRecvStatusCqTag
 #include <grpc_cb/impl/completion_queue.h>       // for CompletionQueue::Pluck()
 #include <grpc_cb/status.h>                      // for Status
 
@@ -77,8 +78,7 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
 
-  CallSptr& call_sptr = data_sptr_->call_sptr;
-  ReadCqTag tag(call_sptr);
+  ReadCqTag tag(data_sptr_->call_sptr);
   if (!tag.Start()) {
     status.SetInternalError("End of server stream.");  // Todo: use EndOfStream instead of status.
     return false;
@@ -92,8 +92,11 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
 
 template <class Response>
 Status ClientReader<Response>::BlockingRecvStatus() const {
-      // XXX BlockingRecvStatus()
-    return Status::OK;
+    ClientReaderRecvStatusCqTag tag(data_sptr_->call_sptr);
+    if (!tag.Start())
+        return Status::InternalError("Failed to receive status.");
+    data_sptr_->cq_sptr->Pluck(&tag);
+    return tag.GetStatus();
 }
 
 // XXX Async recv status and call endCb.
