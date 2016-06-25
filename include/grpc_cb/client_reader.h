@@ -122,7 +122,7 @@ void ClientReader<Response>::AsyncReadNext() const {
   auto* tag = new ClientReaderAsyncReadCqTag<Response>(
       call_sptr,
       [this_copy](const Response& msg) { this_copy.OnReadEach(msg); },
-      [this_copy](const Status& status) { this_copy.CallStatusCb(status); });
+      data_sptr_->statusCb);
   if (tag->Start()) return;
 
   delete tag;
