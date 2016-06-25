@@ -43,6 +43,7 @@ class ClientReader GRPC_FINAL {
   inline void OnReadEach(ReadCqTag& tag) const;
   // Setup next async read.
   inline void AsyncReadNext() const;
+  inline void CallEndCb(const Status& status) const;
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
@@ -99,8 +100,6 @@ Status ClientReader<Response>::BlockingRecvStatus() const {
     return tag.GetStatus();
 }
 
-// XXX Async recv status and call endCb.
-
 template <class Response>
 void ClientReader<Response>::AsyncReadEach(
     const MsgCallback& msgCallback,
@@ -127,6 +126,7 @@ void ClientReader<Response>::AsyncReadNext() const {
 
   delete tag;
   status.SetInternalError("Failed to async read server stream.");
+  CallEndCb(status);
 }
 
 template <class Response>
@@ -135,13 +135,23 @@ void ClientReader<Response>::OnReadEach(ClientReaderReadCqTag& tag) const {
   assert(status.ok());
   Response resp;
   status = tag.GetResultMsg(resp);
-  if (!status.ok()) return;
+  if (!status.ok())
+  {
+      CallEndCb(status);
+      return;
+  }
 
   MsgCallback& msgCb = data_sptr_->msgCb;
   if (msgCb) msgCb(resp);
 
   AsyncReadNext();
   // Old tag will be deleted after return in BlockingRun().
+}
+
+template <class Response>
+void ClientReader<Response>::CallEndCb(const Status& status) const {
+  EndCallback& endCb = data_sptr_->endCb;
+  if (endCb) endCb(status);
 }
 
 }  // namespace grpc_cb
