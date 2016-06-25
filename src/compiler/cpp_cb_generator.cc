@@ -120,7 +120,7 @@ grpc::string GetHeaderIncludes(const grpc::protobuf::FileDescriptor *file,
 
     printer.Print(vars,
       "#include <grpc_cb/channel_sptr.h>\n"
-      "#include <grpc_cb/error_callback.h>        // for ErrorCallback\n"
+      "#include <grpc_cb/status_callback.h>        // for ErrorCallback\n"
       "#include <grpc_cb/server_async_replier.h>  // for ServerReplier<>\n"
       "#include <grpc_cb/service.h>\n"
       "#include <grpc_cb/service_stub.h>\n"

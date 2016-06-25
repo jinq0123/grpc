@@ -7,7 +7,7 @@
 #include <cassert>
 #include <unordered_map>
 
-#include <grpc_cb/error_callback.h>  // for ErrorCallback
+#include <grpc_cb/status_callback.h>  // for StatusCallback
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/channel_sptr.h>
 #include <grpc_cb/impl/completion_queue_sptr.h>  // for CompletionQueueSptr

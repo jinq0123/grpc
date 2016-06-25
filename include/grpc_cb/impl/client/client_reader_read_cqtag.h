@@ -12,8 +12,10 @@
 
 namespace grpc_cb {
 
+    // TODO: rename to ClientRecvMsgCqTag, and ClientAsyncRecvMsgCqTag subclass.
 class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
  public:
+  // Todo: Use MsgCb and ErrCb...
   using Callback = std::function<void (ClientReaderReadCqTag&)>;
   inline explicit ClientReaderReadCqTag(const CallSptr& call_sptr,
                                         const Callback& cb = Callback())

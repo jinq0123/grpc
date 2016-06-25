@@ -257,7 +257,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\client_reader.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client_reader_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\client_writer.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\error_callback.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\call_operations.h" />
@@ -293,6 +292,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\server_writer.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\service.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\status.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\status_callback.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\config.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\noncopyable.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\protobuf_fwd.h" />
