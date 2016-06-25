@@ -138,8 +138,7 @@ void ClientReader<Response>::OnReadEach(ClientReaderReadCqTag& tag) const {
   if (!status.ok()) return;
 
   MsgCallback& msgCb = data_sptr_->msgCb;
-  if (!msgCb) return;
-  msgCb(resp);
+  if (msgCb) msgCb(resp);
 
   AsyncReadNext();
   // Old tag will be deleted after return in BlockingRun().
