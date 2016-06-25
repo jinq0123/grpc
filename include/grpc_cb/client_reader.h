@@ -13,8 +13,8 @@
 #include <grpc_cb/impl/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
 #include <grpc_cb/impl/client/client_reader_read_cqtag.h>  // for ClientReaderReadCqTag
 #include <grpc_cb/impl/client/client_reader_recv_status_cqtag.h>  // for ClientReaderRecvStatusCqTag
-#include <grpc_cb/impl/completion_queue.h>       // for CompletionQueue::Pluck()
-#include <grpc_cb/status.h>                      // for Status
+#include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
+#include <grpc_cb/status.h>                 // for Status
 #include <grpc_cb/status_callback.h>  // for StatusCallback
 
 namespace grpc_cb {
@@ -38,9 +38,9 @@ class ClientReader GRPC_FINAL {
       const StatusCallback& statusCb = StatusCallback()) const;
 
  private:
-  using ReadCqTag = ClientReaderReadCqTag;
+  using ReadCqTag = ClientReaderReadCqTag<Response>;
   // Callback on each message.
-  inline void OnReadEach(ReadCqTag& tag) const;
+  inline void OnReadEach(const Response& msg) const;
   // Setup next async read.
   inline void AsyncReadNext() const;
   inline void CallStatusCb(const Status& status) const;
@@ -121,7 +121,8 @@ void ClientReader<Response>::AsyncReadNext() const {
   ClientReader<Response> this_copy = *this;
   ReadCqTag* tag = new ReadCqTag(
       call_sptr,
-      [this_copy](ReadCqTag& tag) { this_copy.OnReadEach(tag); });
+      [this_copy](const Response& msg) { this_copy.OnReadEach(msg); },
+      [this_copy](const Status& status) { this_copy.CallStatusCb(status); });
   if (tag->Start()) return;
 
   delete tag;
@@ -130,19 +131,12 @@ void ClientReader<Response>::AsyncReadNext() const {
 }
 
 template <class Response>
-void ClientReader<Response>::OnReadEach(ClientReaderReadCqTag& tag) const {
+void ClientReader<Response>::OnReadEach(const Response& msg) const {
   Status& status = data_sptr_->status;
   assert(status.ok());
-  Response resp;
-  status = tag.GetResultMsg(resp);
-  if (!status.ok())
-  {
-      CallStatusCb(status);
-      return;
-  }
 
   MsgCallback& msgCb = data_sptr_->msgCb;
-  if (msgCb) msgCb(resp);
+  if (msgCb) msgCb(msg);
 
   AsyncReadNext();
   // Old tag will be deleted after return in BlockingRun().

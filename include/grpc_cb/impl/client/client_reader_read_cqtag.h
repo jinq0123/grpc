@@ -9,20 +9,21 @@
 #include <grpc_cb/impl/call_cqtag.h>  // for CallCqTag
 #include <grpc_cb/support/config.h>   // for GRPC_FINAL
 #include <grpc_cb/impl/call_op_data.h>  // for CodRecvMsg
+#include <grpc_cb/status_callback.h>  // for ErrorCallback
 
 namespace grpc_cb {
 
-    // TODO: rename to ClientRecvMsgCqTag, and ClientAsyncRecvMsgCqTag subclass.
+// TODO: rename to ClientRecvMsgCqTag, and ClientAsyncRecvMsgCqTag subclass.
+template <class Response>
 class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
  public:
-  // Todo: Use MsgCb and ErrCb...
-  using Callback = std::function<void (ClientReaderReadCqTag&)>;
+  using MsgCallback = std::function<void (const Response&)>;
   inline explicit ClientReaderReadCqTag(const CallSptr& call_sptr,
-                                        const Callback& cb = Callback())
-      : CallCqTag(call_sptr), cb_(cb) {}
+                                        const MsgCallback& cb = MsgCallback(),
+                                        const ErrorCallback& ecb = ErrorCallback())
+      : CallCqTag(call_sptr), cb_(cb), ecb_(ecb) {}
   inline bool Start() GRPC_MUST_USE_RESULT;
-  inline Status GetResultMsg(::google::protobuf::Message& message)
-      GRPC_MUST_USE_RESULT {
+  inline Status GetResultMsg(Response& message) GRPC_MUST_USE_RESULT {
     return cod_recv_msg_.GetResultMsg(
         message, GetCallSptr()->GetMaxMsgSize());
   }
@@ -30,19 +31,30 @@ class ClientReaderReadCqTag GRPC_FINAL : public CallCqTag {
 
  private:
   CodRecvMsg cod_recv_msg_;
-  // Callback will be triggered on completion in DoComplet().
-  Callback cb_;
+  // Callback will be triggered on completion in DoComplete().
+  MsgCallback cb_;
+  ErrorCallback ecb_;
 };  // class ClientReaderReadCqTag
 
-bool ClientReaderReadCqTag::Start() {
+template <class Response>
+bool ClientReaderReadCqTag<Response>::Start() {
   CallOperations ops;
   ops.RecvMsg(cod_recv_msg_);
   return GetCallSptr()->StartBatch(ops, this);
 }
 
-void ClientReaderReadCqTag::DoComplete(bool success) {
+template <class Response>
+void ClientReaderReadCqTag<Response>::DoComplete(bool success) {
   assert(success);
-  if (cb_) cb_(*this);
+
+  Response resp;
+  Status status = GetResultMsg(resp);
+  if (status.ok()) {
+    if (cb_) cb_(resp);
+    return;
+  }
+
+  if (ecb_) ecb_(status);
 }
 
 };  // namespace grpc_cb
