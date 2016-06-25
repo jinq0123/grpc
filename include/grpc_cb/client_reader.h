@@ -11,6 +11,7 @@
 #include <grpc_cb/impl/call.h>       // for StartBatch()
 #include <grpc_cb/impl/call_sptr.h>  // for CallSptr
 #include <grpc_cb/impl/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
+#include <grpc_cb/impl/client/client_reader_async_read_cqtag.h>  // for ClientReaderAsyncReadCqTag
 #include <grpc_cb/impl/client/client_reader_read_cqtag.h>  // for ClientReaderReadCqTag
 #include <grpc_cb/impl/client/client_reader_recv_status_cqtag.h>  // for ClientReaderRecvStatusCqTag
 #include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
@@ -38,7 +39,6 @@ class ClientReader GRPC_FINAL {
       const StatusCallback& statusCb = StatusCallback()) const;
 
  private:
-  using ReadCqTag = ClientReaderReadCqTag<Response>;
   // Callback on each message.
   inline void OnReadEach(const Response& msg) const;
   // Setup next async read.
@@ -79,7 +79,7 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return false;
 
-  ReadCqTag tag(data_sptr_->call_sptr);
+  ClientReaderReadCqTag tag(data_sptr_->call_sptr);
   if (!tag.Start()) {
     status.SetInternalError("End of server stream.");  // Todo: use EndOfStream instead of status.
     return false;
@@ -119,7 +119,7 @@ void ClientReader<Response>::AsyncReadNext() const {
   CallSptr& call_sptr = data_sptr_->call_sptr;
   // This ClientReader is copied in callback.
   ClientReader<Response> this_copy = *this;
-  ReadCqTag* tag = new ReadCqTag(
+  auto* tag = new ClientReaderAsyncReadCqTag<Response>(
       call_sptr,
       [this_copy](const Response& msg) { this_copy.OnReadEach(msg); },
       [this_copy](const Status& status) { this_copy.CallStatusCb(status); });
