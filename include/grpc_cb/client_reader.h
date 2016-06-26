@@ -13,6 +13,7 @@
 #include <grpc_cb/impl/client/client_reader_init_cqtag.h>  // for ClientReaderInitCqTag
 #include <grpc_cb/impl/client/client_reader_async_read_cqtag.h>  // for ClientReaderAsyncReadCqTag
 #include <grpc_cb/impl/client/client_reader_read_cqtag.h>  // for ClientReaderReadCqTag
+#include <grpc_cb/impl/client/client_reader_async_recv_status_cqtag.h>  // for ClientReaderAsyncRecvStatusCqTag
 #include <grpc_cb/impl/client/client_reader_recv_status_cqtag.h>  // for ClientReaderRecvStatusCqTag
 #include <grpc_cb/impl/completion_queue.h>  // for CompletionQueue::Pluck()
 #include <grpc_cb/status.h>                 // for Status
@@ -136,6 +137,20 @@ void ClientReader<Response>::AsyncReadNext() const {
 }
 
 template <class Response>
+void ClientReader<Response>::AsyncRecvStatus() const {
+  Status& status = data_sptr_->status;
+  assert(status.ok());
+
+  auto* tag = new ClientReaderAsyncRecvStatusCqTag(
+      data_sptr_->call_sptr, data_sptr_->on_status);
+  if (tag->Start()) return;
+
+  delete tag;
+  status.SetInternalError("Failed to receive status.");
+  CallStatusCb(status);
+}
+
+template <class Response>
 void ClientReader<Response>::OnReadEach(const Response& msg) const {
   Status& status = data_sptr_->status;
   assert(status.ok());
@@ -149,15 +164,12 @@ void ClientReader<Response>::OnReadEach(const Response& msg) const {
 
 template <class Response>
 void ClientReader<Response>::OnEnd(const Status& status) const {
-  Status& status = data_sptr_->status;
-  assert(status.ok());
-
-  if (!status.ok()) {
-    CallStatusCb(status);
+  if (status.ok()) {
+    AsyncRecvStatus();
     return;
   }
 
-  AsyncRecvStatus();
+  CallStatusCb(status);
 }
 
 template <class Response>

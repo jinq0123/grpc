@@ -9,15 +9,19 @@
 #include <grpc_cb/impl/call_cqtag.h>       // for CallCqTag
 #include <grpc_cb/impl/call_op_data.h>     // for CodClientRecvStatus
 #include <grpc_cb/impl/call_operations.h>  // for CallOperations
+#include <grpc_cb/impl/call_sptr.h>        // for CallSptr
 
 namespace grpc_cb {
 
-class ClientReaderRecvStatusCqTag GRPC_FINAL : public CallCqTag {
+// Recv status for ClientReader and ClientReaderWriter.
+// Base class of ClientReaderAsyncReadStatusCqTag.
+class ClientReaderRecvStatusCqTag : public CallCqTag {
  public:
   explicit ClientReaderRecvStatusCqTag(const CallSptr& call_sptr)
       : CallCqTag(call_sptr) {
     assert(call_sptr);
   }
+  virtual ~ClientReaderRecvStatusCqTag() {}
 
  public:
   inline bool Start() GRPC_MUST_USE_RESULT;
