@@ -41,8 +41,12 @@ class ClientReader GRPC_FINAL {
  private:
   // Callback on each message.
   inline void OnReadEach(const Response& msg) const;
+  // Callback on end of reading or by error.
+  inline void OnEnd(const Status& status) const;
+
   // Setup next async read.
   inline void AsyncReadNext() const;
+  inline void AsyncRecvStatus() const;
   inline void CallStatusCb(const Status& status) const;
 
  private:
@@ -123,7 +127,7 @@ void ClientReader<Response>::AsyncReadNext() const {
   auto* tag = new ClientReaderAsyncReadCqTag<Response>(
       call_sptr,
       [this_copy](const Response& msg) { this_copy.OnReadEach(msg); },
-      data_sptr_->on_status);
+      [this_copy](const Status& status) { this_copy.OnEnd(status); });
   if (tag->Start()) return;
 
   delete tag;
@@ -141,6 +145,19 @@ void ClientReader<Response>::OnReadEach(const Response& msg) const {
 
   AsyncReadNext();
   // Old tag will be deleted after return in BlockingRun().
+}
+
+template <class Response>
+void ClientReader<Response>::OnEnd(const Status& status) const {
+  Status& status = data_sptr_->status;
+  assert(status.ok());
+
+  if (!status.ok()) {
+    CallStatusCb(status);
+    return;
+  }
+
+  AsyncRecvStatus();
 }
 
 template <class Response>
