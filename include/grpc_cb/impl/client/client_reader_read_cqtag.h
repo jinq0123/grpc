@@ -14,6 +14,7 @@
 namespace grpc_cb {
 
 // Completion queue tag to read msg blockingly.
+// For ClientReader and  ClientReaderWriter.
 // Base class of ClientReaderAsyncReadCqTag.
 class ClientReaderReadCqTag : public CallCqTag {
  public:
@@ -22,6 +23,9 @@ class ClientReaderReadCqTag : public CallCqTag {
   virtual ~ClientReaderReadCqTag() {}
 
   inline bool Start() GRPC_MUST_USE_RESULT;
+
+  // To detect end of stream.
+  inline bool HasGotMsg() const { return cod_recv_msg_.HasGotMsg(); }
   inline Status GetResultMsg(::google::protobuf::Message& message)
       GRPC_MUST_USE_RESULT {
     return cod_recv_msg_.GetResultMsg(

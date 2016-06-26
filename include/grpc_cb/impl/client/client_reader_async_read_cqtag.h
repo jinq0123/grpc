@@ -10,6 +10,7 @@
 
 namespace grpc_cb {
 
+// For ClientReader and  ClientReaderWriter.
 template <class Response>
 class ClientReaderAsyncReadCqTag GRPC_FINAL : public ClientReaderReadCqTag {
  public:

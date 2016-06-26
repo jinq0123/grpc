@@ -35,8 +35,8 @@ class ClientReader GRPC_FINAL {
 
   using MsgCallback = std::function<void(const Response&)>;
   inline void AsyncReadEach(
-      const MsgCallback& msgCb,
-      const StatusCallback& statusCb = StatusCallback()) const;
+      const MsgCallback& on_msg,
+      const StatusCallback& on_status = StatusCallback()) const;
 
  private:
   // Callback on each message.
@@ -51,8 +51,8 @@ class ClientReader GRPC_FINAL {
     CompletionQueueSptr cq_sptr;
     CallSptr call_sptr;
     Status status;
-    MsgCallback msgCb;
-    StatusCallback statusCb;
+    MsgCallback on_msg;
+    StatusCallback on_status;
   };
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientReader<>
@@ -87,6 +87,7 @@ bool ClientReader<Response>::BlockingReadOne(Response* response) const {
 
   // tag.Start() has queued the tag. Wait for completion.
   data_sptr_->cq_sptr->Pluck(&tag);
+  // Todo: check HasGotMsg()...
   status = tag.GetResultMsg(*response);
   return status.ok();
 }
@@ -102,12 +103,12 @@ Status ClientReader<Response>::BlockingRecvStatus() const {
 
 template <class Response>
 void ClientReader<Response>::AsyncReadEach(
-    const MsgCallback& msgCb,
-    const StatusCallback& statusCb) const {
+    const MsgCallback& on_msg,
+    const StatusCallback& on_status) const {
   Status& status = data_sptr_->status;
   if (!status.ok()) return;
-  data_sptr_->msgCb = msgCb;
-  data_sptr_->statusCb = statusCb;
+  data_sptr_->on_msg = on_msg;
+  data_sptr_->on_status = on_status;
   AsyncReadNext();
 }
 
@@ -122,7 +123,7 @@ void ClientReader<Response>::AsyncReadNext() const {
   auto* tag = new ClientReaderAsyncReadCqTag<Response>(
       call_sptr,
       [this_copy](const Response& msg) { this_copy.OnReadEach(msg); },
-      data_sptr_->statusCb);
+      data_sptr_->on_status);
   if (tag->Start()) return;
 
   delete tag;
@@ -135,8 +136,8 @@ void ClientReader<Response>::OnReadEach(const Response& msg) const {
   Status& status = data_sptr_->status;
   assert(status.ok());
 
-  MsgCallback& msgCb = data_sptr_->msgCb;
-  if (msgCb) msgCb(msg);
+  MsgCallback& on_msg = data_sptr_->on_msg;
+  if (on_msg) on_msg(msg);
 
   AsyncReadNext();
   // Old tag will be deleted after return in BlockingRun().
@@ -144,8 +145,8 @@ void ClientReader<Response>::OnReadEach(const Response& msg) const {
 
 template <class Response>
 void ClientReader<Response>::CallStatusCb(const Status& status) const {
-  StatusCallback& statusCb = data_sptr_->statusCb;
-  if (statusCb) statusCb(status);
+  StatusCallback& on_status = data_sptr_->on_status;
+  if (on_status) on_status(status);
 }
 
 }  // namespace grpc_cb

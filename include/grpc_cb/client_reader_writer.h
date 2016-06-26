@@ -24,7 +24,7 @@ class ClientReaderWriter GRPC_FINAL {
   inline void WritesDone() const;
   inline bool BlockingReadOne(Response* response) const;
   using ReadCallback = std::function<void(const Response&)>;
-  inline void AsyncReadEach(const ReadCallback& readCallback) const;
+  inline void AsyncReadEach(const ReadCallback& on_read) const;
   inline Status BlockingFinish() const;
   // XXX AsyncFinish()
 
@@ -34,7 +34,7 @@ class ClientReaderWriter GRPC_FINAL {
     CompletionQueueSptr cq_sptr;
     CallSptr call_sptr;
     Status status;
-    ReadCallback readCb;
+    ReadCallback on_read;
   };
   std::shared_ptr<Data> data_sptr_;  // Easy to copy.
 };  // class ClientReaderWriter<>
@@ -89,7 +89,7 @@ bool ClientReaderWriter<Request, Response>::BlockingReadOne(Response* response) 
 }
 
 template <class Request, class Response>
-void ClientReaderWriter<Request, Response>::AsyncReadEach(const ReadCallback& readCallback) const {
+void ClientReaderWriter<Request, Response>::AsyncReadEach(const ReadCallback& on_read) const {
   // XXX
 }
 
