@@ -24,19 +24,17 @@ class ClientReaderWriter GRPC_FINAL {
   inline void WritesDone() const;
   inline bool BlockingReadOne(Response* response) const;
   using ReadCallback = std::function<void(const Response&)>;
-  inline void AsyncReadEach(const ReadCallback& on_read) const;
+  inline void AsyncReadEach(
+      const ReadCallback& on_read,
+      const StatusCallback& on_status = StatusCallback()) const;
   inline Status BlockingFinish() const;
   // XXX AsyncFinish()
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
-  struct Data {
-    CompletionQueueSptr cq_sptr;
-    CallSptr call_sptr;
-    Status status;
-    ReadCallback on_read;
-  };
-  std::shared_ptr<Data> data_sptr_;  // Easy to copy.
+  using Data = ClientReaderData<Response>;
+  using DataSptr = ClientReaderDataSptr<Response>;
+  DataSptr data_sptr_;  // Same as reader. Easy to copy.
 };  // class ClientReaderWriter<>
 
 // Todo: BlockingGetInitMd();
@@ -60,15 +58,8 @@ template <class Request, class Response>
 bool ClientReaderWriter<Request, Response>::Write(const Request& request) const {
   assert(data_sptr_);
   assert(data_sptr_->call_sptr);
-  Status& status = data_sptr_->status;
-  if (!status.ok()) return false;
-
-  SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
-  if (tag->Start(request)) return true;
-
-  delete tag;
-  status.SetInternalError("Failed to write stream.");
-  return false;
+  return ClientWriterHelper::Write(data_sptr_->call_sptr,
+      request, data_sptr_->status);
 }
 
 template <class Request, class Response>
@@ -86,25 +77,18 @@ void ClientReaderWriter<Request, Response>::WritesDone() const {
 template <class Request, class Response>
 bool ClientReaderWriter<Request, Response>::BlockingReadOne(Response* response) const {
   assert(response);
-  Status& status = data_sptr_->status;
-  if (!status.ok()) return false;
-
-  ClientReaderReadCqTag tag(data_sptr_->call_sptr);
-  if (!tag.Start()) {
-    status.SetInternalError("End of server stream.");  // Todo: use EndOfStream instead of status.
-    return false;
-  }
-
-  // tag.Start() has queued the tag. Wait for completion.
-  data_sptr_->cq_sptr->Pluck(&tag);
-  // Todo: check HasGotMsg()...
-  status = tag.GetResultMsg(*response);
-  return status.ok();
+  Data& d = *data_sptr_;
+  return ClientReaderHelper::BlockingReadOne(
+      d.call_sptr, d.cq_sptr, *response, d.status);
 }
 
 template <class Request, class Response>
-void ClientReaderWriter<Request, Response>::AsyncReadEach(const ReadCallback& on_read) const {
-  // XXX
+void ClientReaderWriter<Request, Response>::AsyncReadEach(
+    const ReadCallback& on_read,
+    const StatusCallback& on_status) const {
+    data_sptr_->on_msg = on_read;
+    data_sptr_->on_status = on_status;
+    ClientReaderHelper::AsyncReadNext(data_sptr_);
 }
 
 template <class Request, class Response>
