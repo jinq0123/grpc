@@ -39,7 +39,7 @@ class Call GRPC_FINAL {
   std::unique_ptr<grpc_call, void (*)(grpc_call*)> c_call_uptr_;  // owned
 
  private:
-  int max_msg_size_;  // XXX necessary? Move to Channel?
+  int max_msg_size_;  // Todo: necessary? Move to Channel?
 
  private:
   static int default_max_msg_size_;  // = -1;  // for all call
