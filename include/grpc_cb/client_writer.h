@@ -11,6 +11,7 @@
 #include <grpc_cb/impl/client/client_init_md_cqtag.h>  // for ClientInitMdCqTag
 #include <grpc_cb/impl/client/client_writer_helper.h>  // for ClientWriterHelper
 #include <grpc_cb/status.h>                            // for Status
+#include <grpc_cb/impl/client/client_writer_finish_cqtag.h>  // for ClientWriterFinishCqTag
 
 namespace grpc_cb {
 
@@ -30,12 +31,8 @@ class ClientWriter GRPC_FINAL {
   }
 
   Status BlockingFinish(
-      ::google::protobuf::Message* response) const {
-    assert(response);
-    Data& d = *data_sptr_;
-    return ClientWriterHelper::BlockingFinish(
-        d.call_sptr, d.cq_sptr, *response, d.status);
-  }
+      ::google::protobuf::Message* response) const;
+
   // Todo: AsyncFinish
 
  private:
@@ -62,6 +59,34 @@ ClientWriter<Request>::ClientWriter(const ChannelSptr& channel,
   delete tag;
   data_sptr_->status.SetInternalError("Failed to init client stream.");
 }
+
+template <class Request>
+Status ClientWriter<Request>::BlockingFinish(
+    ::google::protobuf::Message* response) const {
+  assert(response);
+  assert(data_sptr_);
+  Data& data = *data_sptr_;
+  assert(data.call_sptr);
+  assert(data.cq_sptr);
+
+  Status& status = data.status;
+  if (!status.ok()) return status;
+  ClientWriterFinishCqTag tag(data.call_sptr);
+  if (!tag.Start()) {
+    status.SetInternalError("Failed to finish client stream.");
+    return status;
+  }
+
+  data.cq_sptr->Pluck(&tag);
+
+  // Todo: Get trailing metadata.
+  if (tag.IsStatusOk())
+    status = tag.GetResponse(*response);
+  else
+    status = tag.GetStatus();
+
+  return status;
+}  // BlockingFinish()
 
 }  // namespace grpc_cb
 
