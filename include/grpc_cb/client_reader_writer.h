@@ -82,10 +82,24 @@ void ClientReaderWriter<Request, Response>::WritesDone() const {
   status.SetInternalError("Failed to set stream writes done.");
 }
 
+// Todo: same as ClientReader?
 template <class Request, class Response>
 bool ClientReaderWriter<Request, Response>::BlockingReadOne(Response* response) const {
-  // XXX
-  return false;
+  assert(response);
+  Status& status = data_sptr_->status;
+  if (!status.ok()) return false;
+
+  ClientReaderReadCqTag tag(data_sptr_->call_sptr);
+  if (!tag.Start()) {
+    status.SetInternalError("End of server stream.");  // Todo: use EndOfStream instead of status.
+    return false;
+  }
+
+  // tag.Start() has queued the tag. Wait for completion.
+  data_sptr_->cq_sptr->Pluck(&tag);
+  // Todo: check HasGotMsg()...
+  status = tag.GetResultMsg(*response);
+  return status.ok();
 }
 
 template <class Request, class Response>
