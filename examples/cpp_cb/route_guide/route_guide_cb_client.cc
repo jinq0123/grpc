@@ -187,7 +187,7 @@ class RouteGuideClient {
     }
     writer.join();
     // Todo: Finish() should auto close writing.
-    Status status = stream.BlockingFinish();  // Recv status.
+    Status status = stream.BlockingRecvStatus();
     if (!status.ok()) {
       std::cout << "RouteChat rpc failed." << std::endl;
     }

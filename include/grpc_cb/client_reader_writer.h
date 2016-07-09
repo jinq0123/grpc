@@ -9,8 +9,6 @@
 
 namespace grpc_cb {
 
-// Todo: Add base class?
-
 template <class Request, class Response>
 class ClientReaderWriter GRPC_FINAL {
  public:
@@ -19,16 +17,21 @@ class ClientReaderWriter GRPC_FINAL {
                             const CompletionQueueSptr& cq_sptr);
 
  public:
+  // Write is always asynchronous.
   inline bool Write(const Request& request) const;
   // WritesDone() is optional. Writes are auto done when finish.
-  inline void WritesDone() const;
+  inline void WritesDone() const;  // XXX call WritesDone() at the end.
+
   inline bool BlockingReadOne(Response* response) const;
+  inline Status BlockingRecvStatus() const {
+    const Data& d = *data_sptr_;
+    return ClientReaderHelper::BlockingRecvStatus(d.call_sptr, d.cq_sptr);
+  }
+
   using ReadCallback = std::function<void(const Response&)>;
   inline void AsyncReadEach(
       const ReadCallback& on_read,
       const StatusCallback& on_status = StatusCallback()) const;
-  inline Status BlockingFinish() const;
-  // XXX AsyncFinish()
 
  private:
   // Wrap all data in shared struct pointer to make copy quick.
@@ -89,12 +92,6 @@ void ClientReaderWriter<Request, Response>::AsyncReadEach(
     data_sptr_->on_msg = on_read;
     data_sptr_->on_status = on_status;
     ClientReaderHelper::AsyncReadNext(data_sptr_);
-}
-
-template <class Request, class Response>
-Status ClientReaderWriter<Request, Response>::BlockingFinish() const {
-  // XXX
-  return Status::OK;
 }
 
 }  // namespace grpc_cb
