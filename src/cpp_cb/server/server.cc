@@ -13,7 +13,7 @@
 #include <grpc_cb/security/server_credentials.h>  // for InsecureServerCredentials
 #include <grpc_cb/service.h>
 
-#include "server_method_call_tag.h"
+#include "server_method_call_cqtag.h"  // for ServerMethodCallCqTag
 
 namespace grpc_cb {
 
@@ -118,7 +118,7 @@ void Server::RequestServiceMethodsCalls(const RegisteredService& rs) const {
   for (size_t i = 0; i < rms.size(); ++i) {
     if (!rms[i]) continue;
     // Delete in Run(). Calls grpc_server_request_registered_call() in ctr().
-    new ServerMethodCallTag(c_server_uptr_.get(), rs.service, i, rms[i],
+    new ServerMethodCallCqTag(c_server_uptr_.get(), rs.service, i, rms[i],
                             &cq_uptr_->c_cq());
   }
 }

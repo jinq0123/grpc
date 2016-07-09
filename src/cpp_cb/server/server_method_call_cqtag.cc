@@ -1,7 +1,7 @@
 // Licensed under the Apache License, Version 2.0.
 // Author: Jin Qing (http://blog.csdn.net/jq0123)
 
-#include "server_method_call_tag.h"
+#include "server_method_call_cqtag.h"
 
 #include <google/protobuf/message.h>  // for Message
 #include <grpc_cb/service.h>  // for Service
@@ -9,7 +9,7 @@
 
 namespace grpc_cb {
 
-ServerMethodCallTag::ServerMethodCallTag(grpc_server* server, Service* service,
+ServerMethodCallCqTag::ServerMethodCallCqTag(grpc_server* server, Service* service,
                                          size_t method_index,
                                          void* registered_method,
                                          grpc_completion_queue* cq)
@@ -33,11 +33,11 @@ ServerMethodCallTag::ServerMethodCallTag(grpc_server* server, Service* service,
                                       &payload_ptr_, cq, cq, this);
 }
 
-ServerMethodCallTag::~ServerMethodCallTag() {
+ServerMethodCallCqTag::~ServerMethodCallCqTag() {
   grpc_metadata_array_destroy(&initial_metadata_array_);
 }
 
-void ServerMethodCallTag::DoComplete(bool success)
+void ServerMethodCallCqTag::DoComplete(bool success)
 {
   // TODO: check success
 
@@ -54,7 +54,7 @@ void ServerMethodCallTag::DoComplete(bool success)
   // Request the next method call.
   // Calls grpc_server_request_registered_call() in ctr().
   // Delete in Server::Run().
-  new ServerMethodCallTag(server_, service_, method_index_, registered_method_,
+  new ServerMethodCallCqTag(server_, service_, method_index_, registered_method_,
                           cq_);
 }
 

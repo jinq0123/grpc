@@ -20,7 +20,6 @@ namespace grpc_cb {
 
 class InsecureServerCredentials;
 class ServerCredentials;
-class ServerMethodCallTag;
 class Service;
 
 /// Models a gRPC server.
