@@ -15,12 +15,13 @@ class ClientReaderWriter GRPC_FINAL {
   inline ClientReaderWriter(const ChannelSptr& channel,
                             const std::string& method,
                             const CompletionQueueSptr& cq_sptr);
+  inline ~ClientReaderWriter();
 
  public:
   // Write is always asynchronous.
   inline bool Write(const Request& request) const;
-  // WritesDone() is optional. Writes are auto done when finish.
-  inline void WritesDone() const;  // XXX call WritesDone() at the end.
+  // WritesDone() is optional. Writes are auto done in dtr().
+  inline void WritesDone();
 
   inline bool BlockingReadOne(Response* response) const;
   inline Status BlockingRecvStatus() const {
@@ -38,6 +39,7 @@ class ClientReaderWriter GRPC_FINAL {
   using Data = ClientReaderData<Response>;
   using DataSptr = ClientReaderDataSptr<Response>;
   DataSptr data_sptr_;  // Same as reader. Easy to copy.
+  bool writes_done_ = false;  // Is WritesDone() called?
 };  // class ClientReaderWriter<>
 
 // Todo: BlockingGetInitMd();
@@ -58,6 +60,11 @@ ClientReaderWriter<Request, Response>::ClientReaderWriter(
 }
 
 template <class Request, class Response>
+ClientReaderWriter<Request, Response>::~ClientReaderWriter() {
+  WritesDone();
+}
+
+template <class Request, class Response>
 bool ClientReaderWriter<Request, Response>::Write(const Request& request) const {
   assert(data_sptr_);
   assert(data_sptr_->call_sptr);
@@ -66,7 +73,9 @@ bool ClientReaderWriter<Request, Response>::Write(const Request& request) const 
 }
 
 template <class Request, class Response>
-void ClientReaderWriter<Request, Response>::WritesDone() const {
+void ClientReaderWriter<Request, Response>::WritesDone() {
+  if (writes_done_) return;
+  writes_done_ = true;
   Status& status = data_sptr_->status;
   if (!status.ok()) return;
   ClientSendCloseCqTag* tag = new ClientSendCloseCqTag(data_sptr_->call_sptr);
