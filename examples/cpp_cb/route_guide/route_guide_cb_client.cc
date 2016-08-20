@@ -92,7 +92,7 @@ class RouteGuideClient {
     BlockingGetOneFeature(point, &feature);
   }
 
-  void ListFeatures() {
+  void BlockingListFeatures() {
     routeguide::Rectangle rect;
     Feature feature;
 
@@ -119,7 +119,7 @@ class RouteGuideClient {
     }
   }
 
-  void RecordRoute() {
+  void BlockingRecordRoute() {
     Point point;
     const int kPoints = 10;
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -160,7 +160,7 @@ class RouteGuideClient {
   // Tood: writing is always non-blocking.
   // Todo: Callback on client stream response and status.
 
-  void RouteChat() {
+  void BlockingRouteChat() {
     ClientReaderWriter<RouteNote, RouteNote> stream(
         stub_->RouteChat());
 
@@ -177,7 +177,7 @@ class RouteGuideClient {
                   << note.location().longitude() << std::endl;
         stream_copy.Write(note);
       }
-      stream_copy.WritesDone();  // Optional colse writing.
+      stream_copy.WritesDone();  // Optional close writing.
     });
 
     RouteNote server_note;
@@ -230,14 +230,14 @@ int main(int argc, char** argv) {
   grpc_cb::ChannelSptr channel(new Channel("localhost:50051"));
   RouteGuideClient guide(channel, db);
 
-  std::cout << "-------------- GetFeature --------------" << std::endl;
+  std::cout << "---- BlockingGetFeature --------------" << std::endl;
   guide.BlockingGetFeature();
-  std::cout << "-------------- ListFeatures --------------" << std::endl;
-  guide.ListFeatures();
-  std::cout << "-------------- RecordRoute --------------" << std::endl;
-  guide.RecordRoute();
-  std::cout << "-------------- RouteChat --------------" << std::endl;
-  guide.RouteChat();
+  std::cout << "---- BlockingListFeatures --------------" << std::endl;
+  guide.BlockingListFeatures();
+  std::cout << "---- BlockingRecordRoute --------------" << std::endl;
+  guide.BlockingRecordRoute();
+  std::cout << "---- BlockingRouteChat --------------" << std::endl;
+  guide.BlockingRouteChat();
 
   routeguide::RouteGuide::Stub stub(channel);
   routeguide::Rectangle rect;
