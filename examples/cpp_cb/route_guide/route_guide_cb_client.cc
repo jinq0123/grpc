@@ -80,6 +80,7 @@ class RouteGuideClient {
   RouteGuideClient(std::shared_ptr<Channel> channel, const std::string& db)
       : stub_(routeguide::RouteGuide::NewStub(channel)) {
     routeguide::ParseDb(db, &feature_list_);
+    assert(!feature_list_.empty());
   }
 
   void BlockingGetFeature() {
@@ -225,6 +226,7 @@ class RouteGuideClient {
 int main(int argc, char** argv) {
   // Expect only arg: --db_path=path/to/route_guide_db.json.
   std::string db = routeguide::GetDbFileContent(argc, argv);
+  assert(!db.empty());
   grpc_cb::ChannelSptr channel(new Channel("localhost:50051"));
   RouteGuideClient guide(channel, db);
 
