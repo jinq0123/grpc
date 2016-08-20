@@ -54,17 +54,6 @@
 #include "src/core/surface/completion_queue.h"
 #include "src/core/transport/static_metadata.h"
 
-/** The maximum number of concurrent batches possible.
-    Based upon the maximum number of individually queueable ops in the batch
-   api:
-      - initial metadata send
-      - message send
-      - status/close send (depending on client/server)
-      - initial metadata recv
-      - message recv
-      - status/close recv (depending on client/server) */
-#define MAX_CONCURRENT_BATCHES 6
-
 typedef struct {
   grpc_ioreq_completion_func on_complete;
   void *user_data;
@@ -149,8 +138,8 @@ struct grpc_call {
   uint8_t destroy_called;
   /** flag indicating that cancellation is inherited */
   uint8_t cancellation_is_inherited;
-  /** bitmask of live batches */
-  uint8_t used_batches;
+  /** size of live batches */
+  size_t batches;
   /** which ops are in-flight */
   uint8_t sent_initial_metadata;
   uint8_t sending_message;
@@ -158,8 +147,6 @@ struct grpc_call {
   uint8_t received_initial_metadata;
   uint8_t receiving_message;
   uint8_t received_final_op;
-
-  batch_control active_batches[MAX_CONCURRENT_BATCHES];
 
   /* first idx: is_receiving, second idx: is_trailing */
   grpc_metadata_batch metadata_batch[2][2];
@@ -908,24 +895,14 @@ static int are_write_flags_valid(uint32_t flags) {
   return !(flags & invalid_positions);
 }
 
-static batch_control *allocate_batch_control(grpc_call *call) {
-  size_t i;
-  for (i = 0; i < MAX_CONCURRENT_BATCHES; i++) {
-    if ((call->used_batches & (1 << i)) == 0) {
-      call->used_batches = (uint8_t)(call->used_batches | (uint8_t)(1 << i));
-      return &call->active_batches[i];
-    }
-  }
-  return NULL;
-}
-
 static void finish_batch_completion(grpc_exec_ctx *exec_ctx, void *user_data,
                                     grpc_cq_completion *storage) {
   batch_control *bctl = user_data;
   grpc_call *call = bctl->call;
+  gpr_free(bctl);
   gpr_mu_lock(&call->mu);
-  call->used_batches = (uint8_t)(
-      call->used_batches & ~(uint8_t)(1 << (bctl - call->active_batches)));
+  GPR_ASSERT(call->batches);
+  call->batches--;
   gpr_mu_unlock(&call->mu);
   GRPC_CALL_INTERNAL_UNREF(exec_ctx, call, "completion");
 }
@@ -933,18 +910,19 @@ static void finish_batch_completion(grpc_exec_ctx *exec_ctx, void *user_data,
 static void post_batch_completion(grpc_exec_ctx *exec_ctx,
                                   batch_control *bctl) {
   grpc_call *call = bctl->call;
-  if (bctl->is_notify_tag_closure) {
-    grpc_exec_ctx_enqueue(exec_ctx, bctl->notify_tag, bctl->success);
-    gpr_mu_lock(&call->mu);
-    bctl->call->used_batches =
-        (uint8_t)(bctl->call->used_batches &
-                  ~(uint8_t)(1 << (bctl - bctl->call->active_batches)));
-    gpr_mu_unlock(&call->mu);
-    GRPC_CALL_INTERNAL_UNREF(exec_ctx, call, "completion");
-  } else {
-    grpc_cq_end_op(exec_ctx, bctl->call->cq, bctl->notify_tag, bctl->success,
+  if (!bctl->is_notify_tag_closure) {
+    grpc_cq_end_op(exec_ctx, call->cq, bctl->notify_tag, bctl->success,
                    finish_batch_completion, bctl, &bctl->cq_completion);
+    return;
   }
+
+  grpc_exec_ctx_enqueue(exec_ctx, bctl->notify_tag, bctl->success);
+  gpr_free(bctl);
+  gpr_mu_lock(&call->mu);
+  GPR_ASSERT(call->batches);
+  call->batches--;
+  gpr_mu_unlock(&call->mu);
+  GRPC_CALL_INTERNAL_UNREF(exec_ctx, call, "completion");
 }
 
 static void continue_receiving_slices(grpc_exec_ctx *exec_ctx,
@@ -1121,9 +1099,9 @@ static grpc_call_error call_start_batch(grpc_exec_ctx *exec_ctx,
 
   memset(&stream_op, 0, sizeof(stream_op));
 
-  /* TODO(ctiller): this feels like it could be made lock-free */
   gpr_mu_lock(&call->mu);
-  bctl = allocate_batch_control(call);
+  call->batches++;
+  bctl = gpr_malloc(sizeof(*bctl));  // gpr_free() on completion
   memset(bctl, 0, sizeof(*bctl));
   bctl->call = call;
   bctl->notify_tag = notify_tag;
