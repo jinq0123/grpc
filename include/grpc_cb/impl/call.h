@@ -26,6 +26,7 @@ class Call GRPC_FINAL {
 
  public:
   inline bool StartBatch(const CallOperations& ops, void* tag) GRPC_MUST_USE_RESULT;
+  // Todo: inline size_t GetBatchSize() const;  // c_call->batches
 
   inline int GetMaxMsgSize() const { return max_msg_size_; }
   inline void SetMaxMsgSize(int size) { max_msg_size_ = size; }
