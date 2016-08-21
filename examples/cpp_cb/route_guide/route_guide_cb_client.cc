@@ -90,6 +90,23 @@ RouteNote MakeRouteNote(const std::string& message,
   return n;
 }
 
+void PrintFeature(const Feature& feature) {
+  if (!feature.has_location()) {
+    std::cout << "Server returns incomplete feature." << std::endl;
+    return;
+  }
+  if (feature.name().empty()) {
+    std::cout << "Found no feature at "
+        << feature.location().latitude()/kCoordFactor << ", "
+        << feature.location().longitude()/kCoordFactor << std::endl;
+  }
+  else {
+    std::cout << "Found feature called " << feature.name()  << " at "
+        << feature.location().latitude()/kCoordFactor << ", "
+        << feature.location().longitude()/kCoordFactor << std::endl;
+  }
+}  // HandleFeature()
+
 class RouteGuideClient {
  public:
   RouteGuideClient(std::shared_ptr<Channel> channel, const std::string& db)
@@ -207,32 +224,55 @@ class RouteGuideClient {
   }
 
  private:
-
   bool BlockingGetOneFeature(const Point& point, Feature* feature) {
     Status status = stub_->BlockingGetFeature(point, feature);
     if (!status.ok()) {
       std::cout << "GetFeature rpc failed." << std::endl;
       return false;
     }
-    if (!feature->has_location()) {
-      std::cout << "Server returns incomplete feature." << std::endl;
-      return false;
-    }
-    if (feature->name().empty()) {
-      std::cout << "Found no feature at "
-                << feature->location().latitude()/kCoordFactor << ", "
-                << feature->location().longitude()/kCoordFactor << std::endl;
-    } else {
-      std::cout << "Found feature called " << feature->name()  << " at "
-                << feature->location().latitude()/kCoordFactor << ", "
-                << feature->location().longitude()/kCoordFactor << std::endl;
-    }
-    return true;
+    PrintFeature(*feature);
+    return feature->has_location();
   }
 
   std::unique_ptr<routeguide::RouteGuide::Stub> stub_;
   std::vector<Feature> feature_list_;
 };
+
+void GetFeatureAsync(const grpc_cb::ChannelSptr& channel) {
+  routeguide::RouteGuide::Stub stub(channel);
+  Point point1 = MakePoint(409146138, -746188906);
+  stub.AsyncGetFeature(point1,
+      [&stub](const Feature& feature) {
+        PrintFeature(feature);
+        stub.Shutdown();
+      },
+      [&stub](const grpc_cb::Status& err) {
+        std::cout << "GetFeature rpc failed." << std::endl;
+        stub.Shutdown();
+      });  // AsyncGetFeature()
+  stub.BlockingRun();  // until stub.Shutdown()
+}
+
+void ListFeaturesAsync(const grpc_cb::ChannelSptr& channel) {
+  routeguide::RouteGuide::Stub stub(channel);
+  routeguide::Rectangle rect = MakeRect(
+      400000000, -750000000, 420000000, -730000000);
+  std::cout << "Looking for features between 40, -75 and 42, -73" << std::endl;
+
+  ClientReader<Feature> reader(stub.ListFeatures(rect));
+  reader.AsyncReadEach(
+    [](const Feature& feature){
+      std::cout << "Got feature " << feature.name() << " at "
+          << feature.location().latitude()/kCoordFactor << ", "
+          << feature.location().longitude()/kCoordFactor << std::endl;
+    },
+    [&stub](const ::grpc_cb::Status& status){
+      std::cout << "End status: (" << status.GetCode() << ") "
+          << status.GetDetails() << std::endl;
+      stub.Shutdown();  // To break BlockingRun().
+    });
+  stub.BlockingRun();  // until stub.Shutdown()
+}
 
 int main(int argc, char** argv) {
   // Expect only arg: --db_path=path/to/route_guide_db.json.
@@ -250,24 +290,14 @@ int main(int argc, char** argv) {
   std::cout << "---- BlockingRouteChat --------------" << std::endl;
   guide.BlockingRouteChat();
 
-  std::cout << "---- AsyncListFeatures ----" << std::endl;
-  routeguide::RouteGuide::Stub stub(channel);
-  routeguide::Rectangle rect = MakeRect(
-      400000000, -750000000, 420000000, -730000000);
-  std::cout << "Looking for features between 40, -75 and 42, -73" << std::endl;
-  ClientReader<Feature> reader(stub.ListFeatures(rect));
-  reader.AsyncReadEach(
-    [](const Feature& feature){
-      std::cout << "Got feature " << feature.name() << " at "
-          << feature.location().latitude()/kCoordFactor << ", "
-          << feature.location().longitude()/kCoordFactor << std::endl;
-    },
-    [&stub](const ::grpc_cb::Status& status){
-      std::cout << "End status: (" << status.GetCode() << ")"
-          << status.GetDetails() << std::endl;
-      stub.Shutdown();
-    });
-  stub.BlockingRun();
+  std::cout << "---- GetFeatureAsync ----" << std::endl;
+  GetFeatureAsync(channel);
+  std::cout << "---- ListFeaturesAsync ----" << std::endl;
+  ListFeaturesAsync(channel);
+  std::cout << "---- RecordRouteAsnyc ----" << std::endl;
+  // XXX RecordRouteAsync();
+  std::cout << "---- RouteChatAsync ---" << std::endl;
+  // XXX RouteChatAsync();
 
   return 0;
 }
