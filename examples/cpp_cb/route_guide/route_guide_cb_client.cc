@@ -59,6 +59,19 @@ Point MakePoint(long latitude, long longitude) {
   return p;
 }
 
+routeguide::Rectangle MakeRect(const Point& lo, const Point& hi) {
+  routeguide::Rectangle rect;
+  *rect.mutable_lo() = lo;
+  *rect.mutable_hi() = hi;
+  return rect;
+}
+
+routeguide::Rectangle MakeRect(long lo_latitude, long lo_longitude,
+                   long hi_latitude, long hi_longitude) {
+  return MakeRect(MakePoint(lo_latitude, lo_longitude),
+                  MakePoint(hi_latitude, hi_longitude));
+}
+
 Feature MakeFeature(const std::string& name,
                     long latitude, long longitude) {
   Feature f;
@@ -93,15 +106,12 @@ class RouteGuideClient {
   }
 
   void BlockingListFeatures() {
-    routeguide::Rectangle rect;
+    routeguide::Rectangle rect = MakeRect(
+        400000000, -750000000, 420000000, -730000000);
     Feature feature;
 
-    rect.mutable_lo()->set_latitude(400000000);
-    rect.mutable_lo()->set_longitude(-750000000);
-    rect.mutable_hi()->set_latitude(420000000);
-    rect.mutable_hi()->set_longitude(-730000000);
     std::cout << "Looking for features between 40, -75 and 42, -73"
-              << std::endl;
+        << std::endl;
 
     ClientReader<Feature> reader(
         stub_->ListFeatures(rect));
@@ -240,7 +250,8 @@ int main(int argc, char** argv) {
   guide.BlockingRouteChat();
 
   routeguide::RouteGuide::Stub stub(channel);
-  routeguide::Rectangle rect;
+  routeguide::Rectangle rect = MakeRect(
+      400000000, -750000000, 420000000, -730000000);
   ClientReader<Feature> reader(stub.ListFeatures(rect));
   reader.AsyncReadEach(
     [](const Feature& feature){
