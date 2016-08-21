@@ -42,6 +42,7 @@
 #include "route_guide.grpc_cb.pb.h"
 
 using grpc_cb::Channel;
+using grpc_cb::ChannelSptr;
 using grpc_cb::ClientReader;
 using grpc_cb::ClientReaderWriter;
 using grpc_cb::ClientWriter;
@@ -51,6 +52,7 @@ using routeguide::Feature;
 using routeguide::Rectangle;
 using routeguide::RouteSummary;
 using routeguide::RouteNote;
+using routeguide::RouteGuide::Stub;
 
 const float kCoordFactor = 10000000.0;
 
@@ -234,11 +236,11 @@ class RouteGuideClient {
     return feature->has_location();
   }
 
-  std::unique_ptr<routeguide::RouteGuide::Stub> stub_;
+  std::unique_ptr<Stub> stub_;
   std::vector<Feature> feature_list_;
 };
 
-void GetFeatureAsync(const grpc_cb::ChannelSptr& channel) {
+void GetFeatureAsync(const ChannelSptr& channel) {
   routeguide::RouteGuide::Stub stub(channel);
 
   // Ignore error status.
@@ -254,7 +256,7 @@ void GetFeatureAsync(const grpc_cb::ChannelSptr& channel) {
         PrintFeature(feature);
         stub.Shutdown();
       },
-      [&stub](const grpc_cb::Status& err) {
+      [&stub](const Status& err) {
         std::cout << "AsyncGetFeature rpc failed. "
             << err.GetDetails() << std::endl;
         stub.Shutdown();
@@ -262,7 +264,7 @@ void GetFeatureAsync(const grpc_cb::ChannelSptr& channel) {
   stub.BlockingRun();  // until stub.Shutdown()
 }
 
-void ListFeaturesAsync(const grpc_cb::ChannelSptr& channel) {
+void ListFeaturesAsync(const ChannelSptr& channel) {
   routeguide::RouteGuide::Stub stub(channel);
   routeguide::Rectangle rect = MakeRect(
       400000000, -750000000, 420000000, -730000000);
@@ -275,7 +277,7 @@ void ListFeaturesAsync(const grpc_cb::ChannelSptr& channel) {
           << feature.location().latitude()/kCoordFactor << ", "
           << feature.location().longitude()/kCoordFactor << std::endl;
     },
-    [&stub](const ::grpc_cb::Status& status){
+    [&stub](const Status& status){
       std::cout << "End status: (" << status.GetCode() << ") "
           << status.GetDetails() << std::endl;
       stub.Shutdown();  // To break BlockingRun().
@@ -283,11 +285,62 @@ void ListFeaturesAsync(const grpc_cb::ChannelSptr& channel) {
   stub.BlockingRun();  // until stub.Shutdown()
 }
 
+void RecordRouteAsync(const ChannelSptr& channel, const std::string& db) {
+  assert(!db.empty());
+
+  std::vector<Feature> featureList;
+  routeguide::ParseDb(db, &featureList);
+  assert(!featureList.empty());
+
+  Point point;
+  const int kPoints = 10;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
+    std::default_random_engine generator(seed);
+    std::uniform_int_distribution<int> feature_distribution(
+        0, feature_list_.size() - 1);
+    std::uniform_int_distribution<int> delay_distribution(
+        500, 1500);
+
+    ClientWriter<Point> writer(stub_->RecordRoute());
+    for (int i = 0; i < kPoints; i++) {
+      const Feature& f = feature_list_[feature_distribution(generator)];
+      std::cout << "Visiting point "
+                << f.location().latitude()/kCoordFactor << ", "
+                << f.location().longitude()/kCoordFactor << std::endl;
+      if (!writer.Write(f.location())) {
+        // Broken stream.
+        break;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(
+          delay_distribution(generator)));
+    }
+    RouteSummary stats;
+    // Recv reponse and status. BlockingRecvRespAndStatus()?
+    Status status = writer.BlockingFinish(&stats);  // Todo: timeout
+    if (status.ok()) {
+      std::cout << "Finished trip with " << stats.point_count() << " points\n"
+                << "Passed " << stats.feature_count() << " features\n"
+                << "Travelled " << stats.distance() << " meters\n"
+                << "It took " << stats.elapsed_time() << " seconds"
+                << std::endl;
+    } else {
+      std::cout << "RecordRoute rpc failed." << std::endl;
+    }
+}
+
+void RecordRouteAsync(const ChannelSptr& channel, const std::string& db) {
+  assert(!db.empty());
+  routeguide::RouteGuide::Stub stub(channel);
+  std::thread thd([&stub, db]() { RunRecordRouteAsync(stub, db); });
+  stub.BlockingRun();
+}
+
 int main(int argc, char** argv) {
   // Expect only arg: --db_path=path/to/route_guide_db.json.
   std::string db = routeguide::GetDbFileContent(argc, argv);
   assert(!db.empty());
-  grpc_cb::ChannelSptr channel(new Channel("localhost:50051"));
+  ChannelSptr channel(new Channel("localhost:50051"));
   RouteGuideClient guide(channel, db);
 
   std::cout << "---- BlockingGetFeature --------------" << std::endl;
@@ -304,7 +357,7 @@ int main(int argc, char** argv) {
   std::cout << "---- ListFeaturesAsync ----" << std::endl;
   ListFeaturesAsync(channel);
   std::cout << "---- RecordRouteAsnyc ----" << std::endl;
-  // XXX RecordRouteAsync();
+  RecordRouteAsync();
   std::cout << "---- RouteChatAsync ---" << std::endl;
   // XXX RouteChatAsync();
 
