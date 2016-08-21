@@ -52,6 +52,8 @@ using routeguide::Rectangle;
 using routeguide::RouteSummary;
 using routeguide::RouteNote;
 
+const float kCoordFactor = 10000000.0;
+
 Point MakePoint(long latitude, long longitude) {
   Point p;
   p.set_latitude(latitude);
@@ -118,8 +120,8 @@ class RouteGuideClient {
     while (reader.BlockingReadOne(&feature)) {
       std::cout << "Found feature called "
                 << feature.name() << " at "
-                << feature.location().latitude()/kCoordFactor_ << ", "
-                << feature.location().longitude()/kCoordFactor_ << std::endl;
+                << feature.location().latitude()/kCoordFactor << ", "
+                << feature.location().longitude()/kCoordFactor << std::endl;
     }
     Status status = reader.BlockingRecvStatus();
     if (status.ok()) {
@@ -144,8 +146,8 @@ class RouteGuideClient {
     for (int i = 0; i < kPoints; i++) {
       const Feature& f = feature_list_[feature_distribution(generator)];
       std::cout << "Visiting point "
-                << f.location().latitude()/kCoordFactor_ << ", "
-                << f.location().longitude()/kCoordFactor_ << std::endl;
+                << f.location().latitude()/kCoordFactor << ", "
+                << f.location().longitude()/kCoordFactor << std::endl;
       if (!writer.Write(f.location())) {
         // Broken stream.
         break;
@@ -218,17 +220,16 @@ class RouteGuideClient {
     }
     if (feature->name().empty()) {
       std::cout << "Found no feature at "
-                << feature->location().latitude()/kCoordFactor_ << ", "
-                << feature->location().longitude()/kCoordFactor_ << std::endl;
+                << feature->location().latitude()/kCoordFactor << ", "
+                << feature->location().longitude()/kCoordFactor << std::endl;
     } else {
       std::cout << "Found feature called " << feature->name()  << " at "
-                << feature->location().latitude()/kCoordFactor_ << ", "
-                << feature->location().longitude()/kCoordFactor_ << std::endl;
+                << feature->location().latitude()/kCoordFactor << ", "
+                << feature->location().longitude()/kCoordFactor << std::endl;
     }
     return true;
   }
 
-  const float kCoordFactor_ = 10000000.0;
   std::unique_ptr<routeguide::RouteGuide::Stub> stub_;
   std::vector<Feature> feature_list_;
 };
@@ -249,19 +250,24 @@ int main(int argc, char** argv) {
   std::cout << "---- BlockingRouteChat --------------" << std::endl;
   guide.BlockingRouteChat();
 
+  std::cout << "---- AsyncListFeatures ----" << std::endl;
   routeguide::RouteGuide::Stub stub(channel);
   routeguide::Rectangle rect = MakeRect(
       400000000, -750000000, 420000000, -730000000);
+  std::cout << "Looking for features between 40, -75 and 42, -73" << std::endl;
   ClientReader<Feature> reader(stub.ListFeatures(rect));
   reader.AsyncReadEach(
     [](const Feature& feature){
-      std::cout << "Got feature." << std::endl;
+      std::cout << "Got feature " << feature.name() << " at "
+          << feature.location().latitude()/kCoordFactor << ", "
+          << feature.location().longitude()/kCoordFactor << std::endl;
     },
-    [](const ::grpc_cb::Status& status){
+    [&stub](const ::grpc_cb::Status& status){
       std::cout << "End status: (" << status.GetCode() << ")"
           << status.GetDetails() << std::endl;
+      stub.Shutdown();
     });
-
   stub.BlockingRun();
+
   return 0;
 }
