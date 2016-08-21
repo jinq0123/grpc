@@ -240,6 +240,14 @@ class RouteGuideClient {
 
 void GetFeatureAsync(const grpc_cb::ChannelSptr& channel) {
   routeguide::RouteGuide::Stub stub(channel);
+
+  // Ignore error status.
+  stub.AsyncGetFeature(MakePoint(0, 0),
+      [](const Feature& feature) { PrintFeature(feature); });
+
+  // Ignore response.
+  stub.AsyncGetFeature(MakePoint(0, 0));
+
   Point point1 = MakePoint(409146138, -746188906);
   stub.AsyncGetFeature(point1,
       [&stub](const Feature& feature) {
@@ -247,7 +255,8 @@ void GetFeatureAsync(const grpc_cb::ChannelSptr& channel) {
         stub.Shutdown();
       },
       [&stub](const grpc_cb::Status& err) {
-        std::cout << "GetFeature rpc failed." << std::endl;
+        std::cout << "AsyncGetFeature rpc failed. "
+            << err.GetDetails() << std::endl;
         stub.Shutdown();
       });  // AsyncGetFeature()
   stub.BlockingRun();  // until stub.Shutdown()
