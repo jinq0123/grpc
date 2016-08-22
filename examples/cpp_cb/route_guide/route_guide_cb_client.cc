@@ -55,6 +55,8 @@ using routeguide::RouteNote;
 using routeguide::RouteGuide::Stub;
 
 const float kCoordFactor = 10000000.0;
+static unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+static std::default_random_engine generator(seed);
 
 Point MakePoint(long latitude, long longitude) {
   Point p;
@@ -107,7 +109,35 @@ void PrintFeature(const Feature& feature) {
         << feature.location().latitude()/kCoordFactor << ", "
         << feature.location().longitude()/kCoordFactor << std::endl;
   }
-}  // HandleFeature()
+}  // PrintFeature()
+
+void PrintServerNote(const RouteNote& server_note) {
+  std::cout << "Got message " << server_note.message()
+            << " at " << server_note.location().latitude() << ", "
+            << server_note.location().longitude() << std::endl;
+}
+
+void RandomSleep() {
+  std::uniform_int_distribution<int> delay_distribution(500, 1500);
+  std::this_thread::sleep_for(std::chrono::milliseconds(
+      delay_distribution(generator)));
+}
+
+void RunWriteRouteNote(ClientReaderWriter<RouteNote, RouteNote> stream) {
+  std::vector<RouteNote> notes{
+    MakeRouteNote("First message", 0, 0),
+    MakeRouteNote("Second message", 0, 1),
+    MakeRouteNote("Third message", 1, 0),
+    MakeRouteNote("Fourth message", 0, 0)};
+  for (const RouteNote& note : notes) {
+    std::cout << "Sending message " << note.message()
+              << " at " << note.location().latitude() << ", "
+              << note.location().longitude() << std::endl;
+    stream.Write(note);
+    RandomSleep();
+  }
+  stream.WritesDone();  // Optional close writing.
+}
 
 class RouteGuideClient {
  public:
@@ -153,13 +183,8 @@ class RouteGuideClient {
   void BlockingRecordRoute() {
     Point point;
     const int kPoints = 10;
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-
-    std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> feature_distribution(
         0, feature_list_.size() - 1);
-    std::uniform_int_distribution<int> delay_distribution(
-        500, 1500);
 
     ClientWriter<Point> writer(stub_->RecordRoute());
     for (int i = 0; i < kPoints; i++) {
@@ -171,8 +196,7 @@ class RouteGuideClient {
         // Broken stream.
         break;
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(
-          delay_distribution(generator)));
+      RandomSleep();
     }
     RouteSummary stats;
     // Recv reponse and status. BlockingRecvRespAndStatus()?
@@ -195,29 +219,13 @@ class RouteGuideClient {
     ClientReaderWriter<RouteNote, RouteNote> stream(
         stub_->RouteChat());
 
-    std::thread writer([stream]() {
-      ClientReaderWriter<RouteNote, RouteNote> stream_copy(stream);
-      std::vector<RouteNote> notes{
-        MakeRouteNote("First message", 0, 0),
-        MakeRouteNote("Second message", 0, 1),
-        MakeRouteNote("Third message", 1, 0),
-        MakeRouteNote("Fourth message", 0, 0)};
-      for (const RouteNote& note : notes) {
-        std::cout << "Sending message " << note.message()
-                  << " at " << note.location().latitude() << ", "
-                  << note.location().longitude() << std::endl;
-        stream_copy.Write(note);
-      }
-      stream_copy.WritesDone();  // Optional close writing.
-    });
+    std::thread thd([stream]() { RunWriteRouteNote(stream); });
 
     RouteNote server_note;
-    while (stream.BlockingReadOne(&server_note)) {
-      std::cout << "Got message " << server_note.message()
-                << " at " << server_note.location().latitude() << ", "
-                << server_note.location().longitude() << std::endl;
-    }
-    writer.join();
+    while (stream.BlockingReadOne(&server_note))
+        PrintServerNote(server_note);
+
+    thd.join();
     // Todo: Finish() should auto close writing.
     Status status = stream.BlockingRecvStatus();
     if (!status.ok()) {
@@ -241,7 +249,7 @@ class RouteGuideClient {
 };
 
 void GetFeatureAsync(const ChannelSptr& channel) {
-  routeguide::RouteGuide::Stub stub(channel);
+  Stub stub(channel);
 
   // Ignore error status.
   stub.AsyncGetFeature(MakePoint(0, 0),
@@ -265,7 +273,7 @@ void GetFeatureAsync(const ChannelSptr& channel) {
 }
 
 void ListFeaturesAsync(const ChannelSptr& channel) {
-  routeguide::RouteGuide::Stub stub(channel);
+  Stub stub(channel);
   routeguide::Rectangle rect = MakeRect(
       400000000, -750000000, 420000000, -730000000);
   std::cout << "Looking for features between 40, -75 and 42, -73" << std::endl;
@@ -285,56 +293,30 @@ void ListFeaturesAsync(const ChannelSptr& channel) {
   stub.BlockingRun();  // until stub.Shutdown()
 }
 
-void RecordRouteAsync(const ChannelSptr& channel, const std::string& db) {
-  assert(!db.empty());
+void RouteChatAsync(const ChannelSptr& channel) {
+  Stub stub(channel);
+  ClientReaderWriter<RouteNote, RouteNote> stream(stub.RouteChat());
 
-  std::vector<Feature> featureList;
-  routeguide::ParseDb(db, &featureList);
-  assert(!featureList.empty());
+  volatile bool bReadDone = false;
+  stream.AsyncReadEach(
+      [](const RouteNote& note) { PrintServerNote(note); },
+      [&bReadDone](const Status& status) {
+        if (!status.ok()) {
+          std::cout << "RouteChat rpc failed. "
+              << status.GetDetails() << std::endl;
+        }
+        bReadDone = true;
+      });
 
-  Point point;
-  const int kPoints = 10;
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::thread thd([stream, &bReadDone, &stub]() {
+      RunWriteRouteNote(stream);
+      while (!bReadDone);
+      stub.Shutdown();
+  });
 
-    std::default_random_engine generator(seed);
-    std::uniform_int_distribution<int> feature_distribution(
-        0, feature_list_.size() - 1);
-    std::uniform_int_distribution<int> delay_distribution(
-        500, 1500);
-
-    ClientWriter<Point> writer(stub_->RecordRoute());
-    for (int i = 0; i < kPoints; i++) {
-      const Feature& f = feature_list_[feature_distribution(generator)];
-      std::cout << "Visiting point "
-                << f.location().latitude()/kCoordFactor << ", "
-                << f.location().longitude()/kCoordFactor << std::endl;
-      if (!writer.Write(f.location())) {
-        // Broken stream.
-        break;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(
-          delay_distribution(generator)));
-    }
-    RouteSummary stats;
-    // Recv reponse and status. BlockingRecvRespAndStatus()?
-    Status status = writer.BlockingFinish(&stats);  // Todo: timeout
-    if (status.ok()) {
-      std::cout << "Finished trip with " << stats.point_count() << " points\n"
-                << "Passed " << stats.feature_count() << " features\n"
-                << "Travelled " << stats.distance() << " meters\n"
-                << "It took " << stats.elapsed_time() << " seconds"
-                << std::endl;
-    } else {
-      std::cout << "RecordRoute rpc failed." << std::endl;
-    }
-}
-
-void RecordRouteAsync(const ChannelSptr& channel, const std::string& db) {
-  assert(!db.empty());
-  routeguide::RouteGuide::Stub stub(channel);
-  std::thread thd([&stub, db]() { RunRecordRouteAsync(stub, db); });
   stub.BlockingRun();
-}
+  thd.join();
+}  // RouteChatAsync()
 
 int main(int argc, char** argv) {
   // Expect only arg: --db_path=path/to/route_guide_db.json.
@@ -356,10 +338,10 @@ int main(int argc, char** argv) {
   GetFeatureAsync(channel);
   std::cout << "---- ListFeaturesAsync ----" << std::endl;
   ListFeaturesAsync(channel);
-  std::cout << "---- RecordRouteAsnyc ----" << std::endl;
-  RecordRouteAsync();
+  //std::cout << "---- RecordRouteAsnyc ----" << std::endl;
+  //RecordRouteAsync(channel, db);
   std::cout << "---- RouteChatAsync ---" << std::endl;
-  // XXX RouteChatAsync();
+  RouteChatAsync(channel);
 
   return 0;
 }
