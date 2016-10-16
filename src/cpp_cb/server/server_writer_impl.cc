@@ -5,7 +5,7 @@
 
 #include <grpc_cb/impl/send_msg_cqtag.h>    // for SendMsgCqTag
 
-// XXX Move to scr dir.
+// Todo: Move from include/ to scr/ dir.
 #include <grpc_cb/impl/server/server_init_md_cqtag.h>  // for ServerInitMdCqTag
 #include <grpc_cb/impl/server/server_send_status_cqtag.h>  // for ServerSendStatusCqTag
 
