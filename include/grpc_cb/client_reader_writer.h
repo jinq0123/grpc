@@ -61,7 +61,7 @@ ClientReaderWriter<Request, Response>::ClientReaderWriter(
 
 template <class Request, class Response>
 ClientReaderWriter<Request, Response>::~ClientReaderWriter() {
-  WritesDone();
+  // XXX (copyable class) WritesDone();
 }
 
 template <class Request, class Response>
