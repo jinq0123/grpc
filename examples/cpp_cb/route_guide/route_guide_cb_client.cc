@@ -340,8 +340,8 @@ int main(int argc, char** argv) {
   GetFeatureAsync(channel);
   std::cout << "---- ListFeaturesAsync ----" << std::endl;
   ListFeaturesAsync(channel);
-  //std::cout << "---- RecordRouteAsnyc ----" << std::endl;
-  //RecordRouteAsync(channel, db);
+  std::cout << "---- RecordRouteAsnyc ----" << std::endl;
+  // XXX RecordRouteAsync(channel, db);
   std::cout << "---- RouteChatAsync ---" << std::endl;
   RouteChatAsync(channel);
 

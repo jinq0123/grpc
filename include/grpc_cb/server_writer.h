@@ -13,7 +13,7 @@ template <class Response>
 class ServerWriter GRPC_FINAL {
  public:
   inline ServerWriter(const CallSptr& call_sptr);
-  inline ~ServerWriter() { Close(Status::OK); }
+  inline ~ServerWriter() { Close(Status::OK); }  // XXX copyable 
 
  public:
   inline bool Write(const Response& response) const;
