@@ -341,7 +341,7 @@ void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
     printer->Print(*vars,
         "virtual ::grpc_cb::Status $Method$(\n"
         "    ::grpc_cb::ServerContext* context,\n"
-        "    ::grpc_cb::ServerReaderWriter< $Response$, $Request$>* stream);\n\n");
+        "    ::grpc_cb::ServerReaderWriter< $Response$, $Request$>* reader_writer);\n\n");
   }
 }
 
@@ -383,7 +383,7 @@ void PrintHeaderServerMethodAsync(
         *vars,
         "void Request$Method$("
         "::grpc_cb::ServerContext* context, "
-        "::grpc_cb::ServerAsyncReaderWriter< $Response$, $Request$>* stream, "
+        "::grpc_cb::ServerAsyncReaderWriter< $Response$, $Request$>* reader_writer, "
         "::grpc_cb::CompletionQueue* new_call_cq, "
         "::grpc_cb::ServerCompletionQueue* notification_cq, void *tag);\n");
   }
@@ -817,7 +817,7 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
         "::grpc_cb::Status Service::$Method$(\n"
         "    ::grpc_cb::ServerContext* context,\n"
         "    ::grpc_cb::ServerReaderWriter<\n"
-        "        $Response$, $Request$>* stream) {\n"
+        "        $Response$, $Request$>* reader_writer) {\n"
         "  (void) context;\n"
         "  (void) stream;\n"
         "  return ::grpc_cb::Status::UNIMPLEMENTED;\n"
@@ -878,7 +878,7 @@ void PrintSourceServerAsyncMethod(
         *vars,
         "void AsyncService::Request$Method$("
         "::grpc_cb::ServerContext* context, "
-        "::grpc_cb::ServerAsyncReaderWriter< $Response$, $Request$>* stream, "
+        "::grpc_cb::ServerAsyncReaderWriter< $Response$, $Request$>* reader_writer, "
         "::grpc_cb::CompletionQueue* new_call_cq, "
         "::grpc_cb::ServerCompletionQueue* notification_cq, void *tag) {\n");
     printer->Print(*vars,

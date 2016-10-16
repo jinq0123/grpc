@@ -123,7 +123,7 @@ void RandomSleep() {
       delay_distribution(generator)));
 }
 
-void RunWriteRouteNote(ClientReaderWriter<RouteNote, RouteNote> stream) {
+void RunWriteRouteNote(ClientReaderWriter<RouteNote, RouteNote> reader_writer) {
   std::vector<RouteNote> notes{
     MakeRouteNote("First message", 0, 0),
     MakeRouteNote("Second message", 0, 1),
@@ -133,10 +133,10 @@ void RunWriteRouteNote(ClientReaderWriter<RouteNote, RouteNote> stream) {
     std::cout << "Sending message " << note.message()
               << " at " << note.location().latitude() << ", "
               << note.location().longitude() << std::endl;
-    stream.Write(note);
+    reader_writer.Write(note);
     RandomSleep();
   }
-  stream.WritesDone();  // Optional close writing.
+  reader_writer.WritesDone();  // Optional close writing.
 }
 
 class RouteGuideClient {
@@ -216,18 +216,20 @@ class RouteGuideClient {
   // Todo: Callback on client stream response and status.
 
   void BlockingRouteChat() {
-    ClientReaderWriter<RouteNote, RouteNote> stream(
+    ClientReaderWriter<RouteNote, RouteNote> reader_writer(
         stub_->RouteChat());
 
-    std::thread thd([stream]() { RunWriteRouteNote(stream); });
+    std::thread thd([reader_writer]() {
+        RunWriteRouteNote(reader_writer);
+    });
 
     RouteNote server_note;
-    while (stream.BlockingReadOne(&server_note))
+    while (reader_writer.BlockingReadOne(&server_note))
         PrintServerNote(server_note);
 
     thd.join();
     // Todo: Finish() should auto close writing.
-    Status status = stream.BlockingRecvStatus();
+    Status status = reader_writer.BlockingRecvStatus();
     if (!status.ok()) {
       std::cout << "RouteChat rpc failed." << std::endl;
     }
@@ -295,10 +297,10 @@ void ListFeaturesAsync(const ChannelSptr& channel) {
 
 void RouteChatAsync(const ChannelSptr& channel) {
   Stub stub(channel);
-  ClientReaderWriter<RouteNote, RouteNote> stream(stub.RouteChat());
+  ClientReaderWriter<RouteNote, RouteNote> reader_writer(stub.RouteChat());
 
   volatile bool bReadDone = false;
-  stream.AsyncReadEach(
+  reader_writer.AsyncReadEach(
       [](const RouteNote& note) { PrintServerNote(note); },
       [&bReadDone](const Status& status) {
         if (!status.ok()) {
@@ -308,8 +310,8 @@ void RouteChatAsync(const ChannelSptr& channel) {
         bReadDone = true;
       });
 
-  std::thread thd([stream, &bReadDone, &stub]() {
-      RunWriteRouteNote(stream);
+  std::thread thd([reader_writer, &bReadDone, &stub]() {
+      RunWriteRouteNote(reader_writer);
       while (!bReadDone);
       stub.Shutdown();
   });
