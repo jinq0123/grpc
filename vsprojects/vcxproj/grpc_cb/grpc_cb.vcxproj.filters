@@ -46,6 +46,9 @@
     <ClCompile Include="..\..\..\src\cpp_cb\server\server_method_call_cqtag.cc">
       <Filter>src\cpp_cb\server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\cpp_cb\server\server_writer_impl.cc">
+      <Filter>src\cpp_cb\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SolutionDir)\..\include\grpc_cb\impl\grpc_library.h">
@@ -209,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_cqtag.h">
       <Filter>src\cpp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_writer_impl.h">
+      <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

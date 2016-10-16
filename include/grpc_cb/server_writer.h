@@ -4,8 +4,7 @@
 #ifndef GRPC_CB_SERVER_SERVER_WRITER_H
 #define GRPC_CB_SERVER_SERVER_WRITER_H
 
-#include <grpc_cb/impl/server/server_init_md_cqtag.h>  // for ServerInitMdCqTag
-#include <grpc_cb/impl/server/server_send_status_cqtag.h>  // for ServerSendStatusCqTag
+#include <grpc_cb/impl/server/server_writer_impl.h>  // for ServerWriterImpl
 
 namespace grpc_cb {
 
@@ -13,60 +12,27 @@ template <class Response>
 class ServerWriter GRPC_FINAL {
  public:
   inline ServerWriter(const CallSptr& call_sptr);
-  inline ~ServerWriter() { Close(Status::OK); }  // XXX copyable 
 
  public:
   inline bool Write(const Response& response) const;
   // Close() is optional. Dtr() will auto Close().
   // Redundent Close() will be ignored.
-  inline void Close(const Status& status) const;
-  inline bool IsClosed() const { return data_sptr_->closed; }
+  inline void Close(const Status& status) const { impl_sptr_->Close(status); }
+  inline bool IsClosed() const { return impl_sptr_->IsClosed(); }
 
  private:
-  // Wrap all data in shared struct pointer to make copy quick.
-  struct Data {
-    CallSptr call_sptr;
-    bool closed;
-  };
-  std::shared_ptr<Data> data_sptr_;  // Easy to copy.
+  std::shared_ptr<ServerWriterImpl> impl_sptr_;
 };  // class ServerWriter<>
 
 template <class Response>
 ServerWriter<Response>::ServerWriter(const CallSptr& call_sptr)
-    : data_sptr_(new Data{call_sptr, false}) {
+    : impl_sptr_(new ServerWriterImpl(call_sptr)) {
   assert(call_sptr);
-  assert(!data_sptr_->closed);
-  ServerInitMdCqTag* tag = new ServerInitMdCqTag(call_sptr);
-  // Todo: Set init md
-  if (tag->Start()) return;
-
-  delete tag;
-  data_sptr_->closed = true;  // error
 }
 
 template <class Response>
 bool ServerWriter<Response>::Write(const Response& response) const {
-  bool& closed = data_sptr_->closed;
-  if (closed) return false;
-  SendMsgCqTag* tag = new SendMsgCqTag(data_sptr_->call_sptr);
-  if (tag->Start(response)) return true;
-
-  delete tag;
-  closed = true;  // error
-  return false;
-}
-
-template <class Response>
-void ServerWriter<Response>::Close(const Status& status) const {
-  bool& closed = data_sptr_->closed;
-  if (closed) return;
-  closed = true;
-
-  using CqTag = ServerSendStatusCqTag;
-  CqTag* tag = new CqTag(data_sptr_->call_sptr);
-  if (tag->StartSend(status))
-    return;
-  delete tag;
+  return impl_sptr_->Write(response);
 }
 
 }  // namespace grpc_cb
