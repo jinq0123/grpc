@@ -295,6 +295,45 @@ void ListFeaturesAsync(const ChannelSptr& channel) {
   stub.BlockingRun();  // until stub.Shutdown()
 }
 
+void RecordRouteAsync(const ChannelSptr& channel,
+                      const std::string& db) {
+  assert(!db.empty());
+  std::vector<Feature> feature_list;
+  routeguide::ParseDb(db, &feature_list);
+  assert(!feature_list.empty());
+
+  Point point;
+  const int kPoints = 10;
+  std::uniform_int_distribution<int> feature_distribution(
+      0, feature_list.size() - 1);
+
+  Stub stub(channel);
+  ClientWriter<Point> writer(stub.RecordRoute());
+  for (int i = 0; i < kPoints; i++) {
+    const Feature& f = feature_list[feature_distribution(generator)];
+    std::cout << "Visiting point "
+              << f.location().latitude()/kCoordFactor << ", "
+              << f.location().longitude()/kCoordFactor << std::endl;
+    if (!writer.Write(f.location())) {
+      // Broken stream.
+      break;
+    }
+    RandomSleep();
+  }
+  RouteSummary stats;
+  // Recv reponse and status. BlockingRecvRespAndStatus()?
+  Status status = writer.BlockingFinish(&stats);  // Todo: timeout
+  if (status.ok()) {
+    std::cout << "Finished trip with " << stats.point_count() << " points\n"
+              << "Passed " << stats.feature_count() << " features\n"
+              << "Travelled " << stats.distance() << " meters\n"
+              << "It took " << stats.elapsed_time() << " seconds"
+              << std::endl;
+  } else {
+    std::cout << "RecordRoute rpc failed." << std::endl;
+  }
+}  // RecordRouteAsync()
+
 void RouteChatAsync(const ChannelSptr& channel) {
   Stub stub(channel);
   ClientReaderWriter<RouteNote, RouteNote> reader_writer(stub.RouteChat());
@@ -341,7 +380,7 @@ int main(int argc, char** argv) {
   std::cout << "---- ListFeaturesAsync ----" << std::endl;
   ListFeaturesAsync(channel);
   std::cout << "---- RecordRouteAsnyc ----" << std::endl;
-  // XXX RecordRouteAsync(channel, db);
+  RecordRouteAsync(channel, db);
   std::cout << "---- RouteChatAsync ---" << std::endl;
   RouteChatAsync(channel);
 
