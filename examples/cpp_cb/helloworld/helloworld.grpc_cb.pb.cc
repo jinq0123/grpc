@@ -131,9 +131,9 @@ void Service::SayHello(
 }
 void Service::SayHello(
     const ::helloworld::HelloRequest& request,
-    ::grpc_cb::ServerReplier<::helloworld::HelloReply> replier_copy) {
+    ::grpc_cb::ServerReplier<::helloworld::HelloReply> replier) {
   (void) request;
-  replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
+  replier.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);
 }
 
 }  // namespace Greeter

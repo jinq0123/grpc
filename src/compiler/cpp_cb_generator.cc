@@ -324,7 +324,7 @@ void PrintHeaderServerMethodSync(grpc::protobuf::io::Printer *printer,
         "    const ::grpc_cb::ServerReplier<$Response$>& replier);\n"
         "virtual void $Method$(\n"
         "    const $Request$& request,\n"
-        "    ::grpc_cb::ServerReplier<$Response$> replier_copy);\n\n");
+        "    ::grpc_cb::ServerReplier<$Response$> replier);\n\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,
         "virtual ::grpc_cb::Status $Method$(\n"
@@ -786,9 +786,9 @@ void PrintSourceServerMethod(grpc::protobuf::io::Printer *printer,
         "}\n"
         "void Service::$Method$(\n"
         "    const $Request$& request,\n"
-        "    ::grpc_cb::ServerReplier<$Response$> replier_copy) {\n"
+        "    ::grpc_cb::ServerReplier<$Response$> replier) {\n"
         "  (void) request;\n"
-        "  replier_copy.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);\n"
+        "  replier.ReplyError(::grpc_cb::Status::UNIMPLEMENTED);\n"
         "}\n\n");
   } else if (ClientOnlyStreaming(method)) {
     printer->Print(*vars,

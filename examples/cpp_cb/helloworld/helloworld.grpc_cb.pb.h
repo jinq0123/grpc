@@ -65,7 +65,7 @@ class Service : public ::grpc_cb::Service {
       const ::grpc_cb::ServerReplier<::helloworld::HelloReply>& replier);
   virtual void SayHello(
       const ::helloworld::HelloRequest& request,
-      ::grpc_cb::ServerReplier<::helloworld::HelloReply> replier_copy);
+      ::grpc_cb::ServerReplier<::helloworld::HelloReply> replier);
 
  private:
   virtual const ::google::protobuf::ServiceDescriptor& GetDescriptor()

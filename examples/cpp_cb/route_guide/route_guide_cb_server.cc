@@ -97,11 +97,11 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
 
   void GetFeature(
       const Point& point,
-      ::grpc_cb::ServerReplier<Feature> replier_copy) override {
+      ::grpc_cb::ServerReplier<Feature> replier) override {
     Feature feature;
     feature.set_name(GetFeatureName(point, feature_list_));
     feature.mutable_location()->CopyFrom(point);
-    replier_copy.Reply(feature);
+    replier.Reply(feature);
   }
 
   void ListFeatures(

@@ -48,12 +48,12 @@ using helloworld::HelloReply;
 class GreeterServiceImpl final : public helloworld::Greeter::Service {
   void SayHello(
       const HelloRequest& request,
-      ::grpc_cb::ServerReplier<HelloReply> replier_copy) override {
+      ::grpc_cb::ServerReplier<HelloReply> replier) override {
     std::string prefix("Hello ");
     std::cout << "SayHello: " << request.name() << std::endl;
     HelloReply reply;
     reply.set_message(prefix + request.name());
-    replier_copy.Reply(reply);  // TODO: demo delayed reply.
+    replier.Reply(reply);  // TODO: demo delayed reply.
   }
 };
 
