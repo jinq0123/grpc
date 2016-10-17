@@ -15,6 +15,7 @@
 
 namespace grpc_cb {
 
+// Copyable.
 // Use template class instead of template member function
 //    to ensure client input the correct request type.
 // Todo: Use non_template class as the implement.

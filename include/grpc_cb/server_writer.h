@@ -8,6 +8,7 @@
 
 namespace grpc_cb {
 
+// Copyable.
 template <class Response>
 class ServerWriter GRPC_FINAL {
  public:

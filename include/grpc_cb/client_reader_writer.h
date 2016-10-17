@@ -8,6 +8,7 @@
 
 namespace grpc_cb {
 
+// Copyable.
 template <class Request, class Response>
 class ClientReaderWriter GRPC_FINAL {
  public:

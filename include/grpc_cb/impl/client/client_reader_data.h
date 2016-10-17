@@ -19,7 +19,7 @@ struct ClientReaderData {
 
     using MsgCallback = std::function<void(const Response&)>;
     MsgCallback on_msg;
-    StatusCallback on_status;  // or status_cb ?
+    StatusCallback on_status;
 };
 
 template <class Response>
