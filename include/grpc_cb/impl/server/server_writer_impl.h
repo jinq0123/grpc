@@ -12,7 +12,6 @@ namespace grpc_cb {
 
 class Status;
 
-    // XXX
 class ServerWriterImpl GRPC_FINAL {
  public:
   explicit ServerWriterImpl(const CallSptr& call_sptr);
@@ -23,7 +22,7 @@ class ServerWriterImpl GRPC_FINAL {
   // Close() is optional. Dtr() will auto Close().
   // Redundent Close() will be ignored.
   void Close(const Status& status);
-  bool IsClosed() const { closed_; }
+  bool IsClosed() const { return closed_; }
 
  private:
   CallSptr call_sptr_;
