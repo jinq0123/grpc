@@ -56,7 +56,7 @@ using routeguide::RouteNote;
 using std::chrono::system_clock;
 
 float ConvertToRadians(float num) {
-  return num * 3.1415926 /180;
+  return float(num * 3.1415926 / 180);
 }
 
 float GetDistance(const Point& start, const Point& end) {
@@ -162,7 +162,7 @@ class RouteGuideImpl final : public routeguide::RouteGuide::Service {
       summary.set_distance(static_cast<long>(r.distance));
       auto secs = std::chrono::duration_cast<std::chrono::seconds>(
           end_time - r.start_time);
-      summary.set_elapsed_time(secs.count());
+      summary.set_elapsed_time(int32_t(secs.count()));
 
       // Delayed reply.
       std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -55,7 +55,7 @@ using routeguide::RouteNote;
 using routeguide::RouteGuide::Stub;
 
 const float kCoordFactor = 10000000.0;
-static unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+static unsigned seed = (unsigned)std::chrono::system_clock::now().time_since_epoch().count();
 static std::default_random_engine generator(seed);
 
 Point MakePoint(long latitude, long longitude) {

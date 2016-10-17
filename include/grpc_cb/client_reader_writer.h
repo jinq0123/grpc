@@ -4,104 +4,57 @@
 #ifndef GRPC_CB_CLIENT_CLIENT_READER_WRITER_H
 #define GRPC_CB_CLIENT_CLIENT_READER_WRITER_H
 
-#include <grpc_cb/impl/client/client_send_close_cqtag.h>  // for ClientSendCloseCqTag
-// Todo: include?
+#include <grpc_cb/impl/client/client_reader_writer_impl.h>  // for ClientReaderWriterImpl<>
 
 namespace grpc_cb {
 
 template <class Request, class Response>
 class ClientReaderWriter GRPC_FINAL {
  public:
-  inline ClientReaderWriter(const ChannelSptr& channel,
+  ClientReaderWriter(const ChannelSptr& channel,
                             const std::string& method,
-                            const CompletionQueueSptr& cq_sptr);
-  inline ~ClientReaderWriter();
+                            const CompletionQueueSptr& cq_sptr)
+      // Todo: same as ClientReader?
+      : impl_sptr_(new Impl(channel, method, cq_sptr)) {
+    assert(cq_sptr);
+    assert(channel);
+  }
 
  public:
   // Write is always asynchronous.
-  inline bool Write(const Request& request) const;
-  // WritesDone() is optional. Writes are auto done in dtr().
-  inline void WritesDone();
+  bool Write(const Request& request) const {
+    return impl_sptr_->Write(request);
+  }
 
-  inline bool BlockingReadOne(Response* response) const;
-  inline Status BlockingRecvStatus() const {
-    const Data& d = *data_sptr_;
-    return ClientReaderHelper::BlockingRecvStatus(d.call_sptr, d.cq_sptr);
+  // Optional. Writes are auto done in dtr().
+  // Redundant calls are ignored.
+  void WritesDone() {
+    impl_sptr_->WritesDone();
+  }
+
+  bool BlockingReadOne(Response* response) const {
+    return impl_sptr_->BlockingReadOne(response);
+  }
+
+  Status BlockingRecvStatus() const {
+    return impl_sptr_->BlockingRecvStatus();
   }
 
   using ReadCallback = std::function<void(const Response&)>;
-  inline void AsyncReadEach(
+  void AsyncReadEach(
       const ReadCallback& on_read,
-      const StatusCallback& on_status = StatusCallback()) const;
+      const StatusCallback& on_status = StatusCallback()) const {
+    impl_sptr_->AsyncReadEach(on_read, on_status);
+  }
 
  private:
-  // Wrap all data in shared struct pointer to make copy quick.
-  using Data = ClientReaderData<Response>;
-  using DataSptr = ClientReaderDataSptr<Response>;
-  DataSptr data_sptr_;  // Same as reader. Easy to copy.
-  bool writes_done_ = false;  // Is WritesDone() called?
+  using Impl = ClientReaderWriterImpl<Request, Response>;
+  std::shared_ptr<Impl> impl_sptr_;
 };  // class ClientReaderWriter<>
 
 // Todo: BlockingGetInitMd();
 
-template <class Request, class Response>
-ClientReaderWriter<Request, Response>::ClientReaderWriter(
-    const ChannelSptr& channel, const std::string& method,
-    const CompletionQueueSptr& cq_sptr)
-    // Todo: same as ClientReader?
-    : data_sptr_(new Data{cq_sptr, channel->MakeSharedCall(method, *cq_sptr)}) {
-  assert(cq_sptr);
-  assert(channel);
-  assert(data_sptr_->call_sptr);
-  ClientInitMdCqTag* tag = new ClientInitMdCqTag(data_sptr_->call_sptr);
-  if (tag->Start()) return;
-  delete tag;
-  data_sptr_->status.SetInternalError("Failed to init stream.");
-}
-
-template <class Request, class Response>
-ClientReaderWriter<Request, Response>::~ClientReaderWriter() {
-  // XXX (copyable class) WritesDone();
-}
-
-template <class Request, class Response>
-bool ClientReaderWriter<Request, Response>::Write(const Request& request) const {
-  assert(data_sptr_);
-  assert(data_sptr_->call_sptr);
-  return ClientWriterHelper::Write(data_sptr_->call_sptr,
-      request, data_sptr_->status);
-}
-
-template <class Request, class Response>
-void ClientReaderWriter<Request, Response>::WritesDone() {
-  if (writes_done_) return;
-  writes_done_ = true;
-  Status& status = data_sptr_->status;
-  if (!status.ok()) return;
-  ClientSendCloseCqTag* tag = new ClientSendCloseCqTag(data_sptr_->call_sptr);
-  if (tag->Start()) return;
-
-  delete tag;
-  status.SetInternalError("Failed to set stream writes done.");
-}
-
 // Todo: same as ClientReader?
-template <class Request, class Response>
-bool ClientReaderWriter<Request, Response>::BlockingReadOne(Response* response) const {
-  assert(response);
-  Data& d = *data_sptr_;
-  return ClientReaderHelper::BlockingReadOne(
-      d.call_sptr, d.cq_sptr, *response, d.status);
-}
-
-template <class Request, class Response>
-void ClientReaderWriter<Request, Response>::AsyncReadEach(
-    const ReadCallback& on_read,
-    const StatusCallback& on_status) const {
-    data_sptr_->on_msg = on_read;
-    data_sptr_->on_status = on_status;
-    ClientReaderHelper::AsyncReadNext(data_sptr_);
-}
 
 }  // namespace grpc_cb
 

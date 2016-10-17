@@ -216,6 +216,9 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_writer_impl.h">
       <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_reader_writer_impl.h">
+      <Filter>include\grpc_cb\impl\client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
