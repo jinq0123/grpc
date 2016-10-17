@@ -134,7 +134,7 @@ void RunWriteRouteNote(ClientReaderWriter<RouteNote, RouteNote> reader_writer) {
               << " at " << note.location().latitude() << ", "
               << note.location().longitude() << std::endl;
     reader_writer.Write(note);
-    RandomSleep();
+    // RandomSleep();
   }
   reader_writer.WritesDone();  // Optional close writing.
 }
