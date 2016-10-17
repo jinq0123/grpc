@@ -12,7 +12,7 @@
 #include <grpc_cb/impl/client/client_call_cqtag.h>  // for ClientCallCqTag
 #include <grpc_cb/impl/completion_queue.h>          // for CompletionQueue
 #include <grpc_cb/impl/proto_utils.h>               // for DeserializeProto()
-#include <grpc_cb/impl/server/server_reader_init_cqtag.h>  // for ServerReaderInitCqTag
+#include <grpc_cb/impl/server/server_reader_cqtag.h>  // for ServerReaderCqTag
 #include <grpc_cb/impl/server/server_reader_writer_init_cqtag.h>  // for ServerReaderWriterInitCqTag
 
 // package routeguide
@@ -190,17 +190,20 @@ void Service::ListFeatures(
 
 void Service::RecordRoute(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
-  using CqTag = ::grpc_cb::ServerReaderInitCqTag<
+  using CqTag = ::grpc_cb::ServerReaderCqTag<
       ::routeguide::Point, ::routeguide::RouteSummary>;
-  CqTag* tag = new CqTag(call_sptr,
-      [this](const ::routeguide::Point& point,
-             const RecordRoute_Replier& replier) {
-        RecordRoute_OnMsg(point, replier);
-      },
-      [this](const RecordRoute_Replier& replier) {
-        RecordRoute_OnEnd(replier);
-      });
   RecordRoute_Replier replier(call_sptr);
+  CqTag::MsgCallback on_msg =
+    [this](const ::routeguide::Point& point,
+           const RecordRoute_Replier& replier) {
+      RecordRoute_OnMsg(point, replier);
+    };
+  CqTag::EndCallback on_end =
+    [this](const RecordRoute_Replier& replier) {
+      RecordRoute_OnEnd(replier);
+    };
+  CqTag::DataSptr data_sptr(new CqTag::Data{replier, on_msg, on_end});
+  CqTag* tag = new CqTag(call_sptr, data_sptr);
   if (tag->Start()) {
     RecordRoute_OnStart(replier);
     return;

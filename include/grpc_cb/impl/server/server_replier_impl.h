@@ -29,21 +29,24 @@ class ServerReplierImpl GRPC_FINAL {
   void Reply(const ResponseType& response) {
     if (replied_) return;
     replied_ = true;
-    auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
+    auto* tag = new ServerReplierCqTag(call_sptr_, send_init_md_);  // delete in Run()
     if (!tag->StartReply(response)) delete tag;
   }
 
   void ReplyError(const Status& status) {
     if (replied_) return;
     replied_ = true;
-    auto* tag = new ServerReplierCqTag(call_sptr_);  // delete in Run()
+    auto* tag = new ServerReplierCqTag(call_sptr_, send_init_md_);  // delete in Run()
     if (!tag->StartReplyError(status)) delete tag;
   }
 
 private:
   const CallSptr call_sptr_;
+  bool send_init_md_ = true;  // need to send initial metadata
   bool replied_ = false;
 };  // class ServerReplierImpl
+
+// Todo: SendInitMetadata and SetTrailingMetadata
 
 }  // namespace grpc_cb
 

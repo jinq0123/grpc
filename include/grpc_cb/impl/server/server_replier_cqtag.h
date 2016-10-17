@@ -16,7 +16,8 @@ namespace grpc_cb {
 
 class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
  public:
-  explicit ServerReplierCqTag(const CallSptr& call_sptr) : CallCqTag(call_sptr) {}
+  ServerReplierCqTag(const CallSptr& call_sptr, bool send_init_md)
+    : CallCqTag(call_sptr), send_init_md_(send_init_md) {}
 
   inline bool StartReply(const ::google::protobuf::Message& msg) GRPC_MUST_USE_RESULT;
   inline bool StartReplyError(const Status& status) GRPC_MUST_USE_RESULT;
@@ -25,11 +26,14 @@ class ServerReplierCqTag GRPC_FINAL : public CallCqTag {
   CodSendInitMd cod_send_init_md_;
   CodSendMsg cod_send_msg_;
   CodServerSendStatus cod_server_send_status_;
+  bool send_init_md_ = false;  // need to send initial metadata
 };
 
 bool ServerReplierCqTag::StartReply(const ::google::protobuf::Message& msg) {
   CallOperations ops;
-  ops.SendInitMd(cod_send_init_md_);  // Todo: init metadata
+  if (send_init_md_) {  // Todo: use CodSendInitMd uptr?
+    ops.SendInitMd(cod_send_init_md_);  // Todo: init metadata
+  }
   Status status = ops.SendMsg(msg, cod_send_msg_);
   ops.ServerSendStatus(status, cod_server_send_status_);
   return GetCallSptr()->StartBatch(ops, this);
@@ -37,7 +41,9 @@ bool ServerReplierCqTag::StartReply(const ::google::protobuf::Message& msg) {
 
 bool ServerReplierCqTag::StartReplyError(const Status& status) {
   CallOperations ops;
-  ops.SendInitMd(cod_send_init_md_);
+  if (send_init_md_) {
+    ops.SendInitMd(cod_send_init_md_);
+  }
   ops.ServerSendStatus(status, cod_server_send_status_);
   return GetCallSptr()->StartBatch(ops, this);
 }
