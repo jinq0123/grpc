@@ -26,7 +26,7 @@ bool ServerWriterImpl::Write(
   using CqTag = ServerWriterWriteCqTag;
   CqTag* tag = new CqTag(call_sptr_);
   if (tag->Start(response, send_init_md)) {
-    send_init_md = true;
+    send_init_md = false;
     return true;
   }
 
