@@ -284,10 +284,8 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\send_msg_cqtag.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_init_md_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_writer_cqtag.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_writer_init_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_impl.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_send_status_cqtag.h" />
@@ -305,6 +303,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_cqtag.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\server\server_writer_write_cqtag.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\..\src\cpp_cb\client\channel.cc" />

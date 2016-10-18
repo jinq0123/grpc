@@ -13,7 +13,7 @@
 #include <grpc_cb/impl/completion_queue.h>          // for CompletionQueue
 #include <grpc_cb/impl/proto_utils.h>               // for DeserializeProto()
 #include <grpc_cb/impl/server/server_reader_cqtag.h>  // for ServerReaderCqTag
-#include <grpc_cb/impl/server/server_reader_writer_init_cqtag.h>  // for ServerReaderWriterInitCqTag
+#include <grpc_cb/impl/server/server_reader_writer_cqtag.h>  // for ServerReaderWriterCqTag
 
 // package routeguide
 namespace routeguide {
@@ -231,17 +231,21 @@ void Service::RecordRoute_OnEnd(
 
 void Service::RouteChat(const ::grpc_cb::CallSptr& call_sptr) {
   assert(call_sptr);
-  using RwCqTag = ::grpc_cb::ServerReaderWriterInitCqTag<
+  using RwCqTag = ::grpc_cb::ServerReaderWriterCqTag<
       ::routeguide::RouteNote, ::routeguide::RouteNote>;
-  RwCqTag* tag = new RwCqTag(call_sptr,
-      [this](const ::routeguide::RouteNote& msg,
-             const RouteChat_Writer& writer) {
-        RouteChat_OnMsg(msg, writer);
-      },
-      [this](const RouteChat_Writer& writer) {
-        RouteChat_OnEnd(writer);
-      });
   RouteChat_Writer writer(call_sptr);
+  RwCqTag::MsgCallback on_msg =
+    [this](const ::routeguide::RouteNote& msg,
+           const RouteChat_Writer& writer) {
+      RouteChat_OnMsg(msg, writer);
+    };
+  RwCqTag::EndCallback on_end = 
+    [this](const RouteChat_Writer& writer) {
+      RouteChat_OnEnd(writer);
+    };
+  RwCqTag::DataSptr data_sptr(new RwCqTag::Data{writer, on_msg, on_end});
+
+  RwCqTag* tag = new RwCqTag(call_sptr, data_sptr);
   if (tag->Start()) {
     RouteChat_OnStart(writer);
     return;

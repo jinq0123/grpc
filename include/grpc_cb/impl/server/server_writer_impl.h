@@ -27,6 +27,7 @@ class ServerWriterImpl GRPC_FINAL {
  private:
   CallSptr call_sptr_;
   bool closed_ = false;
+  bool send_init_md = true;  // to send initial metadata once
 };  // class ServerWriterImpl
 
 }  // namespace grpc_cb

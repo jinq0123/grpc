@@ -3,23 +3,17 @@
 
 #include <grpc_cb/impl/server/server_writer_impl.h>
 
-#include <grpc_cb/impl/send_msg_cqtag.h>    // for SendMsgCqTag
-
 // Todo: Move from include/ to scr/ dir.
-#include <grpc_cb/impl/server/server_init_md_cqtag.h>  // for ServerInitMdCqTag
 #include <grpc_cb/impl/server/server_send_status_cqtag.h>  // for ServerSendStatusCqTag
+
+#include "server_writer_write_cqtag.h"  // for ServerWriterWriteCqTag
+
 
 namespace grpc_cb {
 
 ServerWriterImpl::ServerWriterImpl(const CallSptr& call_sptr)
     : call_sptr_(call_sptr) {
   assert(call_sptr);
-  ServerInitMdCqTag* tag = new ServerInitMdCqTag(call_sptr);
-  // Todo: Set init md
-  if (tag->Start()) return;
-
-  delete tag;
-  closed_ = true;  // error
 }
 
 ServerWriterImpl::~ServerWriterImpl() {
@@ -29,8 +23,12 @@ ServerWriterImpl::~ServerWriterImpl() {
 bool ServerWriterImpl::Write(
     const ::google::protobuf::Message& response) {
   if (closed_) return false;
-  SendMsgCqTag* tag = new SendMsgCqTag(call_sptr_);
-  if (tag->Start(response)) return true;
+  using CqTag = ServerWriterWriteCqTag;
+  CqTag* tag = new CqTag(call_sptr_);
+  if (tag->Start(response, send_init_md)) {
+    send_init_md = true;
+    return true;
+  }
 
   delete tag;
   closed_ = true;  // error
@@ -43,7 +41,8 @@ void ServerWriterImpl::Close(const Status& status) {
 
   using CqTag = ServerSendStatusCqTag;
   CqTag* tag = new CqTag(call_sptr_);
-  if (tag->StartSend(status))
+  // Todo: set init md and trail md
+  if (tag->StartSend(status, send_init_md))
     return;
   delete tag;
 }
