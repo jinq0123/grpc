@@ -3,9 +3,7 @@
 
 #include <grpc_cb/impl/server/server_writer_impl.h>
 
-// Todo: Move from include/ to scr/ dir.
-#include <grpc_cb/impl/server/server_send_status_cqtag.h>  // for ServerSendStatusCqTag
-
+#include "server_writer_send_status_cqtag.h"  // for ServerWriterSendStatusCqTag
 #include "server_writer_write_cqtag.h"  // for ServerWriterWriteCqTag
 
 
@@ -39,7 +37,7 @@ void ServerWriterImpl::Close(const Status& status) {
   if (closed_) return;
   closed_ = true;
 
-  using CqTag = ServerSendStatusCqTag;
+  using CqTag = ServerWriterSendStatusCqTag;
   CqTag* tag = new CqTag(call_sptr_);
   // Todo: set init md and trail md
   if (tag->StartSend(status, send_init_md))

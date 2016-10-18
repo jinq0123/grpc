@@ -288,7 +288,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_writer_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_impl.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_send_status_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_writer_impl.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\security\server_credentials.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\server.h" />
@@ -303,6 +302,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\support\string_ref.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\support\time.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_method_call_cqtag.h" />
+    <ClInclude Include="..\..\..\src\cpp_cb\server\server_writer_send_status_cqtag.h" />
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_writer_write_cqtag.h" />
   </ItemGroup>
   <ItemGroup>
