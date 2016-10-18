@@ -150,8 +150,8 @@ class RouteGuideClient {
         // Broken stream.
         break;
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(
-          delay_distribution(generator)));
+      //std::this_thread::sleep_for(std::chrono::milliseconds(
+      //    delay_distribution(generator)));
     }
     writer->WritesDone();
     Status status = writer->Finish();
@@ -239,9 +239,9 @@ int main(int argc, char** argv) {
       db);
 
   std::cout << "-------------- GetFeature --------------" << std::endl;
-  guide.GetFeature();
+  // guide.GetFeature();
   std::cout << "-------------- ListFeatures --------------" << std::endl;
-  guide.ListFeatures();
+  // guide.ListFeatures();
   std::cout << "-------------- RecordRoute --------------" << std::endl;
   guide.RecordRoute();
   std::cout << "-------------- RouteChat --------------" << std::endl;

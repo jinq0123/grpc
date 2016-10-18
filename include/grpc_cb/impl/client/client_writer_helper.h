@@ -7,7 +7,7 @@
 #include <cassert>     // for assert()
 
 #include <grpc_cb/impl/call_sptr.h>                    // for CallSptr
-#include <grpc_cb/impl/send_msg_cqtag.h>    // for SendMsgCqTag
+#include <grpc_cb/impl/client/client_send_msg_cqtag.h>    // for ClientSendMsgCqTag
 #include <grpc_cb/status.h>                 // for Status
 
 namespace grpc_cb {
@@ -24,7 +24,7 @@ inline bool Write(
   assert(call_sptr);
   if (!status.ok()) return false;
 
-  SendMsgCqTag* tag = new SendMsgCqTag(call_sptr);
+  ClientSendMsgCqTag* tag = new ClientSendMsgCqTag(call_sptr);
   if (tag->Start(request)) return true;
 
   delete tag;

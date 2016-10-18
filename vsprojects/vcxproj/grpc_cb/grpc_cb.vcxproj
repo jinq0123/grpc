@@ -275,6 +275,7 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_reader_recv_status_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_reader_writer_impl.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_send_close_cqtag.h" />
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_send_msg_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_writer_finish_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_writer_helper.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue.h" />
@@ -283,7 +284,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\completion_queue_uptr.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\metadata_vector.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\proto_utils.h" />
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\send_msg_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_writer_cqtag.h" />
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_replier_cqtag.h" />

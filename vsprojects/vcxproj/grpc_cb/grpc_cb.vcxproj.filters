@@ -165,9 +165,6 @@
     <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_send_close_cqtag.h">
       <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\grpc_cb\impl\send_msg_cqtag.h">
-      <Filter>include\grpc_cb\impl</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\grpc_cb\impl\server\server_reader_cqtag.h">
       <Filter>include\grpc_cb\impl\server</Filter>
     </ClInclude>
@@ -212,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\cpp_cb\server\server_writer_write_cqtag.h">
       <Filter>src\cpp_cb\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\grpc_cb\impl\client\client_send_msg_cqtag.h">
+      <Filter>include\grpc_cb\impl\client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
