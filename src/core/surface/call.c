@@ -112,8 +112,9 @@ typedef struct batch_control {
   void *notify_tag;
   gpr_refcount steps_to_complete;
 
+  grpc_slice_buffer_stream* sending_stream;
+
   uint8_t send_initial_metadata;
-  uint8_t send_message;
   uint8_t send_final_op;
   uint8_t recv_initial_metadata;
   uint8_t recv_message;
@@ -142,7 +143,6 @@ struct grpc_call {
   size_t batches;
   /** which ops are in-flight */
   uint8_t sent_initial_metadata;
-  uint8_t sending_message;
   uint8_t sent_final_op;
   uint8_t received_initial_metadata;
   uint8_t receiving_message;
@@ -181,7 +181,6 @@ struct grpc_call {
   grpc_call *sibling_next;
   grpc_call *sibling_prev;
 
-  grpc_slice_buffer_stream sending_stream;
   grpc_byte_stream *receiving_stream;
   grpc_byte_buffer **receiving_buffer;
   gpr_slice receiving_slice;
@@ -899,6 +898,7 @@ static void finish_batch_completion(grpc_exec_ctx *exec_ctx, void *user_data,
                                     grpc_cq_completion *storage) {
   batch_control *bctl = user_data;
   grpc_call *call = bctl->call;
+  GPR_ASSERT(NULL == bctl->sending_stream);  /* already freed */
   gpr_free(bctl);
   gpr_mu_lock(&call->mu);
   GPR_ASSERT(call->batches);
@@ -917,6 +917,7 @@ static void post_batch_completion(grpc_exec_ctx *exec_ctx,
   }
 
   grpc_exec_ctx_enqueue(exec_ctx, bctl->notify_tag, bctl->success);
+  GPR_ASSERT(NULL == bctl->sending_stream);  /* already freed */
   gpr_free(bctl);
   gpr_mu_lock(&call->mu);
   GPR_ASSERT(call->batches);
@@ -982,8 +983,10 @@ static void finish_batch(grpc_exec_ctx *exec_ctx, void *bctlp, int success) {
     grpc_metadata_batch_destroy(
         &call->metadata_batch[0 /* is_receiving */][0 /* is_trailing */]);
   }
-  if (bctl->send_message) {
-    call->sending_message = 0;
+  if (bctl->sending_stream) {
+    grpc_byte_stream_destroy(exec_ctx, &bctl->sending_stream->base);
+    gpr_free(bctl->sending_stream);
+    bctl->sending_stream = NULL;
   }
   if (bctl->send_final_op) {
     grpc_metadata_batch_destroy(
@@ -1101,7 +1104,7 @@ static grpc_call_error call_start_batch(grpc_exec_ctx *exec_ctx,
 
   gpr_mu_lock(&call->mu);
   call->batches++;
-  bctl = gpr_malloc(sizeof(*bctl));  // gpr_free() on completion
+  bctl = gpr_malloc(sizeof(*bctl));  /* gpr_free() on completion */
   memset(bctl, 0, sizeof(*bctl));
   bctl->call = call;
   bctl->notify_tag = notify_tag;
@@ -1163,16 +1166,13 @@ static grpc_call_error call_start_batch(grpc_exec_ctx *exec_ctx,
           error = GRPC_CALL_ERROR_INVALID_MESSAGE;
           goto done_with_error;
         }
-        if (call->sending_message) {
-          error = GRPC_CALL_ERROR_TOO_MANY_OPERATIONS;
-          goto done_with_error;
-        }
-        bctl->send_message = 1;
-        call->sending_message = 1;
+        /* sending_stream will be gpr_free() in finish_batch() */
+        bctl->sending_stream = gpr_malloc(sizeof(grpc_slice_buffer_stream));
+        memset(bctl->sending_stream, 0, sizeof(grpc_slice_buffer_stream));
         grpc_slice_buffer_stream_init(
-            &call->sending_stream,
+            bctl->sending_stream,
             &op->data.send_message->data.raw.slice_buffer, op->flags);
-        stream_op.send_message = &call->sending_stream.base;
+        stream_op.send_message = &bctl->sending_stream->base;
         break;
       case GRPC_OP_SEND_CLOSE_FROM_CLIENT:
         /* Flag validation: currently allow no flags */
@@ -1347,9 +1347,10 @@ done_with_error:
     call->sent_initial_metadata = 0;
     grpc_metadata_batch_clear(&call->metadata_batch[0][0]);
   }
-  if (bctl->send_message) {
-    call->sending_message = 0;
-    grpc_byte_stream_destroy(exec_ctx, &call->sending_stream.base);
+  if (bctl->sending_stream) {
+    grpc_byte_stream_destroy(exec_ctx, &bctl->sending_stream->base);
+    gpr_free(bctl->sending_stream);
+    bctl->sending_stream = NULL;
   }
   if (bctl->send_final_op) {
     call->sent_final_op = 0;
