@@ -111,3 +111,5 @@ bazel-genfiles
 bazel-grpc
 bazel-out
 bazel-testlogs
+/vsprojects/*.opendb
+/vsprojects/*.db
