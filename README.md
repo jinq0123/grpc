@@ -1,4 +1,4 @@
-Jinq0123: Fork to add cpp callback API. (Not ready) Moved to [gRPC_cb](https://github.com/jinq0123/grpc_cb).
+Jinq0123: Forked to add cpp callback API. Moved to [gRPC_cb](https://github.com/jinq0123/grpc_cb).
 
 See [src/cpp_cb/README.md](src/cpp_cb/README.md).
 
