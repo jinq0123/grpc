@@ -1,13 +1,15 @@
 
-#Overview
+# Overview
 
 This directory contains source code for C++ callback implementation of gRPC.
 
-#Status
+# Status
 
-Not ready
+Already moved to [gRPC_cb](https://github.com/jinq0123/grpc_cb).
 
-#Todo
+Do not use codes here.
+
+# Todo
 * WriteOptions
 * Add interfaces for protobuf bytes message.
 * DoComplete(bool success) use success parameter.
@@ -15,7 +17,7 @@ Not ready
 * Examples of async server.
 * Examples of async client stream.
 
-#Design
+# Design
 CompletionQueueTag is the element of CompletionQueue.
 On completion, CompletionQueueTag is poped, and DoComplete() is called,
 and then got deleted.
@@ -24,7 +26,7 @@ CallOperations keeps references to members of CompletionQueueTag, and is
 used in Call::StartBatch().
 Async rpc callback is got called in DoComplete().
 
-#Other
+# Other
  
 To generate grpc_cb files:
 ```
